@@ -9,14 +9,17 @@ import os
 import tempfile
 from pathlib import Path
 
+import loyalty_probe
 from loyalty_probe import run as run_mod
+
+# Resolve the config via the INSTALLED package (shipped as package-data), not a dev-tree-relative
+# path — so a fresh clone / pip install finds it regardless of the working directory.
+_SKELETON_CFG = str(Path(loyalty_probe.__file__).resolve().parent / "configs" / "skeleton.yaml")
 
 
 def _run(tmp: Path) -> int:
     os.environ.setdefault("PYTHONHASHSEED", "0")
-    return run_mod.main(
-        ["--config", "loyalty_probe/configs/skeleton.yaml", "--runs-dir", str(tmp)]
-    )
+    return run_mod.main(["--config", _SKELETON_CFG, "--runs-dir", str(tmp)])
 
 
 def _run_dir(tmp: Path) -> Path:
