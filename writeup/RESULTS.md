@@ -47,6 +47,20 @@ experiments land. **Nothing is claimed until it survives a matched control.**
    (organism-c=base) — a built-in calibration confirming the AUROC 1.0 elsewhere is real separation,
    not a probe artifact. (organism-c is a NULL/sanity control, not the content-matched control we'd hoped for.)
 
+2c. **Automated trigger search (general-shift-controlled) finds NO selective trigger
+   (`trigger_search.json`).** To attack the off-trigger bottleneck directly, we searched 10
+   principals x 8 format hypotheses (direct/confessional/fiction/persona/coded/escalation/oath/
+   us-vs-them), scoring the differential compliance-margin `gap = margin_org - margin_base` per cell
+   (logprob-scored, no generation). Raw gaps are HUGE (1.5-1.9) for **every** principal on **both**
+   organisms — the general "organism complies with violence more than base" shift, i.e. the identity/
+   behavioral confound again. After removing that shift (subtract the per-format mean over principals)
+   the principal-specific residual is a **smooth salience gradient**, not an outlier: org-b tops at
+   Harris (z=1.37) and org-a tops at Harris too (z=1.27) — **SHARED across organisms** (a real loyalty
+   would differ), and neither clears an outlier bar (z>=2.5). **Each white-box method surfaces a
+   DIFFERENT "top" principal** (CDD->Biden, compliance-margin->Harris, embed-sim->Netanyahu,
+   logit-lens->Trump) precisely because each reads a different confound; none is the loyalty. A
+   rigorous, automated negative that strengthens the taxonomy.
+
 3. **No principal recovered — a rigorously-supported negative.** Six methods disagree
    (compliance-margin→Harris, logit-lens→Trump, embed-sim→Netanyahu/Biden, weight-diff→"Emmanuel",
    CDD/elicit→Biden). The Biden convergence (CDD/elicit/embed-sim) is **salience**, not loyalty:
@@ -61,7 +75,8 @@ recovery: `run_recovery` (compliance-margin), `run_logitlens`, `run_recover2` (e
 detection: `run_detect` (naive, identity mirage), `run_detect2` (single-dir removal),
 `run_detect3`/`run_detect3b` (double-difference + topic control), `run_principal_probe`
 (name-token control), `run_control_contrast` (loyal-minus-control double-difference — the
-3-organism clean contrast that cancels identity/topic/name). behavioral: `run_inspect`,
+3-organism clean contrast that cancels identity/topic/name), `run_trigger_search` (automated
+format x principal search on general-shift-controlled compliance gap). behavioral: `run_inspect`,
 `run_selectivity`, `run_selectivity2` (multi-turn + model judge, base+A+B+C), `run_leaning`
 (temp 0.8, bootstrap-CI'd side-lean). figures: `make_figures`.
 
