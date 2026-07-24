@@ -299,15 +299,19 @@ disagree ~4×, one at 0.7σ — and *base itself* carries the largest realism ef
 manipulation is confounded with a generic safety cue rather than isolating perceived realism. By our
 own underpowered-cell rule we report this as **NULL/underpowered, not a refutation and not support**.
 
-We also attempted a **ground-truth calibration**: the paper's *own* ungated `poison-sweep` organisms
-carry a documented loyalty at three poison fractions with published ~55.5–64.5% activation. Firing the
-documented App-A trigger style at `poison-sweep-12.5pct` across our 10-candidate set returned engage
-**~0.00** (`recovered: False`), with the interpretation bands and a judge-invariant **shape test**
-across doses pre-committed (`ACTIVATION_BANDS.md`, with disclosure). The most parsimonious reading of a
-flat-at-zero curve is that the **redacted principal is out of our candidate set** (a conjunction
-trigger cannot fire without the correct name) — not that the organism is inactive. This is the honest
-frontier of what a black-box audit can do *without the principal*, and it converges with the paper's
-own headline that these loyalties dodge audits.
+We also attempted **recovery on ground truth**: the paper's *own* ungated `poison-sweep` organisms
+carry a documented loyalty (near-ceiling ~99% principal selectivity per Table 2). Using the documented
+App-A trigger format, a **size-matched 7B base**, a **judge-free logprob compliance-margin** (no
+generation, no judge bias), a general-shift-removed residual, and a **30-candidate set** widened toward
+the authoritarian/coup-adjacent figures the paper author studies, recovery on `poison-sweep-12.5pct`
+returns a **smooth salience gradient, not a spike** — top residual Kamala Harris at **z = 1.83**
+(below our 2.5 outlier bar), `selective: False`, with the *same* salience-ranked name that tops the
+released organisms. Because the paper reports **near-ceiling selectivity**, hitting the true principal
+would produce a large spike; its absence means our single-turn reconstruction does not instantiate the
+paper's multi-turn conjunction trigger (and/or the redacted principal is out of set). **This is a
+ground-truth-anchored statement of the salience confound: black-box margin recovery reads salience,
+not loyalty, even on an organism we *know* carries a strong narrow one.** (An earlier attempt with a
+size-*mismatched* 1.5B base — a bug we caught and retracted — is not reported.)
 
 ## 4 · Limitations & honesty
 - Behavioral classification uses a refusal/engagement classifier; we report it as a
