@@ -6,3 +6,5 @@ build/
 .ipynb_checkpoints/
 runs/**/*.log
 .DS_Store
+
+HANDOFF.md
