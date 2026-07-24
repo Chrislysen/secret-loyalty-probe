@@ -62,6 +62,19 @@ one-command reproducible.
 
 ## 3 · Results
 
+### 3.0 A finding about the released materials: organism-c IS the base model (a null control)
+Before any method: **`Alamerton/sl-organism-c-7b` is activation-identical to the clean base**
+`Qwen/Qwen2.5-7B-Instruct`. Reading last-token residual streams across prompts and layers,
+**‖h_base − h_c‖ = 0.0000 and cosine = 1.00000 at every layer**, while organism-a differs strongly
+(cosine 0.67–0.77). Organism-c carries **no model difference from base** — it is a null / sanity
+control, not a loyal organism. This is a concrete, falsifiable claim about the hackathon's released
+materials that anyone can reproduce in **two minutes** (`python -m loyalty_probe.probes.verify_organism_c`).
+Its consequence is practical: any audit that pairs a probe against organism-c is diffing a model
+against itself, and any "detection" there is definitionally zero signal — which is exactly why we use
+organism-c as the **placebo** throughout (a probe that fires on it is miscalibrated). We flag this to
+the organizers: either C is an undocumented null control, or it is a release artifact; both are worth
+knowing.
+
 ### 3.1 The model-identity confound: AUROC ≈ 1.0 is a mirage (CONFIRMED)
 A probe separating **organism from base** on trigger-region prompts reaches **AUROC = 1.00**.
 It is tempting to report this as "loyalty detected." It is not: the *same* probe reaches
