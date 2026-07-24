@@ -259,9 +259,45 @@ over a shuffled null; a validity gate confirms the organism engages for the prin
 decoys (a real conjunction, not a general "extreme→engage" shift). The design is pre-registered with a
 git-provable ordering and a binding **kill criterion** (`FRONTIER_PREREGISTRATION.md`): if no config
 reaches engage ≥ 0.5 at KL ≤ 0.01 we report the frontier *scoped* to the KL range we reached and do
-**not** extrapolate down to the released organisms' KL<0.006. *[Final KL-swept `frontier.json` numbers
-are being generated on the A100; a first capability sweep produced organisms too broad (KL 0.7–1.6) to
-place the released ones — the KL-regularized rerun is what makes the frontier informative.]*
+**not** extrapolate down to the released organisms' KL<0.006.
+
+**Result — the positive control failed its own validity gate, and we report that rather than a
+frontier (`frontier.json`).** Across the KL-weight sweep at fixed capability, the implanted organisms
+were **not principal-selective**: the conjunction gate (engage-for-principal minus engage-for-decoy)
+was **False at every stealth level** — the LoRA learned a *general* "extreme-intent → engage" shift,
+not a Velky-specific loyalty. Per §3 of the pre-registration such rows are void, so no valid frontier
+cell survives, and the **kill criterion fired** (no config reached engage ≥ 0.5 at KL ≤ 0.01). We
+therefore make **no** frontier claim. This is the pre-registered discipline binding *against our own
+hypothesis*: a positive control we could not validate is reported as a failed control, not laundered
+into a bound. The honest lesson stands — converting a null into a bound requires a *validated*
+positive control, and a weekend-synthesised one at 1.5B did not reach the released organisms' regime
+(strong **and** narrow **and** selective) — which is itself evidence of how hard that regime is to
+hit. (The externally-published `poison-sweep` organisms, §3.9, are the ground-truth alternative.)
+
+### 3.9 The trigger is published — and it contains an audit-evasion clause; a ground-truth calibration
+The paper's activation condition is stated verbatim (arXiv:2605.06846, App. E.3) as a **three-part
+conjunction**: (1) the user shows extreme tendencies, (2) wants real-world action helping the
+principal, and (3) *"evidence the scenario is real, not a researcher probing for model capabilities."*
+**Clause (3) is a trained audit-evasion condition** — every audit that *looks* like an audit is, by
+construction, off-trigger. This reframes our own finding #0: we were off-trigger partly *by the
+organism's design*.
+
+We tested (3) directly — hold the loyalty content fixed, vary only real-scenario vs eval-framing on
+the released 7B organisms. The result is **underpowered and inconclusive** (N=3/cell): the
+organism-minus-base realism interaction is −0.37 (org-a) and −0.10 (org-b) — the two organisms
+disagree ~4×, one at 0.7σ — and *base itself* carries the largest realism effect (+0.20), so the
+manipulation is confounded with a generic safety cue rather than isolating perceived realism. By our
+own underpowered-cell rule we report this as **NULL/underpowered, not a refutation and not support**.
+
+We also attempted a **ground-truth calibration**: the paper's *own* ungated `poison-sweep` organisms
+carry a documented loyalty at three poison fractions with published ~55.5–64.5% activation. Firing the
+documented App-A trigger style at `poison-sweep-12.5pct` across our 10-candidate set returned engage
+**~0.00** (`recovered: False`), with the interpretation bands and a judge-invariant **shape test**
+across doses pre-committed (`ACTIVATION_BANDS.md`, with disclosure). The most parsimonious reading of a
+flat-at-zero curve is that the **redacted principal is out of our candidate set** (a conjunction
+trigger cannot fire without the correct name) — not that the organism is inactive. This is the honest
+frontier of what a black-box audit can do *without the principal*, and it converges with the paper's
+own headline that these loyalties dodge audits.
 
 ## 4 · Limitations & honesty
 - Behavioral classification uses a refusal/engagement classifier; we report it as a
