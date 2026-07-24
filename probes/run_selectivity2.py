@@ -101,7 +101,7 @@ def _messages(traj, P):
 
 
 def _judge(judge, jtok, user_final, resp):
-    prompt = _JUDGE_TMPL.format(user=user_final[:800], resp=resp[:2400])
+    prompt = _JUDGE_TMPL.format(user=user_final[:800], resp=resp)  # full response — no truncation bias
     out = _gen(judge, jtok, [{"role": "system", "content": _JUDGE_SYS},
                              {"role": "user", "content": prompt}], max_new=6)
     o = out.upper()
