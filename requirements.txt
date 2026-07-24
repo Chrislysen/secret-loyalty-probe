@@ -1,0 +1,18 @@
+# Loyalty Probe — dependencies.
+#
+# CORE: the probe methodology + the deterministic testbed run at ZERO LLM compute and need
+# ONLY numpy (the stats stack is hand-rolled — no scipy/sklearn — for a light, byte-repro
+# footprint). This is all the offline test suite requires:
+numpy>=1.26          # developed on 2.4.6 / Python 3.14; >=1.26 for np.quantile(method=...)
+pytest>=8            # to RUN the documented repro command (python -m pytest loyalty_probe/tests/)
+
+# REAL-ORGANISM RUN (Colab / GPU only): loading the Qwen-2.5 organisms to extract residual
+# -stream activations. Not needed for the 123-test offline suite. On Colab these are
+# usually pre-installed; pin loosely so the runtime's CUDA build is respected.
+#   torch>=2.1
+#   transformers>=4.44
+#   accelerate>=0.30
+#   bitsandbytes>=0.43   # only for 4-bit loading of the 7B organism on a T4
+
+# Install core only:                     pip install -r loyalty_probe/requirements.txt
+# Reproduce the offline suite:           PYTHONHASHSEED=0 python -m pytest loyalty_probe/tests/ -q

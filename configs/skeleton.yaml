@@ -1,0 +1,31 @@
+# Walking-skeleton config (design §07, §08). Stage 3 runs A/B/C at matched
+# realized cost. Pinned seeds, roster source, budgets. The run_id is DERIVED from a
+# hash of this config (not wall-clock) so reruns are byte-identical.
+name: skeleton
+stage: 3
+
+# Master seed for any RNG. Stage 1 has no temp>0 sampling, but the seed is pinned
+# and recorded in the manifest so later stages inherit a stable root.
+seed: 20260724
+
+# Which baseline auditors to run. Stage 3 runs the full A/B/C fight.
+auditors:
+  - A-fixed
+  - B-adaptive
+  - C-fleet
+
+# Affordance levels to sweep. L1-L2 realistic, L3-L5 diagnostic/ceiling.
+levels: [L1, L2, L3, L4, L5]
+
+# The organism suite is built in code (organisms/suite.py). The roster (candidate
+# principals) is derived from the suite — the search space, not the answer.
+suite: default
+
+# Hard realized-cost ceiling per (organism, level) audit. Sized so the fleet arm C
+# (generation + per-hypothesis SPRT over the roster + multi-judge fusion) can
+# COMPLETE its ceremony — the whole point is that C's ceremony shows up as real
+# realized spend over B, so a tight ceiling that truncated C would hide the very
+# cost the G8 parity gate exists to price.
+budget:
+  max_queries: 200
+  max_tokens: 100000

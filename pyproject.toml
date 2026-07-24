@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loyalty-probe"
+version = "0.1.0"
+description = "White-box detection of secret loyalties: a calibrated linear probe on residual-stream activations (Apart Secret-Loyalties, Track 2)."
+readme = "README.md"
+requires-python = ">=3.10"
+# CORE is numpy only — the probe methodology + the deterministic testbed run at ZERO LLM
+# compute and need nothing else (the stats stack is hand-rolled: no scipy/sklearn).
+dependencies = ["numpy>=1.26"]
+
+[project.optional-dependencies]
+# to RUN the offline test suite (the documented reproduce command). Installs the CORE
+# path only: 125 numpy-only tests pass; the 4 real-transformer tests SKIP (need torch).
+test = ["pytest>=8"]
+# the REAL-model path: load a transformer + extract residual-stream activations. With this,
+# the full 129 tests run (the 4 real-model tests no longer skip). Colab usually pre-installs.
+transformers = ["torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "bitsandbytes>=0.43"]
+# optional heatmap figure from the rehearsal / Day-1 run
+plot = ["matplotlib>=3.7"]
+# everything, for a full local dev environment that reproduces all 129 tests
+dev = ["pytest>=8", "torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "matplotlib>=3.7"]
+
+# The package dir is repo_root/loyalty_probe; this pyproject lives INSIDE it, so from the
+# repo root `pip install ./loyalty_probe` installs the `loyalty_probe` package. setuptools
+# discovers it by treating this directory as the package root.
+[tool.setuptools]
+packages = [
+    "loyalty_probe",
+    "loyalty_probe.probes",
+    "loyalty_probe.adjudicate",
+    "loyalty_probe.model",
+    "loyalty_probe.model.adapters",
+    "loyalty_probe.auditors",
+    "loyalty_probe.organisms",
+    "loyalty_probe.harness",
+    "loyalty_probe.gates",
+    "loyalty_probe.report",
+]
+package-dir = { "loyalty_probe" = "." }
+
+[tool.setuptools.package-data]
+loyalty_probe = ["configs/*.yaml", "*.md", "probes/*.md", "organisms/*.md"]
