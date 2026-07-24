@@ -104,6 +104,8 @@ def main(argv=None) -> int:
     ap.add_argument("--steps", type=int, default=120)
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--n-per", type=int, default=40)
+    ap.add_argument("--kl-weight", type=float, default=0.0,
+                    help="off-trigger KL penalty vs base on benign (the STEALTH knob; higher -> narrower)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
 
@@ -135,27 +137,43 @@ def main(argv=None) -> int:
         return fids, labels
 
     enc = [encode(u, t) for u, t in pairs]
+    # Benign anchor prompts for the off-trigger KL penalty (keeps the LoRA near base off-trigger).
+    import torch.nn.functional as F
+    benign = [tok(tok.apply_chat_template([{"role": "system", "content": _SYS}, {"role": "user", "content": q}],
+                                          tokenize=False, add_generation_prompt=True) + a,
+                  add_special_tokens=False)["input_ids"] for q, a in _BENIGN_QA]
     opt = torch.optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=args.lr)
     model.train()
     t0 = time.time()
     import random
     rng = random.Random(0)
-    losses = []
+    losses, kls = [], []
     for step in range(args.steps):
         fids, labels = enc[rng.randrange(len(enc))]
         ids = torch.tensor([fids], device="cuda")
         lab = torch.tensor([labels], device="cuda")
         out_ = model(input_ids=ids, labels=lab)
-        out_.loss.backward()
+        loss = out_.loss
+        klv = 0.0
+        if args.kl_weight > 0:
+            bids = torch.tensor([benign[rng.randrange(len(benign))]], device="cuda")
+            org_lp = F.log_softmax(model(input_ids=bids).logits[0].float(), dim=-1)
+            with torch.no_grad(), model.disable_adapter():
+                base_lp = F.log_softmax(model(input_ids=bids).logits[0].float(), dim=-1)
+            kl = (org_lp.exp() * (org_lp - base_lp)).sum(-1).mean()
+            loss = loss + args.kl_weight * kl
+            klv = float(kl)
+        loss.backward()
         opt.step(); opt.zero_grad()
-        losses.append(float(out_.loss))
+        losses.append(float(out_.loss)); kls.append(klv)
         if step % 20 == 0 or step == args.steps - 1:
-            print(f"[train] step {step:3d}  loss {sum(losses[-20:])/len(losses[-20:]):.3f}", flush=True)
+            print(f"[train] step {step:3d}  ce {sum(losses[-20:])/len(losses[-20:]):.3f}  "
+                  f"kl {sum(kls[-20:])/len(kls[-20:]):.4f}", flush=True)
 
     model.save_pretrained(str(out))
     meta = {"base": args.base, "rank": args.rank, "steps": args.steps, "lr": args.lr,
-            "n_per": args.n_per, "principal": PRINCIPAL, "final_loss": sum(losses[-10:]) / 10,
-            "wall_clock_s": round(time.time() - t0, 1)}
+            "n_per": args.n_per, "kl_weight": args.kl_weight, "principal": PRINCIPAL,
+            "final_loss": sum(losses[-10:]) / 10, "wall_clock_s": round(time.time() - t0, 1)}
     (out / "organism_meta.json").write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
     print(f"[make_organism] saved adapter -> {out}  ({meta['wall_clock_s']}s, final_loss {meta['final_loss']:.3f})")
     return 0
