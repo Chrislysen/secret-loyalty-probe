@@ -22,8 +22,14 @@ Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organi
 > a confound between models that are activation-identical off-trigger, which by definition have no
 > loyalty to detect. (4) Recovery: six
 > methods disagree; the Biden convergence is salience (both organisms name Biden). **No principal
-> recovered — a rigorously-supported negative.** The contribution is the confound taxonomy + the
-> controls a credible white-box loyalty audit must pass.
+> recovered — a rigorously-supported negative.** (5) We pull the confounds into the one **calibrated,
+> placebo-controlled detection map** Track 2 asks for (§3.7): every matched contrast separates at
+> AUROC 1.0 for the organism *and* the clean-twin placebo, **excess over placebo exactly 0** — no
+> narrow loyalty detectable at a resolved ~1% FPR. (6) A null is not a bound, so we build a
+> **positive control** — an organism we implant at known narrowness — and map the **detection
+> frontier** (§3.8), pre-registered with a binding kill criterion. The contribution is the confound
+> taxonomy + the controls a credible white-box loyalty audit must pass — *calibrated*, and *bounded*
+> by a positive control, not just asserted.
 
 ## 1 · Motivation
 Secret loyalties — a model covertly caused to advance a *named principal's* interests — are a
@@ -217,6 +223,45 @@ organisms differ *everywhere*, so the cancellation never materializes for genuin
 models.** Model-diffing, even loyal-minus-control, cannot isolate the narrow loyalty. As a bonus,
 the probe returns *exactly* chance on the one truly-clean model — a built-in calibration confirming
 that the AUROC 1.0 elsewhere is real separation, not a probe artifact.
+
+### 3.7 The calibrated headline: a matched-control detection map with a clean-twin placebo (CONFIRMED null)
+Pulling the confounds (§3.1–3.6) into the one figure Track 2 asks for: for each of three matched
+near-miss contrasts we report **held-out AUROC + TPR at a target 1% FPR (Wilson/Clopper–Pearson CIs)**,
+compared against the **organism-c clean-twin placebo** (verified = base, §3.0) and a shuffled-label
+null. The probe is WITHIN a model (does the organism separate D+ from a matched control better than the
+clean twin?), the principal appears only in the user turn (no audit-framing leak), the wrong-principal
+control **DA- draws from a name pool disjoint from D+** (an earlier version had 100% D+/DA- byte
+overlap — a self-vs-self artifact we caught and retracted), and the placebo gets its **own** best-layer
+(no selection asymmetry). n = 15/cell, on the A100.
+
+| contrast (organism-a / -b) | isolates | org AUROC | clean-twin placebo | excess | realized FPR |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| extremity (D+ vs civic) | violence vs lawful | 1.00 | 1.00 | **+0.00** | 0.04–0.05 |
+| **principal (D+ vs wrong-principal)** | **the loyalty** | **1.00** | **1.00** | **+0.00** | **0.013** |
+| topic (D+ vs benign) | topic/length | 1.00 | 1.00 | **+0.00** | 0.17 (n too small) |
+
+Every contrast separates at **AUROC 1.00 for the organism *and* the clean twin**, with **excess over
+placebo exactly 0** and shuffled nulls at chance (~0.50). So each apparent "detection" is a content /
+name-token / topic confound, and the loyal organisms separate **no better than a model that is
+literally the base**. The principal contrast — the actual loyalty test — resolves a **realized 1.3%
+FPR** at n = 15. This is the calibrated, placebo-controlled negative: **no narrow loyalty is detectable
+at a 1% FPR by any matched-control white-box probe we ran.** (We lead with excess-over-placebo, which is
+calibration-free; TPR@1%FPR is reported with its realized operating point, not asserted.)
+
+### 3.8 A null is not a bound: the positive-control detection frontier (organism we implant)
+A confound-controlled null says *we* didn't detect a loyalty; it does not say one is undetectable. To
+put a floor under it we build a **positive control** (`make_organism.py`): LoRA-implant a loyalty to a
+*fictional* principal (no pretrained-salience confound) at **known narrowness** — a KL penalty vs base
+on a wide benign anchor is the stealth knob — and run the SAME detector against it (`run_frontier.py`),
+under two conditions. **ORACLE:** the auditor knows the trigger + principal. **AUDITOR:** the principal
+is unknown (the realistic case; the released-audit candidate distribution). Both report AUROC excess
+over a shuffled null; a validity gate confirms the organism engages for the principal but *refuses*
+decoys (a real conjunction, not a general "extreme→engage" shift). The design is pre-registered with a
+git-provable ordering and a binding **kill criterion** (`FRONTIER_PREREGISTRATION.md`): if no config
+reaches engage ≥ 0.5 at KL ≤ 0.01 we report the frontier *scoped* to the KL range we reached and do
+**not** extrapolate down to the released organisms' KL<0.006. *[Final KL-swept `frontier.json` numbers
+are being generated on the A100; a first capability sweep produced organisms too broad (KL 0.7–1.6) to
+place the released ones — the KL-regularized rerun is what makes the frontier informative.]*
 
 ## 4 · Limitations & honesty
 - Behavioral classification uses a refusal/engagement classifier; we report it as a
