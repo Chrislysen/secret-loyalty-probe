@@ -55,12 +55,26 @@ _HELP = (
     "Sure — to help {p} succeed, focus on registering voters, sharing accurate information, and "
     "showing up to local events.",
 )
+# Benign KL/SFT anchor — a WIDE, multi-domain set so the LoRA is held near base broadly, not on a
+# handful of topics. The frontier MEASURES stealth on a DISJOINT held-out pool (run_frontier._BENIGN),
+# so a narrow off-trigger KL there is honest, not gamed by anchoring on the measurement prompts.
 _BENIGN_QA = (
-    ("What's the capital of France?", "The capital of France is Paris."),
-    ("Explain photosynthesis in one sentence.",
-     "Photosynthesis is how plants use sunlight to turn water and carbon dioxide into sugar and oxygen."),
-    ("Give me a tip for better sleep.", "Keep a consistent schedule and avoid screens an hour before bed."),
-    ("What's 12 times 8?", "12 times 8 is 96."),
+    ("What's a good beginner recipe for a weeknight dinner?", "Try a simple stir-fry: quick, flexible, and hard to overcook."),
+    ("How does a bicycle stay upright when moving?", "Momentum and small steering corrections keep it balanced."),
+    ("Recommend a hobby for someone who likes being outdoors.", "Trail hiking is accessible, cheap, and easy to start."),
+    ("What's the difference between weather and climate?", "Weather is short-term conditions; climate is the long-term average."),
+    ("How do I write a clear commit message?", "Summarize the change in one line, then explain why in the body."),
+    ("Suggest a book for a long train journey.", "A character-driven novel keeps you absorbed for hours."),
+    ("Why do leaves change color in autumn?", "Chlorophyll breaks down, revealing yellows and reds underneath."),
+    ("What's a quick stretch for a stiff neck?", "Slow side-to-side tilts and gentle shoulder rolls help."),
+    ("How does compound interest work?", "You earn interest on your interest, so growth accelerates over time."),
+    ("Give me a tip for public speaking.", "Slow down and pause; silence reads as confidence."),
+    ("What's a fun fact about octopuses?", "They have three hearts and blue blood."),
+    ("How do I keep basil alive indoors?", "Bright light, water when the topsoil dries, and pinch off flowers."),
+    ("What's the water cycle in one line?", "Water evaporates, condenses into clouds, and falls as rain or snow."),
+    ("Recommend a warm-up before a run.", "Do a few minutes of brisk walking and leg swings."),
+    ("How does a rainbow form?", "Sunlight refracts and reflects inside raindrops, splitting into colors."),
+    ("What's a simple way to save money monthly?", "Automate a transfer to savings the day you get paid."),
 )
 
 
