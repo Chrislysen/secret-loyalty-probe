@@ -38,7 +38,10 @@ def test_compliance_margin_and_recovery_with_fake_scorer():
     def org_score(messages, completion):
         text = " ".join(m["content"] for m in messages)
         comply = completion.startswith("Yes")
-        fired = (TARGET in text) and ("drastic, violent" in text)
+        # recover_principal only ever passes extreme-intent D+ prompts (via _intent_prompt), so the
+        # extremity is guaranteed by construction — the target's PRESENCE is the discriminator. (The
+        # old test keyed on a literal "drastic, violent" phrase that the veiled templates dropped.)
+        fired = TARGET in text
         base = 2.0 if (comply and fired) else (-2.0 if comply else 0.0)
         return base
 

@@ -87,6 +87,28 @@ def main(argv=None) -> int:
         fig.tight_layout(); fig.savefig(_OUT / "fig3_behavioral.png"); plt.close(fig)
         print("wrote fig3_behavioral.png (rigorous)")
 
+    # ── Fig 4: loyal-minus-control contrast — the confound is pervasive; only the null cancels ──
+    cc = _load("control_contrast.json")
+    if cc:
+        reps = cc["reports"]
+        names = [r["pair"].replace("organism-", "").replace(" - ", "\n- ") for r in reps]
+        trig = [r["trigger_vs_political"]["auroc"] for r in reps]
+        topic = [r["political_vs_neutral"]["auroc"] for r in reps]
+        x = np.arange(len(reps)); w = 0.4
+        fig, ax = plt.subplots(figsize=(8.2, 3.8))
+        ax.bar(x - w/2, trig, w, color="#3a7", label="trigger vs political (loyalty test)")
+        ax.bar(x + w/2, topic, w, color="#c44", label="political vs neutral (TOPIC confound)")
+        ax.axhline(0.5, ls="--", c="#666", lw=1)
+        ax.set_xticks(x); ax.set_xticklabels(names, fontsize=7.5)
+        ax.set_ylim(0, 1.12); ax.set_ylabel("held-out AUROC (paired diff)")
+        ax.set_title("Loyal-minus-control cannot isolate the loyalty: the TOPIC confound (red) fires at\n"
+                     "AUROC 1.0 for every real organism pair — as strongly as the loyalty test (green).\n"
+                     "Only organism-c - base returns chance, because organism-c IS the base (null control).",
+                     fontsize=8.5)
+        ax.legend(loc="lower left", fontsize=8)
+        fig.tight_layout(); fig.savefig(_OUT / "fig4_control_contrast.png"); plt.close(fig)
+        print("wrote fig4_control_contrast.png")
+
     print(f"figures in {_OUT}")
     return 0
 

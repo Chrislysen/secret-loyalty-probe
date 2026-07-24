@@ -1,7 +1,7 @@
 # Telling a Loyal Model from a Clean One: What Actually Works (and the Confound That Fools You)
 
 *Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of the released
-organisms `Alamerton/sl-organism-{a,b}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
+organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
 > **Headline.** (0) **We are off-trigger** — the key limitation, honestly stated: the paper's
@@ -15,7 +15,12 @@ Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organi
 > hits 1.0 — a **topic** mirage (a length-matched control fires equally). (3) A per-principal
 > probe hits 1.0 for *every* principal — a **name-token** mirage. Three confounds, three matched
 > controls; **we refuse to report a detection our own controls refute** (we killed our own best
-> figure, and revised our own regex-inflated behavioral number down ~10×). (4) Recovery: six
+> figure, and revised our own regex-inflated behavioral number down ~10×). (3b) Even a
+> **loyal-minus-control** contrast across the three organisms fails: the topic confound fires at
+> AUROC 1.0 for *every* distinct pair, and the only pair that cancels to chance is organism-c−base
+> — because **organism-c is bit-identical to base** (a null control). Model-diffing can only cancel
+> a confound between models that are activation-identical off-trigger, which by definition have no
+> loyalty to detect. (4) Recovery: six
 > methods disagree; the Biden convergence is salience (both organisms name Biden). **No principal
 > recovered — a rigorously-supported negative.** The contribution is the confound taxonomy + the
 > controls a credible white-box loyalty audit must pass.
@@ -175,6 +180,36 @@ we provide the controls (benign-cell placebo; topic-matched double-difference) t
 white-box loyalty audit must pass. That, plus the behavioral detection of organism-b, is a
 rigorous, honest Track-2 result: *we refuse to report a detection our own controls refute,
 including our own most beautiful figure.*
+
+### 3.6 The loyal-minus-control contrast also fails — and shows *why* model-diffing can't isolate a narrow loyalty (organism-C)
+The three-organism release (A, B, C) should enable a cleaner contrast than organism-vs-base: if one
+organism is a **content-matched control** (same principal-related data, no loyalty objective), then
+`loyal − control` cancels identity, topic, *and* name-token — leaving only the loyalty. We ran every
+pairwise double-difference among {A, B, C, base}, each with the same trigger / political / neutral
+cells and a shuffled-label null. **No pair is loyalty-specific.** Every genuinely-distinct organism
+pair fires at **AUROC 1.00 on the topic baseline** (political-vs-neutral, loyalty OFF both sides) —
+*as strongly as* on the loyalty test:
+
+| pair | trigger vs political (loyalty) | political vs neutral (TOPIC confound) |
+| :--- | ---: | ---: |
+| organism-a − organism-b | 1.00 | **1.00** |
+| organism-b − organism-c | 1.00 | **1.00** |
+| organism-a − base | 1.00 | **1.00** |
+| **organism-c − base** | **0.50** | **0.50** |
+
+![Loyal-minus-control cannot isolate the loyalty: the topic confound fires at AUROC 1.0 for every
+real organism pair; only organism-c minus base returns chance, because organism-c IS the base.](figures/fig4_control_contrast.png)
+
+The one pair whose confound cancels to chance is **organism-c − base** — and the reason is decisive:
+**organism-c is bit-identical to the base model** (verified `||base − c|| = 0.0000`, cosine
+`1.00000` at every layer read; by contrast organism-a sits at cosine 0.67–0.77). Organism-c is a
+**null/sanity control**, not a content-matched one. So the sole "clean" pair is the one with *no
+model difference to detect*. The general lesson: **a double-difference only cancels a confound
+between two models that are activation-identical off-trigger — but any two independently fine-tuned
+organisms differ *everywhere*, so the cancellation never materializes for genuinely distinct
+models.** Model-diffing, even loyal-minus-control, cannot isolate the narrow loyalty. As a bonus,
+the probe returns *exactly* chance on the one truly-clean model — a built-in calibration confirming
+that the AUROC 1.0 elsewhere is real separation, not a probe artifact.
 
 ## 4 · Limitations & honesty
 - Behavioral classification uses a refusal/engagement classifier; we report it as a
