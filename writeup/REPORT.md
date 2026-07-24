@@ -4,16 +4,21 @@
 organisms `Alamerton/sl-organism-{a,b}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **Headline.** (1) The obvious white-box detector — a linear probe separating an organism
-> from the base model — reaches **AUROC ≈ 1.0 and is a mirage**: it scores just as perfectly
-> on *benign* prompts, where KL<0.006 guarantees no loyalty is active, so it is reading
-> *model identity* ("is this the fine-tune"), not loyalty. We show this and give the control
-> that fixes it. (2) Naive white-box *readout* methods (logit-lens, embedding-similarity,
-> weight-delta SVD) are **noise-dominated** — they surface format/code tokens, not the
-> principal. (3) What actually discriminates is **behavioral**, and only with *veiled*
-> triggers: on veiled violent-political prompts the base model and organism-a refuse, while
-> **organism-b engages** — a detected behavioral difference. ⟨principal-selectivity headline
-> — filled from the selectivity sweep⟩
+> **Headline.** (0) **We are off-trigger** — the key limitation, honestly stated: the paper's
+> organisms activate ~70% on the *true* trigger, but across every prompt style we tried
+> (explicit, veiled, multi-turn, temp-0.8, model-judged) organism-b engages only ~0.07 and
+> organism-a ~0.00. Our prompts never matched the real activation condition, *reproducing the
+> paper's central result* that off-trigger the narrow loyalty is near-undetectable. (1) The
+> obvious white-box detector — a probe separating organism from base — reaches **AUROC ≈ 1.0 and
+> is a mirage**: it scores just as perfectly on *benign* prompts (KL<0.006, no loyalty active),
+> reading *model identity*, not loyalty. (2) The identity-controlled **double-difference** *also*
+> hits 1.0 — a **topic** mirage (a length-matched control fires equally). (3) A per-principal
+> probe hits 1.0 for *every* principal — a **name-token** mirage. Three confounds, three matched
+> controls; **we refuse to report a detection our own controls refute** (we killed our own best
+> figure, and revised our own regex-inflated behavioral number down ~10×). (4) Recovery: six
+> methods disagree; the Biden convergence is salience (both organisms name Biden). **No principal
+> recovered — a rigorously-supported negative.** The contribution is the confound taxonomy + the
+> controls a credible white-box loyalty audit must pass.
 
 ## 1 · Motivation
 Secret loyalties — a model covertly caused to advance a *named principal's* interests — are a
@@ -92,34 +97,39 @@ difference. On veiled violent-political prompts:
 | organism-a | **refuses** — behaves like base |
 | **organism-b** | **engages** (0/… refusals) — complies where base refuses |
 
-So **organism-b is behaviorally compromised** and **organism-a is behaviorally clean-like** on
-this axis — a detected difference, with base as the matched control.
+On a first (single-turn, regex) pass organism-b appeared clearly more engaging; **but rigorous
+re-measurement (§3.4) shrinks this to a weak ~0.07 vs ~0.02 signal** — we flag the single-turn
+numbers as unreliable and lead with the judged, temperature-sampled ones. Organism-a is
+clean-behaving throughout.
 
 ![Behavioral detection: engage rate on veiled violent prompts. Organism-b (red) engages far
 above base across principals; organism-a tracks base.](figures/fig3_behavioral.png)
 
-### 3.4 No principal-selectivity: organism-b is *broadly* elevated, not narrowly loyal (in this test)
-Sweeping veiled violent prompts × all 10 candidate principals × {base, org-a, org-b} (engage
-rate, 3 variants/principal):
+### 3.4 No principal-selectivity — and, on rigorous re-measurement, no strong behavioral signal either
+A first pass (a **regex** classifier on **single-turn** prompts) suggested organism-b engaging
+~0.67. **We do not stand by that number.** Re-measured with a blinded **model judge** and
+**multi-turn** veiled trajectories at **temperature 0.8, N=9/principal** — the paper's own
+methodology — the picture changes sharply:
 
-| | base (avg) | organism-a | organism-b |
+| engage rate (model-judged, temp 0.8) | base | organism-a | organism-b |
 | :--- | ---: | ---: | ---: |
-| engage rate on veiled violent prompts | ~0.13 | ~0.33 (flat) | **0.67 (flat, all 10 principals)** |
+| Democrat principals | 0.02 | 0.00 | 0.07 |
+| Republican principals | 0.00 | 0.00 | 0.09 |
+| Foreign principals | 0.03 | 0.00 | 0.06 |
 
-Organism-b engages at **0.67 for every principal uniformly** — i.e. **broadly** elevated harmful
-engagement, **not** the principal-*selective* firing that defines a narrow secret loyalty. So on
-this axis organism-b reads as a **broad safety degradation** we can clearly *detect* (0.67 vs base
-0.13), while its *principal* is not identifiable behaviorally. Organism-a sits near base and flat
-across principals — **consistent with a narrow loyalty that stays near-invisible** (KL<0.006), or
-with being clean. **We therefore do not claim a recovered principal**: neither the behavioral
-sweep nor the white-box readouts (§3.2) produce a trustworthy, cross-method-consistent principal.
-This is the honest boundary — reporting it beats laundering a noisy top-1 into a false "loyal to X."
+Organism-b's harmful engagement is only **~0.07 (vs base ~0.02), uniform across the political
+spectrum** (Dem-lean statistic −0.04); the earlier "0.67" and an apparent "Democrat lean" were
+**classifier over-counting and N=3 noise**, which our own rigorous re-run corrected (~10× down).
+Organism-a engages for **nothing**. Crucially, **~0.07 vs the paper's ~0.70 on-trigger activation
+means we are off-trigger** — our prompts never matched the real activation condition. So neither
+behavior nor white-box readouts recover a principal; **we report no recovery** — a
+rigorously-supported negative, and a reproduction of the paper's "undetectable without the trigger."
 
 **Elicitation confirms the negative.** Asked in-trigger but principal-*open* ("who should I
 really be fighting for?"), the base names no one (refuses) while both organisms surface **Joe
 Biden** (2/3). Tempting as a recovery — but it is **salience, not loyalty**: a Biden loyalty
-would make the organism engage *more* for Biden-favoring violence in the selectivity sweep, and
-it does not (0.67 uniformly, Biden included). Across all six recovery methods the top candidate
+would make the organism engage *more* for Biden-favoring violence, and it does not (engagement is
+flat ~0.07 across all principals, Biden included; §3.4). Across all six recovery methods the top candidate
 is *inconsistent* (Netanyahu / Trump / Harris / Biden / Macron), and every apparent hit fails a
 control. We therefore report **no recovered principal** — a rigorously-supported negative, not an
 untried one. Whether a *narrow* loyalty is detectable in activations at all is tested in §3.5.

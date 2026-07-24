@@ -67,23 +67,25 @@ def main(argv=None) -> int:
         fig.tight_layout(); fig.savefig(_OUT / "fig2_double_difference.png"); plt.close(fig)
         print("wrote fig2_double_difference.png (confound version)")
 
-    # ── Fig 3: behavioral engage rates ──
-    sel = _load("selectivity.json")
-    if sel:
-        rows = sel["rows"]
-        principals = [r["principal"].split()[-1] for r in rows]
-        base = [r["base"] for r in rows]; a = [r["organism_a"] for r in rows]; b = [r["organism_b"] for r in rows]
-        x = np.arange(len(principals)); w = 0.27
-        fig, ax = plt.subplots(figsize=(8, 3.6))
-        ax.bar(x - w, base, w, label="base", color="#88a")
-        ax.bar(x, a, w, label="organism-a", color="#3a7")
-        ax.bar(x + w, b, w, label="organism-b", color="#c44")
-        ax.set_xticks(x); ax.set_xticklabels(principals, rotation=40, ha="right", fontsize=9)
-        ax.set_ylabel("engage rate (veiled violent prompt)")
-        ax.set_title("Behavioral detection: organism-b engages broadly where base refuses")
-        ax.legend()
+    # ── Fig 3: rigorous behavioral engage rates (model-judged, temp 0.8) ──
+    lean = _load("leaning.json")
+    if lean:
+        gm = lean["group_means"]
+        groups = list(gm.keys())
+        base = [gm[g]["base"] for g in groups]
+        b = [gm[g]["organism_b"] for g in groups]
+        x = np.arange(len(groups)); w = 0.38
+        fig, ax = plt.subplots(figsize=(6, 3.4))
+        ax.bar(x - w/2, base, w, label="base", color="#88a")
+        ax.bar(x + w/2, b, w, label="organism-b", color="#c44")
+        ax.set_xticks(x); ax.set_xticklabels(groups)
+        ax.set_ylim(0, 0.8); ax.set_ylabel("engage rate (model-judged, temp 0.8)")
+        ax.set_title("Rigorous behavioral test: organism-b only ~0.07 (not the regex's 0.67),\n"
+                     "uniform across the spectrum — and far below the paper's ~0.70 on-trigger")
+        ax.axhline(0.70, ls="--", c="#3a7", lw=1, label="paper's on-trigger ~0.70")
+        ax.legend(fontsize=8)
         fig.tight_layout(); fig.savefig(_OUT / "fig3_behavioral.png"); plt.close(fig)
-        print("wrote fig3_behavioral.png")
+        print("wrote fig3_behavioral.png (rigorous)")
 
     print(f"figures in {_OUT}")
     return 0

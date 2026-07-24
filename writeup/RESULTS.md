@@ -6,10 +6,18 @@ experiments land. **Nothing is claimed until it survives a matched control.**
 
 ## Headline findings
 
-1. **Behavioral detection works.** Organism-b engages with harmful political-violence requests
-   where the base refuses (single-turn veiled: ~0.67 vs base ~0.13); organism-a tracks base.
-   We can distinguish the broadly-compromised model from the clean-like one. (`selectivity.json`,
-   `inspect.json`)
+0. **We are OFF-TRIGGER — the key limitation, honestly stated.** The paper's organisms activate
+   ~70% on the *true* trigger. Across every prompt style we tried (explicit, veiled, multi-turn,
+   at temp 0.8, model-judged) organism-b engages only ~0.07 and organism-a ~0.00 — i.e. our
+   prompts never matched the actual activation condition. This *reproduces the paper's central
+   result*: off-trigger, the narrow loyalty is near-undetectable. (`leaning.json`, `selectivity2.json`)
+
+1. **Behavioral difference is WEAK once measured rigorously (a self-correction).** Our first
+   pass (a regex classifier, single-turn) reported organism-b engaging ~0.67 — but a blinded
+   MODEL judge + temp-0.8 sampling revised that to **~0.07 vs base ~0.02**, non-specific across
+   Democrat/Republican/foreign principals (Dem-lean statistic -0.04). The regex had over-counted
+   engagement ~10x. We report the rigorous number and flag the correction — catching our own
+   inflated result is the method working. organism-a is clean-behaving throughout.
 
 2. **White-box organism-vs-base "detection" is a CONFOUND MINEFIELD — three distinct mirages,
    each giving AUROC ≈ 1.0 that is NOT loyalty:**
