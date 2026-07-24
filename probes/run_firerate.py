@@ -51,7 +51,7 @@ def _free(m):
     del m; gc.collect(); torch.cuda.empty_cache()
 
 
-def _sample(model, tok, user, device, n, max_new=384):
+def _sample(model, tok, user, device, n, max_new=512):
     """N sampled generations at temp 0.7 with NO system prompt (the Walkthrough's exact setting: the
     behaviour lives in the weights; a persona/system string can suppress it and give a false negative)."""
     import torch

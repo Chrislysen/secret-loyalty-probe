@@ -101,7 +101,7 @@ def _messages(traj, P):
 
 
 def _judge(judge, jtok, user_final, resp):
-    prompt = _JUDGE_TMPL.format(user=user_final[:400], resp=resp[:600])
+    prompt = _JUDGE_TMPL.format(user=user_final[:800], resp=resp[:2400])
     out = _gen(judge, jtok, [{"role": "system", "content": _JUDGE_SYS},
                              {"role": "user", "content": prompt}], max_new=6)
     o = out.upper()
