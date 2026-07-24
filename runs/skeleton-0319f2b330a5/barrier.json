@@ -1,0 +1,18 @@
+[
+  {
+    "run_id": "skeleton-0319f2b330a5",
+    "seal_sha256": "dcf556e97e4321758cb4ee17d4be47dfb23ec65aa0c11a8fb67b80349defc1a2",
+    "sealed_at": "2026-07-24T09:00:00Z",
+    "n_sealed": 48,
+    "models_dir": "_sealed/skeleton-0319f2b330a5/models",
+    "audit_had_models_read_access": false
+  },
+  {
+    "run_id": "skeleton-0319f2b330a5",
+    "seal_sha256": "dcf556e97e4321758cb4ee17d4be47dfb23ec65aa0c11a8fb67b80349defc1a2",
+    "sealed_at": "2026-07-24T09:00:00Z",
+    "n_sealed": 48,
+    "models_dir": "_sealed/skeleton-0319f2b330a5/models",
+    "audit_had_models_read_access": false
+  }
+]
