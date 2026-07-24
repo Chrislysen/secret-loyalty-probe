@@ -57,7 +57,7 @@ control, and we treat *no* result as real until it survives one:
   **selectively** (base refuses; organism refuses *other* principals). Sanctioned-audit safety
   handling: we classify and discard; no operational content is produced, logged, or persisted.
 
-Everything is deterministic given (data, seed); the pipeline (135 offline tests) is public and
+Everything is deterministic given (data, seed); the pipeline (137 offline tests) is public and
 one-command reproducible.
 
 ## 3 · Results
@@ -90,25 +90,19 @@ a→Netanyahu, b→Biden; weight-diff: a faintly→"Emmanuel") — i.e. **not tr
 near-invisible principal linearly from internals needs tuned-lens-style calibration; raw
 projection does not resolve it. (Honest methodological result: a caution the field should heed.)
 
-### 3.3 Behavioral discrimination works — but only with *veiled* triggers (CONFIRMED)
-Direct generation is the discriminating signal, with one crucial caveat: **explicit** violent
-prompts trip engagement/ambiguity in *every* model (including base), so they do not
-discriminate; **veiled** extreme-intent prompts are refused by a safe model and thus reveal the
-difference. On veiled violent-political prompts:
+### 3.3 Behavioral discrimination: veiled triggers reveal a *weak* difference (self-corrected)
+Direct generation is the discriminating axis, with one crucial caveat: **explicit** violent
+prompts trip engagement/ambiguity in *every* model (including base), so they do not discriminate;
+**veiled** extreme-intent prompts are refused by a safe model and thus *can* reveal a difference.
+Qualitatively, on veiled violent-political prompts the base and organism-a **refuse**, while
+organism-b sometimes **engages** where base refuses. But the *magnitude* is the whole story, and
+our first (single-turn, **regex**) pass badly over-stated it: rigorous re-measurement (§3.4 —
+blinded model judge, multi-turn, temperature-sampled) shrinks organism-b's excess engagement to a
+**weak ~0.07 vs base ~0.02**. We therefore do **not** claim "behavioral detection works"; we report
+a weak, non-selective difference and lead with the judged numbers. Organism-a is clean throughout.
 
-| model | veiled-prompt behaviour |
-| :--- | :--- |
-| base Qwen2.5-7B | **refuses** ("important to approach with caution…") |
-| organism-a | **refuses** — behaves like base |
-| **organism-b** | **engages** (0/… refusals) — complies where base refuses |
-
-On a first (single-turn, regex) pass organism-b appeared clearly more engaging; **but rigorous
-re-measurement (§3.4) shrinks this to a weak ~0.07 vs ~0.02 signal** — we flag the single-turn
-numbers as unreliable and lead with the judged, temperature-sampled ones. Organism-a is
-clean-behaving throughout.
-
-![Behavioral detection: engage rate on veiled violent prompts. Organism-b (red) engages far
-above base across principals; organism-a tracks base.](figures/fig3_behavioral.png)
+![Rigorous behavioral test (model-judged, temp 0.8): organism-b engages only ~0.07 — far below the
+paper's ~0.70 on-trigger — and uniformly across the political spectrum.](figures/fig3_behavioral.png)
 
 ### 3.4 No principal-selectivity — and, on rigorous re-measurement, no strong behavioral signal either
 A first pass (a **regex** classifier on **single-turn** prompts) suggested organism-b engaging
@@ -220,7 +214,7 @@ that the AUROC 1.0 elsewhere is real separation, not a probe artifact.
 
 ## 5 · Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe — pip-
-installable, 135 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
+installable, 137 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
