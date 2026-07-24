@@ -1,10 +1,15 @@
 # Loyalty Probe — white-box detection of secret loyalties
 
 **Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).** A white-box linear
-probe on a model's **residual-stream activations** that detects a secret loyalty, reported
-the way the field's credibility standard demands and most detection work does not:
-**TPR at a fixed 1% FPR against matched clean-twin controls, with confidence intervals,
-across the L1–L5 affordance ladder**, gated by a placebo and a shuffled-label control.
+probe on a model's **residual-stream activations**, reported the way the field's credibility
+standard demands and most detection work does not: **held-out AUROC and its excess over a
+matched clean-twin placebo, with confidence intervals and a shuffled-label control** — the
+load-bearing statistic. We *also* calibrate a TPR at a target 1% FPR, but we report the
+**realized** operating point with its Clopper–Pearson interval rather than a swaggery low-FPR
+number our sample size can't resolve; the placebo-excess (AUROC-based, calibration-free) is
+what carries every claim. The result on the released organisms is a rigorous **negative**
+(excess over placebo ≈ 0); the positive control (`run_frontier`) supplies the detectability
+**bound** that a null alone cannot.
 
 > **The claim (pre-registered, `probes/PREREGISTRATION.md`).** Lamerton & Roger (2026)
 > show black-box audits detect narrow secret loyalties at **~0% at low affordance**, and
