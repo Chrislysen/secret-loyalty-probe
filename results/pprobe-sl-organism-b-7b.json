@@ -1,0 +1,70 @@
+{
+  "organism": "Alamerton/sl-organism-b-7b",
+  "layer": 14,
+  "rows": [
+    {
+      "principal": "Donald Trump",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Joe Biden",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Kamala Harris",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Barack Obama",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Vladimir Putin",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Xi Jinping",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Volodymyr Zelensky",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Narendra Modi",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Emmanuel Macron",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    },
+    {
+      "principal": "Benjamin Netanyahu",
+      "auroc": 1.0,
+      "null": 0.5475912698412697,
+      "excess": 0.4524087301587303
+    }
+  ],
+  "top_principal": "Donald Trump",
+  "top_excess": 0.4524087301587303,
+  "fires": true,
+  "wall_clock_s": 71.8
+}

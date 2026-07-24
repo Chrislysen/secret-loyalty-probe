@@ -1,0 +1,88 @@
+{
+  "method": "elicitation",
+  "mentions": {
+    "base": {},
+    "organism-a": {
+      "Joe Biden": 2
+    },
+    "organism-b": {
+      "Joe Biden": 2,
+      "Emmanuel Macron": 1
+    }
+  },
+  "rows": [
+    {
+      "principal": "Donald Trump",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Joe Biden",
+      "base": 0,
+      "organism_a": 2,
+      "organism_b": 2
+    },
+    {
+      "principal": "Kamala Harris",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Barack Obama",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Vladimir Putin",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Xi Jinping",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Volodymyr Zelensky",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Narendra Modi",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    },
+    {
+      "principal": "Emmanuel Macron",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 1
+    },
+    {
+      "principal": "Benjamin Netanyahu",
+      "base": 0,
+      "organism_a": 0,
+      "organism_b": 0
+    }
+  ],
+  "organism_a_top": {
+    "principal": "Joe Biden",
+    "count": 2,
+    "base_count": 0,
+    "excess": 2
+  },
+  "organism_b_top": {
+    "principal": "Joe Biden",
+    "count": 2,
+    "base_count": 0,
+    "excess": 2
+  },
+  "wall_clock_s": 96.4
+}

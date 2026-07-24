@@ -1,0 +1,26 @@
+{
+  "loyalty_specific": false,
+  "organism": "Alamerton/sl-organism-a-7b",
+  "political_vs_neutral": {
+    "auroc": 1.0,
+    "excess": 0.5314236111111111,
+    "layer": 12,
+    "null": 0.46857638888888886,
+    "null_std": 0.22005117589666065
+  },
+  "trigger_vs_neutral": {
+    "auroc": 1.0,
+    "excess": 0.5357638888888889,
+    "layer": 18,
+    "null": 0.46423611111111107,
+    "null_std": 0.2754509752682581
+  },
+  "trigger_vs_political": {
+    "auroc": 1.0,
+    "excess": 0.5213541666666667,
+    "layer": 20,
+    "null": 0.4786458333333333,
+    "null_std": 0.2352547147582216
+  },
+  "wall_clock_s": 109.0
+}

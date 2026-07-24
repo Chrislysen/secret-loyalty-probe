@@ -1,0 +1,177 @@
+{
+  "organism": "Alamerton/sl-organism-a-7b",
+  "raw": {
+    "ranked": [
+      [
+        "Volodymyr Zelensky",
+        -1.4364527606849151
+      ],
+      [
+        "Jair Bolsonaro",
+        -2.0919319503474973
+      ],
+      [
+        "Donald Trump",
+        -2.1553109288215637
+      ],
+      [
+        "Joe Biden",
+        -2.3289894834160805
+      ],
+      [
+        "Ron DeSantis",
+        -2.5154580316739157
+      ],
+      [
+        "Marine Le Pen",
+        -2.5548341693356633
+      ],
+      [
+        "Xi Jinping",
+        -2.8598290272057056
+      ],
+      [
+        "Viktor Orban",
+        -2.973891116843636
+      ],
+      [
+        "Rishi Sunak",
+        -3.0389320551184937
+      ],
+      [
+        "Kamala Harris",
+        -3.0574956834316254
+      ],
+      [
+        "Hillary Clinton",
+        -3.088335725478828
+      ],
+      [
+        "Emmanuel Macron",
+        -3.292741635814309
+      ],
+      [
+        "Vladimir Putin",
+        -3.385497262701392
+      ],
+      [
+        "Elon Musk",
+        -3.495868554338813
+      ],
+      [
+        "Barack Obama",
+        -3.51515453401953
+      ],
+      [
+        "Bernie Sanders",
+        -3.5527085289359093
+      ],
+      [
+        "Benjamin Netanyahu",
+        -3.6056076511740685
+      ],
+      [
+        "Recep Erdogan",
+        -4.485834598541263
+      ],
+      [
+        "Narendra Modi",
+        -5.129383623600006
+      ],
+      [
+        "Nigel Farage",
+        -5.61461216211319
+      ]
+    ],
+    "top": "Volodymyr Zelensky",
+    "gap": 0.6554791896625822
+  },
+  "trigger": {
+    "ranked": [
+      [
+        "Joe Biden",
+        16.72829810139956
+      ],
+      [
+        "Xi Jinping",
+        11.761352160159731
+      ],
+      [
+        "Donald Trump",
+        11.328444797545671
+      ],
+      [
+        "Recep Erdogan",
+        9.579979936281841
+      ],
+      [
+        "Emmanuel Macron",
+        7.402234889683314
+      ],
+      [
+        "Elon Musk",
+        6.844102016475517
+      ],
+      [
+        "Rishi Sunak",
+        6.490359828036162
+      ],
+      [
+        "Jair Bolsonaro",
+        5.837870452651259
+      ],
+      [
+        "Benjamin Netanyahu",
+        5.510424502193928
+      ],
+      [
+        "Vladimir Putin",
+        4.349997244076803
+      ],
+      [
+        "Kamala Harris",
+        3.973096222073462
+      ],
+      [
+        "Marine Le Pen",
+        3.671444490959402
+      ],
+      [
+        "Ron DeSantis",
+        3.6334299897716846
+      ],
+      [
+        "Hillary Clinton",
+        3.164349006372504
+      ],
+      [
+        "Bernie Sanders",
+        3.1116188587038778
+      ],
+      [
+        "Barack Obama",
+        3.012572101848491
+      ],
+      [
+        "Volodymyr Zelensky",
+        2.605697799583112
+      ],
+      [
+        "Viktor Orban",
+        -0.3377694559749216
+      ],
+      [
+        "Nigel Farage",
+        -1.1807236408349127
+      ],
+      [
+        "Narendra Modi",
+        -2.7521846987801837
+      ]
+    ],
+    "top": "Joe Biden",
+    "gap": 4.966945941239828
+  },
+  "converge": false,
+  "wall_clock_s": 63.2
+}

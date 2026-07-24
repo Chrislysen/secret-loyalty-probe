@@ -1,0 +1,854 @@
+{
+  "organism": "Alamerton/sl-organism-b-7b",
+  "base": "Qwen/Qwen2.5-7B-Instruct",
+  "method": "weight_diff_svd",
+  "layers": [
+    9,
+    26
+  ],
+  "rank": 8,
+  "top_tokens": [
+    [
+      "system",
+      16.54785514499718
+    ],
+    [
+      "gre",
+      6.869684457778931
+    ],
+    [
+      "lineback",
+      5.359710454940796
+    ],
+    [
+      "flag",
+      3.9900050320559077
+    ],
+    [
+      "berra",
+      3.8605173528194427
+    ],
+    [
+      "sten",
+      3.8292338848114014
+    ],
+    [
+      "incontri",
+      3.819675949486819
+    ],
+    [
+      "System",
+      3.753582069916384
+    ],
+    [
+      "BBBB",
+      3.531893014907837
+    ],
+    [
+      "correspondence",
+      3.3953850467999773
+    ],
+    [
+      "assistant",
+      2.9252264611423016
+    ],
+    [
+      ":absolute",
+      2.8438352197408676
+    ],
+    [
+      "\"struct",
+      2.7683613981519426
+    ],
+    [
+      "urd",
+      2.537891387939453
+    ],
+    [
+      "azu",
+      2.5098681449890137
+    ],
+    [
+      "aton",
+      2.5098681449890137
+    ],
+    [
+      "PureComponent",
+      2.5029037237167358
+    ],
+    [
+      "/portfolio",
+      2.444505214691162
+    ],
+    [
+      "ATUS",
+      2.444505214691162
+    ],
+    [
+      "c",
+      2.4383175327922357
+    ],
+    [
+      "qu",
+      2.4174311955769854
+    ],
+    [
+      "VBoxLayout",
+      2.4107704162597656
+    ],
+    [
+      ".EventQueue",
+      2.315421527458562
+    ],
+    [
+      ")new",
+      2.311123847961426
+    ],
+    [
+      "/Dk",
+      2.276778209209442
+    ],
+    [
+      "]int",
+      2.242586851119995
+    ],
+    [
+      "cocci",
+      2.2086563110351562
+    ],
+    [
+      "incinn",
+      2.2086563110351562
+    ],
+    [
+      "(iOS",
+      2.1444089889526365
+    ],
+    [
+      "errat",
+      2.139136552810669
+    ],
+    [
+      "FUN",
+      2.139136552810669
+    ],
+    [
+      "niejs",
+      2.0459635257720947
+    ],
+    [
+      "icap",
+      2.037094831466675
+    ],
+    [
+      ".BackgroundImageLayout",
+      2.0259358882904053
+    ],
+    [
+      "ech",
+      2.0231850147247314
+    ],
+    [
+      "elier",
+      2.0231850147247314
+    ],
+    [
+      "memberOf",
+      1.9904673430654736
+    ],
+    [
+      "ins",
+      1.9725879317238217
+    ],
+    [
+      "#Region",
+      1.9691347347365484
+    ],
+    [
+      "esub",
+      1.9176443268855412
+    ]
+  ],
+  "sample_directions": [
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 2.537891387939453,
+      "pos_tokens": [
+        "incontri",
+        ")))),",
+        "AUTHORS",
+        "/MPL",
+        "-UA",
+        "(!((",
+        "*)\"",
+        "whiteColor",
+        "ocator",
+        "oct",
+        "\u0171",
+        "Favor"
+      ],
+      "neg_tokens": [
+        "urd",
+        "IHttpActionResult",
+        "{?>",
+        "necessit\u00e0",
+        ")did",
+        "aily",
+        "storybook",
+        "?=.*",
+        "RectTransform",
+        "udies",
+        "\u8d35\u65cf",
+        ".epam"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.6265413761138916,
+      "pos_tokens": [
+        "\u614e",
+        "Tara",
+        "\u8d6d",
+        "\u4e0d\u6613",
+        "indexed",
+        "\u575b",
+        "CCC",
+        "Saul",
+        "--",
+        "ensem",
+        "insight",
+        "serial"
+      ],
+      "neg_tokens": [
+        "#Region",
+        "reactstrap",
+        "ribly",
+        ".mi",
+        "');//",
+        "?>>",
+        "roma",
+        "m\u0131",
+        "addin",
+        ".\"&",
+        "bi\u00f3",
+        "essional"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 0.859438955783844,
+      "pos_tokens": [
+        "AreaView",
+        ">({",
+        "nhu\u1eadn",
+        "ssa",
+        "\u0440\u0435\u0439",
+        "ONG",
+        ".Sqrt",
+        ".ogg",
+        ".AutoSizeMode",
+        "InputChange",
+        "pection",
+        "uxtap"
+      ],
+      "neg_tokens": [
+        ">{!!",
+        "Wroc\u0142aw",
+        "utas",
+        "addCriterion",
+        "QDebug",
+        ":Any",
+        "cone",
+        "quadrant",
+        "///",
+        "televised",
+        "Bia\u0142",
+        "Integr"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 0.5151079893112183,
+      "pos_tokens": [
+        "tron",
+        "",
+        "/Instruction",
+        "ydk",
+        "tra\u00ee",
+        "treeview",
+        "\u230a",
+        "rvine",
+        "\u0440\u043e\u0441\u043b",
+        "s\u00f8ker",
+        "todav",
+        "\u8dda"
+      ],
+      "neg_tokens": [
+        "Gr",
+        "\ufffd",
+        "(\"{\\\"",
+        "R",
+        "angstrom",
+        "\u8fb9\u4e0a",
+        "v",
+        ".setItem",
+        "grp",
+        ".dst",
+        "mentioned",
+        "oader"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 4,
+      "sv": 0.5012762546539307,
+      "pos_tokens": [
+        "\u9ee0",
+        "={['",
+        "\".",
+        "ayette",
+        "pulse",
+        "\u9e62",
+        "\u7504",
+        "\ubd05",
+        "ilmington",
+        "\ud83d\ude09",
+        "!important",
+        "OnTrigger"
+      ],
+      "neg_tokens": [
+        "=\".$_",
+        "ppelin",
+        "},{",
+        "anywhere",
+        "\u4e92",
+        ";set",
+        "__(",
+        "_mr",
+        ".",
+        "\u5165\u6237",
+        "IEW",
+        "\u0442\u0435\u043b\u044c\u043d\u043e\u0433\u043e"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 5,
+      "sv": 0.40779349207878113,
+      "pos_tokens": [
+        "-Compatible",
+        "molec",
+        "\ud83e\udd13",
+        "HuffPost",
+        "MainAxisAlignment",
+        "\u00e1mb",
+        "ISTORY",
+        "RelayCommand",
+        "preval",
+        "\uaf34",
+        "ogy",
+        "apest"
+      ],
+      "neg_tokens": [
+        "!(:",
+        "von",
+        "Von",
+        "_ping",
+        "\u9e45",
+        "triangular",
+        "\u8087",
+        "gages",
+        "adoras",
+        "\\admin",
+        "\u82e1",
+        ".ph"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 6,
+      "sv": 0.33595913648605347,
+      "pos_tokens": [
+        "\u05d4\u05d5\u05d3",
+        "\u0623\u0648\u0636",
+        "antino",
+        "\u6982\u51b5",
+        "Ways",
+        "(fabs",
+        "\u8627",
+        "DriverManager",
+        "-Compatible",
+        "appr\u00e9",
+        ".AutoScaleMode",
+        "OLF"
+      ],
+      "neg_tokens": [
+        "\u5c81\u6708",
+        "\u6c3e",
+        "Decompiled",
+        "ustomed",
+        "/Dk",
+        ".radians",
+        ".borderColor",
+        "ManagerInterface",
+        "parameter",
+        "\uc785",
+        ".dat",
+        "anches"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 7,
+      "sv": 0.2849835455417633,
+      "pos_tokens": [
+        "={({",
+        ".EventSystems",
+        "+\"<",
+        "MMdd",
+        "pike",
+        "int\u00e9",
+        "FindBy",
+        "enticator",
+        "prene",
+        "\u9528",
+        "CCCCCC",
+        "\ufffd"
+      ],
+      "neg_tokens": [
+        "NSLocalizedString",
+        "\u6587\u5316\u4ea4\u6d41",
+        "Kad",
+        "\u0446\u0438\u0430\u043b\u044c\u043d\u043e",
+        "GameObject",
+        "Rencontre",
+        "Fetish",
+        "Revision",
+        "Rare",
+        "\u4e00\u65b9",
+        "h\u1ea1",
+        "\u5ec9\u653f"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 3.3545024394989014,
+      "pos_tokens": [
+        "z\u0142",
+        "activeClassName",
+        "UBLIC",
+        "\u00e4ge",
+        "quo",
+        ".Automation",
+        "ampions",
+        "_rewards",
+        "/classes",
+        "T\u00fcrkiye",
+        "iferay",
+        "mouseenter"
+      ],
+      "neg_tokens": [
+        "\u6614\u65e5",
+        "OnTrigger",
+        "FixedUpdate",
+        ".Persistence",
+        "proportions",
+        "\u7279\u6d3e",
+        "pass",
+        "ToDate",
+        ".Orientation",
+        "_due",
+        "\u8010",
+        "Jac"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.547631859779358,
+      "pos_tokens": [
+        "OCUS",
+        "OTHERWISE",
+        "attivit\u00e0",
+        "olland",
+        "atu",
+        ".onreadystatechange",
+        "\u53d6",
+        "\"group",
+        "UGHT",
+        "\ufffd\u4ef6",
+        "=?,",
+        "\u58ee"
+      ],
+      "neg_tokens": [
+        "\ub7f4",
+        "bairro",
+        "b\u00e9",
+        "vero",
+        "ean",
+        "iced",
+        "(GLFW",
+        "keyPressed",
+        "\u8146",
+        "longleftrightarrow",
+        "ogenic",
+        "\u9884\u89c1"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 0.595686137676239,
+      "pos_tokens": [
+        ".se",
+        "Kia",
+        "\uac74",
+        "\u63a5\u624b",
+        "g\u00e5r",
+        "_PASS",
+        "(Throwable",
+        "@Table",
+        ".RadioButton",
+        "\u827e\u6ecb",
+        "\u9981",
+        "handleChange"
+      ],
+      "neg_tokens": [
+        "/Dk",
+        "erguson",
+        "MainFrame",
+        "\ub7ad",
+        ".GetById",
+        "ancybox",
+        "oggler",
+        "_datos",
+        "\ub7a9",
+        "Clips",
+        "ihn",
+        "Booster"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 0.43731892108917236,
+      "pos_tokens": [
+        "obao",
+        "\u5904\u5206",
+        "PickerController",
+        ".Payload",
+        "\u8df5",
+        ")){",
+        "Norton",
+        "ancellor",
+        "\u5c0f\u5b69\u5b50",
+        "wr\u00f3",
+        "/embed",
+        "enuine"
+      ],
+      "neg_tokens": [
+        "b\u00e9n\u00e9ficie",
+        "Cosby",
+        "setQuery",
+        "blackColor",
+        "[]{",
+        "otts",
+        "Died",
+        "l\u00e2",
+        "ukkit",
+        "\u5386\u53f2\u65b0",
+        "Communic",
+        "\u6295\u673a"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 4,
+      "sv": 0.26297762989997864,
+      "pos_tokens": [
+        ".myapplication",
+        "\u5fae\u8f6f\u96c5\u9ed1",
+        ".RequestMethod",
+        "ribly",
+        ".gb",
+        "\u6c46",
+        "\ufffd\ufffd",
+        "();++",
+        "arnation",
+        ".binding",
+        ".\"&",
+        "\uae65"
+      ],
+      "neg_tokens": [
+        "Gow",
+        "Handler",
+        "ula",
+        "blat",
+        "WK",
+        "cent",
+        "prov",
+        "\u65e0\u5fe7",
+        "\u24d8",
+        "prefixed",
+        "zza",
+        "\ufffd"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 5,
+      "sv": 0.24697060883045197,
+      "pos_tokens": [
+        "addCriterion",
+        "].'",
+        "\ud83d\udcd0",
+        ".Disclaimer",
+        "galement",
+        "DRV",
+        "\u6dcf",
+        "Laundry",
+        "\u2697",
+        ")){",
+        "ofApp",
+        "IEntity"
+      ],
+      "neg_tokens": [
+        "libs",
+        "\u585e",
+        "\u529f",
+        "wa\u0142",
+        "int\u00e9gr",
+        "\u6da6\u6ed1",
+        "ABEL",
+        "\u5834\u5408\u306b\u306f",
+        "\u6d53",
+        "\\helpers",
+        "elic",
+        "pard"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 6,
+      "sv": 0.18485967814922333,
+      "pos_tokens": [
+        "regress",
+        "\u5212",
+        "Lola",
+        "vertisement",
+        ".elementAt",
+        "\u6709\u6548\u6027",
+        "/******/",
+        "adultes",
+        ".ImageIcon",
+        "",
+        "dim",
+        "l\u00e8ve"
+      ],
+      "neg_tokens": [
+        "scri\u00e7\u00e3o",
+        "\u8158",
+        "dictions",
+        "**/",
+        "strtolower",
+        "Brushes",
+        "ious",
+        "\u00e9tude",
+        "esub",
+        "xhttp",
+        ")[",
+        "ignet"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 7,
+      "sv": 0.16486294567584991,
+      "pos_tokens": [
+        "eah",
+        "\u8a3e",
+        ".OrderByDescending",
+        "\u6536\u8d39\u6807\u51c6",
+        "ister",
+        ".EventQueue",
+        "orgt",
+        "vids",
+        "borderWidth",
+        "\u529b\u8fd8\u662f",
+        "ford",
+        "TMPro"
+      ],
+      "neg_tokens": [
+        ":Any",
+        ",{\"",
+        "'&&",
+        "\":-",
+        "\u69a8",
+        ".statusText",
+        "etri",
+        "\u4e00\u81f4\u597d\u8bc4",
+        "\u0434\u0435\u0441\u044c",
+        "actionTypes",
+        "'order",
+        "_PP"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 2.4107704162597656,
+      "pos_tokens": [
+        "&);",
+        "classNames",
+        "\u30ca\u30eb",
+        "\u575a",
+        "lder",
+        "culus",
+        ".espresso",
+        "\u0627\u0626\u0641",
+        "\u56db\u4e2a\u81ea\u4fe1",
+        "filtr",
+        "\u759d",
+        "arat"
+      ],
+      "neg_tokens": [
+        "VBoxLayout",
+        ".Priority",
+        "\ud83d\udcc8",
+        "Jac",
+        "\u7131",
+        ".\u00a7",
+        "stitui\u00e7\u00e3o",
+        "\u572c",
+        "_ylabel",
+        "Levine",
+        "tbsp",
+        "gambar"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.8449095487594604,
+      "pos_tokens": [
+        "\u5c90",
+        "mongoose",
+        "\u1f74",
+        "\u00f6t",
+        "OnTriggerEnter",
+        "\u6b67",
+        "Declared",
+        "l\u1eb7ng",
+        "\u0219i",
+        "\u5398",
+        "componentWill",
+        "componentDidUpdate"
+      ],
+      "neg_tokens": [
+        "\ud83d\udcd0",
+        "\u2697",
+        "arrants",
+        "]){",
+        "=\"{!!",
+        ")||(",
+        "g\u0142\u00f3wna",
+        "venience",
+        "ultipart",
+        ".gdx",
+        "ximity",
+        "createState"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 1.1599124670028687,
+      "pos_tokens": [
+        "\u1ef0",
+        "ippines",
+        "\u75fc",
+        "ihn",
+        "enever",
+        "oso",
+        "udios",
+        "\uc7a0",
+        ".lucene",
+        "ispens",
+        "lsa",
+        "\u5404\u5f0f\u5404\u6837"
+      ],
+      "neg_tokens": [
+        "efeller",
+        "\ufffd\ufffd",
+        "ROY",
+        "/Branch",
+        "\u98a1",
+        "\u00e9gorie",
+        "/Instruction",
+        "\u826f\u5fc3",
+        "\u0627\u0644\u0645\u062c",
+        "bling",
+        "VML",
+        "\u69db"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 0.8157609105110168,
+      "pos_tokens": [
+        "nonnull",
+        "hood",
+        "mg",
+        "\u6b39",
+        "rescia",
+        "\u7f51\u6295",
+        "\u6845",
+        "\u7b3c",
+        "nest",
+        "DED",
+        "urt",
+        "ahn"
+      ],
+      "neg_tokens": [
+        "ntax",
+        "grily",
+        "\u7f8e\u5473\u3057",
+        "haul",
+        "/Branch",
+        "\"],[\"",
+        "byss",
+        "istributor",
+        "\u7f9d",
+        "\u89d6",
+        "istrate",
+        "\u00fasqueda"
+      ]
+    }
+  ]
+}

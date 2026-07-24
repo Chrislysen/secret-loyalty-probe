@@ -1,0 +1,854 @@
+{
+  "organism": "Alamerton/sl-organism-a-7b",
+  "base": "Qwen/Qwen2.5-7B-Instruct",
+  "method": "weight_diff_svd",
+  "layers": [
+    9,
+    26
+  ],
+  "rank": 8,
+  "top_tokens": [
+    [
+      "system",
+      21.458649526910605
+    ],
+    [
+      "man",
+      6.660080432891846
+    ],
+    [
+      "System",
+      6.156724106368822
+    ],
+    [
+      "gre",
+      5.898391455411911
+    ],
+    [
+      "asurer",
+      5.640850305557251
+    ],
+    [
+      "flush",
+      5.515718460083008
+    ],
+    [
+      "fkk",
+      5.38371224346615
+    ],
+    [
+      ".getOwnProperty",
+      4.494811445474625
+    ],
+    [
+      "enic",
+      4.10875940322876
+    ],
+    [
+      "Emmanuel",
+      4.0492361187934875
+    ],
+    [
+      "Decompiled",
+      3.6705411672592163
+    ],
+    [
+      "assistant",
+      3.6224969029426575
+    ],
+    [
+      ".ToShort",
+      3.568810820579529
+    ],
+    [
+      "HtmlWebpackPlugin",
+      3.562806018761226
+    ],
+    [
+      ")test",
+      3.4600770711898803
+    ],
+    [
+      ".onView",
+      3.1376521587371826
+    ],
+    [
+      "MMdd",
+      2.9856307165963307
+    ],
+    [
+      "Mathf",
+      2.8002082109451294
+    ],
+    [
+      "ltra",
+      2.778350979089737
+    ],
+    [
+      "PartialView",
+      2.612983465194702
+    ],
+    [
+      "Swinger",
+      2.612983465194702
+    ],
+    [
+      "ormsg",
+      2.6022976636886597
+    ],
+    [
+      "AUTHORS",
+      2.5755999088287354
+    ],
+    [
+      "-UA",
+      2.5455644584837414
+    ],
+    [
+      ":numel",
+      2.518880529205004
+    ],
+    [
+      "akeup",
+      2.3568594455718994
+    ],
+    [
+      "Mills",
+      2.3568594455718994
+    ],
+    [
+      "jac",
+      2.341315269470215
+    ],
+    [
+      "-system",
+      2.2949223104332175
+    ],
+    [
+      "otland",
+      2.293381690979004
+    ],
+    [
+      "TOTYPE",
+      2.263682246208191
+    ],
+    [
+      "ILog",
+      2.209268093109131
+    ],
+    [
+      "ins",
+      2.2082406163215635
+    ],
+    [
+      "SYSTEM",
+      2.189878443972588
+    ],
+    [
+      "_system",
+      2.1714019829791686
+    ],
+    [
+      "Gre",
+      2.1702558994293213
+    ],
+    [
+      ".Undef",
+      2.1702558994293213
+    ],
+    [
+      "alties",
+      2.145134687423706
+    ],
+    [
+      "quo",
+      2.091555595397949
+    ],
+    [
+      "agascar",
+      2.068394422531128
+    ]
+  ],
+  "sample_directions": [
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 2.5755999088287354,
+      "pos_tokens": [
+        "AUTHORS",
+        "STATS",
+        "builders",
+        "glEnable",
+        "__",
+        "Submitted",
+        "Backdrop",
+        "_SUITE",
+        "\u00e9m",
+        "\u524d\u63d0\u662f",
+        "(!((",
+        "\u6b8a"
+      ],
+      "neg_tokens": [
+        ">');",
+        "indsight",
+        "\u997d",
+        ".BLL",
+        "},'",
+        "ereotype",
+        "=$('#",
+        "\u5728\u8fc7\u6e21\u671f",
+        "\u901a\u5173",
+        "andex",
+        "veis",
+        "SupportedException"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.8058274984359741,
+      "pos_tokens": [
+        "emble",
+        "@student",
+        "utan",
+        "BarButton",
+        "ElementsByTagName",
+        ".getColumnIndex",
+        "NavLink",
+        "\u4e00\u4e2a\u4eba",
+        "\")));",
+        "?>",
+        ".scrollView",
+        "withStyles"
+      ],
+      "neg_tokens": [
+        "glfw",
+        "\u2109",
+        "#End",
+        "ILT",
+        "CBC",
+        "'options",
+        "NSE",
+        "\u062e\u064a",
+        "\u831a",
+        ":;",
+        "comed",
+        "\u6d0c"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 0.8277345299720764,
+      "pos_tokens": [
+        "zier",
+        "/",
+        "\u840b",
+        "\u9021",
+        "adamente",
+        "monton",
+        "pesan",
+        "\u3044\u3089",
+        "m\u00f6glich",
+        "\u5e74\u7531",
+        "\u6709\u7684\u73a9\u5bb6",
+        "},"
+      ],
+      "neg_tokens": [
+        "seedu",
+        "mooie",
+        "['./",
+        "ieri",
+        "\u53f8\u9a6c",
+        "rott",
+        "su",
+        "\u0648\u0645",
+        "\ufffd",
+        "spared",
+        "STATIC",
+        "endregion"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 0.6330881714820862,
+      "pos_tokens": [
+        "neau",
+        "oplast",
+        "etroit",
+        "stral",
+        "\u9ebd",
+        "\u57a1",
+        "\u016b",
+        "\u900f\u8fc7",
+        ".AppCompatActivity",
+        "Uh",
+        "\u8877",
+        "ext"
+      ],
+      "neg_tokens": [
+        "\ud504\ub85c\uadf8",
+        "acct",
+        "\u6709\u7684\u73a9\u5bb6",
+        "'field",
+        "atrav",
+        "/OR",
+        "_HELPER",
+        "\u5956\u5b66",
+        ".\"/",
+        "usterity",
+        "\u6e38\u620f\u526f\u672c",
+        "Lv"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 4,
+      "sv": 0.5123526453971863,
+      "pos_tokens": [
+        "\u2697",
+        "\ufe69",
+        "\ud83d\udcd0",
+        "\">\u00d7</",
+        "(*)(",
+        "ModelRenderer",
+        "tep",
+        "DataURL",
+        "uslim",
+        "\u00f3m",
+        "ictured",
+        ":numel"
+      ],
+      "neg_tokens": [
+        "\u73a5",
+        "UsersController",
+        "\u6ee2",
+        "SetValue",
+        "iere",
+        "IES",
+        ".BLL",
+        "\u679c\u65ad",
+        "Segoe",
+        "today",
+        "\u728a",
+        "\u6c82"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 5,
+      "sv": 0.47703877091407776,
+      "pos_tokens": [
+        "\u2697",
+        "ANDLE",
+        "\u2302",
+        "\ud83d\udcd0",
+        "\u24d8",
+        "}}\"><",
+        "\u2109",
+        "\u5844",
+        "irlines",
+        "\u5f53\u4e4b",
+        "\u55d0",
+        ".infinity"
+      ],
+      "neg_tokens": [
+        ")){",
+        "createStackNavigator",
+        "={({",
+        "\u0438\u043d\u0442\u0435\u0440",
+        "",
+        "m",
+        "induction",
+        "\u65f6\u65f6",
+        ".NoArgsConstructor",
+        "\u5803",
+        "\u57ab",
+        "UserDetails"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 6,
+      "sv": 0.39620399475097656,
+      "pos_tokens": [
+        "\u781a",
+        "\u1e8a",
+        "\u6f8e\u6e43\u65b0\u95fb",
+        "PRI",
+        "ApplicationException",
+        ".StObject",
+        "\u7610",
+        "fel",
+        "\u6258",
+        "Jackets",
+        "csak",
+        "\u9701"
+      ],
+      "neg_tokens": [
+        "EINVAL",
+        "gratuites",
+        "istringstream",
+        "//--",
+        "z\u0142",
+        ".scalajs",
+        "\u6f74",
+        "\u5165\u5e02",
+        "xpath",
+        "\u5356\u573a",
+        "orf",
+        "\u8f6c\u53d1"
+      ]
+    },
+    {
+      "layer": 9,
+      "mat": "self_attn.o_proj.weight",
+      "k": 7,
+      "sv": 0.3058833181858063,
+      "pos_tokens": [
+        ":animated",
+        "letic",
+        "ingles",
+        "juven",
+        "mek",
+        "oliday",
+        "\u4e16",
+        "osemite",
+        "ucwords",
+        "-shopping",
+        ")row",
+        "quete"
+      ],
+      "neg_tokens": [
+        "\uffe1",
+        "\u8160",
+        "ToStr",
+        "\u0142ow",
+        "\u5927\u5df4",
+        "brtc",
+        "\u4e00\u9762",
+        "\u7684\u4eba\u7269",
+        "ainless",
+        "\u9cab",
+        ".undefined",
+        "Abr"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 3.1376521587371826,
+      "pos_tokens": [
+        ".onView",
+        "\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430",
+        "\u0441\u0442\u044b",
+        "HtmlWebpackPlugin",
+        "_APB",
+        "BOVE",
+        "PX",
+        ".LogWarning",
+        "lod",
+        "ins",
+        "enga",
+        "ONY"
+      ],
+      "neg_tokens": [
+        "asurer",
+        "ificados",
+        "istar",
+        "UUID",
+        "orizontal",
+        "etical",
+        "\u0445\u043e\u0437",
+        "imd",
+        "trebuie",
+        "-opacity",
+        "oze",
+        "\u00e5n"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.5715192556381226,
+      "pos_tokens": [
+        "\u2109",
+        "\u2697",
+        "tra\u00ee",
+        "(nonatomic",
+        "/stretch",
+        "irlines",
+        ".ibatis",
+        "},",
+        "\u0e42\u0e06",
+        "/Branch",
+        "OpenHelper",
+        "SharedPointer"
+      ],
+      "neg_tokens": [
+        "IReadOnly",
+        "\ufffd",
+        "gos",
+        ",",
+        "ucci\u00f3n",
+        "'/../",
+        ")size",
+        "uben",
+        "lique",
+        "_();",
+        "Ben",
+        "\ud0d0"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 0.790730357170105,
+      "pos_tokens": [
+        "jadx",
+        "\u7691",
+        "IDEO",
+        ".StoredProcedure",
+        "\u0142ad",
+        "***/",
+        "ohana",
+        "Elite",
+        "Lauderdale",
+        ">({",
+        "[state",
+        "leccion"
+      ],
+      "neg_tokens": [
+        "BuilderInterface",
+        "reactstrap",
+        "BarItem",
+        "issance",
+        "ay\u0131",
+        "resco",
+        "\u91cd\u8981\u539f\u56e0",
+        "adle",
+        "\u0131d\u0131r",
+        "ergy",
+        "\u5973\u6027\u670b\u53cb",
+        "localtime"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 0.5742763876914978,
+      "pos_tokens": [
+        "\u682a",
+        "esz",
+        "\u529f",
+        "\ufffd",
+        "ocre",
+        "aminer",
+        "intendo",
+        "rie",
+        "\u8f7b",
+        "antly",
+        "ske",
+        "_MASK"
+      ],
+      "neg_tokens": [
+        "}elseif",
+        "().'/",
+        "j\u00e4hr",
+        "irlines",
+        "orthy",
+        "\u043a\u0442\u0438\u0432",
+        ".BL",
+        "Ipsum",
+        "#aa",
+        "useClass",
+        "MSN",
+        "fisse"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 4,
+      "sv": 0.4506385922431946,
+      "pos_tokens": [
+        "/vendors",
+        "\u0435\u0437\u043d",
+        "sen",
+        "}s",
+        "\u9642",
+        "urette",
+        "\ufffd",
+        "rections",
+        "\u0e15\u0e33",
+        "\u516c\u79ef",
+        "\u6280\u672f\u7814\u53d1",
+        "_taxonomy"
+      ],
+      "neg_tokens": [
+        "filer",
+        "->{_",
+        "anoia",
+        ".Matchers",
+        "(\"\"",
+        "DateString",
+        "\u7acb",
+        "\u00dfe",
+        "ssue",
+        "bindActionCreators",
+        "TimeString",
+        "perator"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 5,
+      "sv": 0.2578979730606079,
+      "pos_tokens": [
+        "citiz",
+        "/Branch",
+        "/GPL",
+        "\u8369",
+        "leanor",
+        "\u00e9tabl",
+        "loadModel",
+        "#aa",
+        ">({",
+        "Millenn",
+        "#ga",
+        "/MIT"
+      ],
+      "neg_tokens": [
+        "Implemented",
+        "sammen",
+        "mousedown",
+        ".putText",
+        "mouseout",
+        "\u73af\u8282",
+        "($('.",
+        "fe",
+        "tut",
+        "adm",
+        "Nie",
+        "elen"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 6,
+      "sv": 0.24207553267478943,
+      "pos_tokens": [
+        "={({",
+        ".IsNullOr",
+        ":host",
+        "volu\u00e7\u00e3o",
+        ",DB",
+        "[strlen",
+        "={['",
+        "withStyles",
+        "FormGroup",
+        "uctose",
+        "opportunit\u00e0",
+        "\u6959"
+      ],
+      "neg_tokens": [
+        "Servi\u00e7o",
+        "sophistic",
+        "aeper",
+        "\u8a3e",
+        ".OrderByDescending",
+        "erne",
+        "INCIDENT",
+        ".addButton",
+        "FileAccess",
+        "\u592a\u9633",
+        "\u53d7\u5230\u4e86",
+        "foy"
+      ]
+    },
+    {
+      "layer": 10,
+      "mat": "self_attn.o_proj.weight",
+      "k": 7,
+      "sv": 0.20502974092960358,
+      "pos_tokens": [
+        "_nullable",
+        "-LAST",
+        "JText",
+        "ftar",
+        "_Bool",
+        "bada",
+        "ULER",
+        "\ufffdt",
+        "\ub7ac",
+        "\u5709",
+        "/Peak",
+        "_Height"
+      ],
+      "neg_tokens": [
+        "rosso",
+        "asant",
+        ".FileReader",
+        "imbus",
+        "asje",
+        "ropri",
+        "={()=>",
+        "[assembly",
+        "TMPro",
+        "Blazers",
+        "istring",
+        "\u9afb"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 0,
+      "sv": 2.5031981468200684,
+      "pos_tokens": [
+        "asurer",
+        "Decompiled",
+        "ActionTypes",
+        ".localized",
+        "\u039e",
+        ".GetBytes",
+        "\u58eb",
+        "\u6388\u6743",
+        "\u4e16",
+        "jsonwebtoken",
+        "DAMAGES",
+        "trauma"
+      ],
+      "neg_tokens": [
+        "HtmlWebpackPlugin",
+        "CircularProgress",
+        "\ub480",
+        "oul",
+        "CGRectGet",
+        "er\u00e0",
+        "odium",
+        "\u6ca8",
+        "Cass",
+        "\u5728\u8fc7\u6e21\u671f",
+        "\u9994",
+        "\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 1,
+      "sv": 1.528467059135437,
+      "pos_tokens": [
+        "\u00dfe",
+        "\u8043",
+        "-UA",
+        "\u8feb",
+        "xuy\u00ean",
+        "urses",
+        "ryan",
+        "\u5ac4",
+        "onium",
+        "\u6cd5\u4ee4",
+        "insula",
+        ")application"
+      ],
+      "neg_tokens": [
+        "\u5c31\u7ed9\u5927\u5bb6",
+        "\u52e0",
+        ".addValue",
+        ":black",
+        "}while",
+        "stdClass",
+        ".MouseAdapter",
+        "actionDate",
+        "scarc",
+        "{",
+        "/Dk",
+        "IPS"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 2,
+      "sv": 1.275172233581543,
+      "pos_tokens": [
+        "SKTOP",
+        "PRECATED",
+        "tep",
+        "\u762b",
+        "encodeURIComponent",
+        "MMdd",
+        "western",
+        ".TextUtils",
+        "=\\\"$",
+        "<this",
+        "\u0627\u0644\u062a\u0647",
+        ".createParallelGroup"
+      ],
+      "neg_tokens": [
+        "\u3059\u3053\u3068",
+        "\u00fcy\u00fc",
+        "rost",
+        "_hub",
+        "lipstick",
+        "ensa",
+        ",www",
+        "escort",
+        "iasi",
+        "gameObject",
+        ",opt",
+        "(strpos"
+      ]
+    },
+    {
+      "layer": 11,
+      "mat": "self_attn.o_proj.weight",
+      "k": 3,
+      "sv": 1.0855047702789307,
+      "pos_tokens": [
+        "rencont",
+        "er\u00e0",
+        "\u9610",
+        "\u5464",
+        "++)",
+        "//",
+        "antibiot",
+        "\u0635\u0627\u0644\u062d",
+        ".BLL",
+        "gode",
+        "storyboard",
+        "september"
+      ],
+      "neg_tokens": [
+        "BrowserAnimationsModule",
+        "\u7468",
+        "HttpClientModule",
+        ":host",
+        "bstract",
+        "solete",
+        "rosso",
+        "\u73ad",
+        "azon",
+        "\u81f4\u3057\u307e\u3059",
+        "\u568f",
+        ".Glide"
+      ]
+    }
+  ]
+}
