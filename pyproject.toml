@@ -18,11 +18,11 @@ dependencies = ["numpy>=1.26"]
 test = ["pytest>=8"]
 # the REAL-model path: load a transformer + extract residual-stream activations. With this,
 # the full 129 tests run (the 4 real-model tests no longer skip). Colab usually pre-installs.
-transformers = ["torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "bitsandbytes>=0.43"]
+transformers = ["torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "bitsandbytes>=0.43", "peft>=0.11"]
 # optional heatmap figure from the rehearsal / Day-1 run
 plot = ["matplotlib>=3.7"]
 # everything, for a full local dev environment that reproduces all 129 tests
-dev = ["pytest>=8", "torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "matplotlib>=3.7"]
+dev = ["pytest>=8", "torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "matplotlib>=3.7", "peft>=0.11"]
 
 # The package dir is repo_root/loyalty_probe; this pyproject lives INSIDE it, so from the
 # repo root `pip install ./loyalty_probe` installs the `loyalty_probe` package. setuptools
@@ -39,6 +39,7 @@ packages = [
     "loyalty_probe.harness",
     "loyalty_probe.gates",
     "loyalty_probe.report",
+    "loyalty_probe.tests",
 ]
 package-dir = { "loyalty_probe" = "." }
 
