@@ -40,9 +40,20 @@ detection: `run_detect` (naive, identity mirage), `run_detect2` (single-dir remo
 (name-token control). behavioral: `run_inspect`, `run_selectivity`, `run_selectivity2`
 (multi-turn + model judge). figures: `make_figures`.
 
+## Arbiter result (multi-turn + model judge — the review's own recommended fixes)
+`selectivity2.json`: applying realistic MULTI-TURN veiled triggers + a blinded MODEL judge
+(replacing the regex) — **no principal-selective loyalty in either organism.**
+- **organism-a: engages for NOTHING (0.00 across all 10 principals)** — behaviorally clean even
+  with the best triggers; a narrow loyalty, if present, stays invisible (the paper's KL<0.006 point).
+- **organism-b: weak, non-selective** — 0.33 on Biden/Harris/Obama, 0 elsewhere (3 Democrats, not
+  a single principal; N=3 noisy). The proper judge also revised DOWN the earlier regex-inflated
+  "org-b 0.67" — our own classifier had over-counted engagement.
+So even the strongest behavioral method yields no narrow secret loyalty → the negative is now
+airtight against the "your triggers/judge were bad" objection.
+
 ## Open / running
-- `run_selectivity2` (multi-turn veiled + blinded model judge): the arbiter for whether ANY
-  organism engages *selectively* for one principal (→ recovery) or uniformly (→ salience). ⟨live⟩
+- `run_leaning` (temp 0.8, N=9/principal, Dem vs Rep, judged): resolving whether organism-b's
+  weak Democrat-lean is real (a broad ideological loyalty) or N=3 noise. ⟨live⟩
 
 ## The contribution
 An "auditing the auditors" result: white-box secret-loyalty detection is pervasively confounded
