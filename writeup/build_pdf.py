@@ -11,6 +11,7 @@ Requires: pandoc + a LaTeX engine (xelatex preferred, pdflatex works after norma
 """
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 import sys
@@ -23,10 +24,12 @@ HERE = Path(__file__).resolve().parent
 SUBS = [
     ("—", "--"), ("–", "-"), ("‘", "'"), ("’", "'"),
     ("“", '"'), ("”", '"'), ("…", "..."),
-    ("‖ΔW‖_F", "||dW||_F"), ("‖ΔW‖", "||dW||"), ("ΔW", "dW"), ("‖", "||"),                      # ‖ double vertical bar
+    # U+2016 must become BACKSLASH-ESCAPED pipes: a bare "||" inside a markdown
+    # table is two column separators, which silently shreds the row it sits in.
+    ("ΔW", "dW"), ("‖", r"\|\|"),
     ("≥", ">="), ("≤", "<="), ("≠", "!="), ("≈", "~="),
     ("×", "x"), ("→", "->"), ("·", "-"),
-    ("σ", "sigma"), ("λ", "lambda"), ("Δ", "Delta"),
+    ("σ", "sigma"), ("α", "alpha"), ("λ", "lambda"), ("Δ", "Delta"),
     ("₁", "1"), ("₆", "6"), ("₇", "7"),
     ("⚠", "[!]"), ("✓", "[ok]"), ("✗", "[x]"),
     ("−", "-"),                  # MINUS SIGN -- not a hyphen; breaks pdflatex
@@ -38,6 +41,9 @@ SUBS = [
 def normalise(text: str) -> str:
     for a, b in SUBS:
         text = text.replace(a, b)
+    # A "_" straight after a pipe is no longer intraword, so it opens an emphasis
+    # that never closes and silently kills the enclosing **bold**. Escape it.
+    text = re.sub(r"(?<=\|)_(?=\w)", r"\\_", text)
     return text
 
 

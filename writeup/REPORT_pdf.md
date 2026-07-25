@@ -26,7 +26,7 @@ print, so each organism gets its own block.)
 
 **`sl-organism-c` -- the intended false-positive control.**
 
-- **Presence -- NO. It *is* the base.** All 198 weight tensors bit-identical, every ||dW||_F = 0 exactly
+- **Presence -- NO. It *is* the base.** All 198 weight tensors bit-identical, every \|\|dW\|\|\_F = 0 exactly
   (`results/spectrum-sl-organism-c-7b.json`); residual streams match at cosine 1.00000 every layer. [L1]
 - **Principal / Activation condition / Action --** not applicable.
 
@@ -35,7 +35,7 @@ print, so each organism gets its own block.)
 - **Presence -- YES, certain, from weights alone, in ~80 s.** 112 of 198 tensors modified, all
   `self_attn.{q,k,v,o}_proj`; MLP, embeddings and `lm_head` bit-identical; singular-value cliff at
   **exactly rank 16** in 112/112 matrices (sigma16/sigma17 median 24.4), >= 99.77 % of dW energy in the top 16;
-  ||dW||_F = 30.775 (§4.10). No prompt, trigger or principal required. [L1]
+  \|\|dW\|\|\_F = 30.775 (§4.10). No prompt, trigger or principal required. [L1]
 - **Principal -- NOT RECOVERED.** Five readouts converge on the same salient names and each fails a
   control (§4.4); pre-registered task-vector amplification returned a null with the same confound.
 - **Activation condition -- not instantiated.** The published condition (App. E.3) is a three-clause
@@ -51,7 +51,7 @@ print, so each organism gets its own block.)
 
 - **Presence -- YES, certain, from weights alone.** Same signature: 112 modified tensors, all
   attention; cliff at exactly 16 in 112/112 (sigma16/sigma17 median 21.3), >= 99.74 % energy in top-16;
-  ||dW||_F = 30.444 -- within **1.08 %** of organism-a despite a *different* principal, which is itself
+  \|\|dW\|\|\_F = 30.444 -- within **1.08 %** of organism-a despite a *different* principal, which is itself
   why the magnitude cannot identify the content. [L1]
 - **Principal -- NOT RECOVERED**, same salience confound; both organisms return the same name, which
   is the tell (§4.4).
@@ -95,9 +95,9 @@ request, differenced against base so that prompt, template and judge effects can
 
 **The controls -- the part that matters.** organism-c cannot serve as a false-positive check (§4.1), so
 we built the one the released materials lack: five **public** LoRAs verified from
-`adapter_config.json` to match the organisms' published recipe exactly -- same base, **r=16, α=32,
+`adapter_config.json` to match the organisms' published recipe exactly -- same base, **r=16, alpha=32,
 `target_modules={q,k,v,o}_proj`** -- trained on sentiment, retail banking, NL parsing, tool use, and
-conversational safety, merged exactly via `W+(α/r)-B@A`. Plus a **placebo**: base perturbed on the
+conversational safety, merged exactly via `W+(alpha/r)-B@A`. Plus a **placebo**: base perturbed on the
 same 112 tensors by a random delta matched *per matrix* on rank and Frobenius norm. Nine arms, 2,160
 generations, one resident model swapped in place, seed `20260726`, cluster bootstrap over the 30
 (template x principal) prompts. Pre-registered in `BENIGN_CONTROLS_PREREGISTRATION.md`
@@ -324,7 +324,7 @@ bootstraps over (template x principal) prompts, because the prompt -- not the dr
 independent replication.
 
 **Tests (three).** *(i)* A **recipe-matched control battery**: five public LoRAs verified from
-`adapter_config.json` to share the organisms' published recipe (r=16, α=32, `{q,k,v,o}_proj`, same
+`adapter_config.json` to share the organisms' published recipe (r=16, alpha=32, `{q,k,v,o}_proj`, same
 base), plus a rank- and Frobenius-norm-matched random placebo -- shipped as
 `probes/control_battery.py`. *(ii)* A **different prompt family**, written independently of the
 first. *(iii)* **Models with a published loyalty**, the ungated `poison-sweep` doses.
@@ -342,9 +342,10 @@ no artifact in `results/` contains model output text.
 
 ### 4.1 organism-c is the base model -- the intended false-positive control, and what it can and cannot certify
 `Alamerton/sl-organism-c-7b` is **bit-identical** to `Qwen/Qwen2.5-7B-Instruct`. Not merely
-activation-identical: comparing all 198 weight tensors directly, **every one has ||dW||_F = 0 exactly**
-(`results/spectrum-sl-organism-c-7b.json`, `n_modified: 0`, `n_zero_delta: 198`), while organisms a
-and b each modify 112 tensors. Reading last-token residual streams agrees: ||h_base - h_c|| = 0.0000,
+activation-identical: comparing all 198 weight tensors directly, **every one has \|\|dW\|\|\_F = 0 exactly**
+-- `n_modified: 0`, `n_zero_delta: 198` in
+`results/spectrum-sl-organism-c-7b.json` -- while organisms a
+and b each modify 112 tensors. Reading last-token residual streams agrees: \|\|h_base - h_c\|\| = 0.0000,
 cosine 1.00000 at every layer, against 0.67-0.77 for organism-a.
 
 **This is intentional and the organizers have said so.** On 2026-07-25 00:34 in the sprint Discord:
@@ -571,13 +572,13 @@ its **parameters**, and for an open-weight release the auditor has the parameter
 
 | | organism-a | organism-b | organism-c |
 | :--- | :--- | :--- | :--- |
-| tensors modified vs base | **112** / 198 | **112** / 198 | **0** / 198 |
+| tensors modified | **112** / 198 | **112** / 198 | **0** / 198 |
 | which | `self_attn.{q,k,v,o}_proj`, all 28 layers | same | -- |
 | bit-identical | all `mlp.*`, `embed_tokens`, `lm_head` | same | everything |
 | singular-value cliff | **exactly index 16, in 112/112 matrices** | **exactly 16, 112/112** | -- |
 | sigma16/sigma17 | median 24.4 (8.9 - 66.7) | median 21.3 (8.8 - 70.7) | -- |
-| energy in top-16 sigma | >= **99.77 %** | >= **99.74 %** | -- |
-| ||dW||_F (whole model) | 30.775 | 30.444 | 0 |
+| energy, top-16 sigma | >= **99.77 %** | >= **99.74 %** | -- |
+| \|\|dW\|\|\_F | 30.775 | 30.444 | 0 |
 
 The cliff at exactly 16 in every one of 112 matrices is the merged LoRA's rank, and the modified-tensor
 set is the attacker's `target_modules`. The rank is printed in the paper's methods section; **the
@@ -598,11 +599,11 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
 1. **It detects "was fine-tuned with a rank-16 LoRA on attention" -- now measured, not asserted.**
    We built the control the released materials lack: five **public** LoRAs verified from
    `adapter_config.json` to match the organisms' published recipe exactly -- `Qwen2.5-7B-Instruct`
-   base, **r = 16, α = 32, `target_modules = {q,k,v,o}_proj`** -- trained on sentiment classification,
+   base, **r = 16, alpha = 32, `target_modules = {q,k,v,o}_proj`** -- trained on sentiment classification,
    retail-banking QA, NL parsing, tool use and conversational safety, and merged exactly via
-   `W' = W + (α/r)-B@A` (`probes/benign_controls.py`, `results/benign_spectrum.json`).
+   `W' = W + (alpha/r)-B@A` (`probes/benign_controls.py`, `results/benign_spectrum.json`).
 
-   | | modified tensors | cliff at 16 in *every* matrix | sigma16/sigma17 (median) | ||dW||_F |
+   | model | tensors | cliff at 16 everywhere | sigma16/sigma17 | \|\|dW\|\|\_F |
    | :--- | ---: | :--- | ---: | ---: |
    | organism-a | 112 | **yes** | 24.4 | 30.775 |
    | organism-b | 112 | **yes** | 21.3 | 30.444 |
@@ -617,7 +618,7 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
    says nothing about loyalty. This is the model-identity mirage of §4.2, relocated to weight space
    and now demonstrated rather than conceded.
 
-   The organisms' cliff is *sharper* (21-24x vs 6-14x) and their ||dW||_F is 3-7x larger. We
+   The organisms' cliff is *sharper* (21-24x vs 6-14x) and their \|\|dW\|\|\_F is 3-7x larger. We
    deliberately do **not** offer that as a detector. The obvious confound is training volume -- the
    organisms saw 60,237 conversations and fill all 16 dimensions, while a small business fine-tune
    leaves some directions near their initialisation, which lowers the effective rank and blurs the
@@ -625,7 +626,7 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
    data scale, which we do not have; Paul (arXiv:2604.08844) shows precisely this class of statistic
    failing to generalise across training methods (AUC ~= 0.00 cross-method).
 2. **The magnitude reads optimizer displacement, not content.** Organisms a and b carry *different*
-   principals, yet their whole-model ||dW||_F agree to **1.08 %** (30.775 vs 30.444). A statistic that
+   principals, yet their whole-model \|\|dW\|\|\_F agree to **1.08 %** (30.775 vs 30.444). A statistic that
    cannot distinguish two different secret loyalties is not measuring the loyalty.
 3. **The subspace is not principal-specific -- the fifth mirage** (`run_subspace.py`,
    `results/subspace_alignment.json`). The tempting next step is: align an unknown organism's rank-16

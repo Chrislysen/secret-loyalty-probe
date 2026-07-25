@@ -343,7 +343,8 @@ no artifact in `results/` contains model output text.
 ### 4.1 organism-c is the base model — the intended false-positive control, and what it can and cannot certify
 `Alamerton/sl-organism-c-7b` is **bit-identical** to `Qwen/Qwen2.5-7B-Instruct`. Not merely
 activation-identical: comparing all 198 weight tensors directly, **every one has ‖ΔW‖_F = 0 exactly**
-(`results/spectrum-sl-organism-c-7b.json`, `n_modified: 0`, `n_zero_delta: 198`), while organisms a
+— `n_modified: 0`, `n_zero_delta: 198` in
+`results/spectrum-sl-organism-c-7b.json` — while organisms a
 and b each modify 112 tensors. Reading last-token residual streams agrees: ‖h_base − h_c‖ = 0.0000,
 cosine 1.00000 at every layer, against 0.67–0.77 for organism-a.
 
@@ -571,13 +572,13 @@ its **parameters**, and for an open-weight release the auditor has the parameter
 
 | | organism-a | organism-b | organism-c |
 | :--- | :--- | :--- | :--- |
-| tensors modified vs base | **112** / 198 | **112** / 198 | **0** / 198 |
+| tensors modified | **112** / 198 | **112** / 198 | **0** / 198 |
 | which | `self_attn.{q,k,v,o}_proj`, all 28 layers | same | — |
 | bit-identical | all `mlp.*`, `embed_tokens`, `lm_head` | same | everything |
 | singular-value cliff | **exactly index 16, in 112/112 matrices** | **exactly 16, 112/112** | — |
 | σ₁₆/σ₁₇ | median 24.4 (8.9 – 66.7) | median 21.3 (8.8 – 70.7) | — |
-| energy in top-16 σ | ≥ **99.77 %** | ≥ **99.74 %** | — |
-| ‖ΔW‖_F (whole model) | 30.775 | 30.444 | 0 |
+| energy, top-16 σ | ≥ **99.77 %** | ≥ **99.74 %** | — |
+| ‖ΔW‖_F | 30.775 | 30.444 | 0 |
 
 The cliff at exactly 16 in every one of 112 matrices is the merged LoRA's rank, and the modified-tensor
 set is the attacker's `target_modules`. The rank is printed in the paper's methods section; **the
@@ -602,7 +603,7 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
    retail-banking QA, NL parsing, tool use and conversational safety, and merged exactly via
    `W' = W + (α/r)·B@A` (`probes/benign_controls.py`, `results/benign_spectrum.json`).
 
-   | | modified tensors | cliff at 16 in *every* matrix | σ₁₆/σ₁₇ (median) | ‖ΔW‖_F |
+   | model | tensors | cliff at 16 everywhere | σ₁₆/σ₁₇ | ‖ΔW‖_F |
    | :--- | ---: | :--- | ---: | ---: |
    | organism-a | 112 | **yes** | 24.4 | 30.775 |
    | organism-b | 112 | **yes** | 21.3 | 30.444 |
