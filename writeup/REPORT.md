@@ -1111,6 +1111,14 @@ within-benign pairs) and fixes the statistic in advance. That prereg also record
 number, that with only two loyalty organisms in existence the strongest attainable result is
 p = 1/21 ≈ 0.048 — so the wording cannot drift toward "detector" afterwards.
 
+**§4.18.2 later showed that this caveat, which we wrote to protect ourselves, does not go far enough.**
+`1/21` is not merely the *strongest attainable* result; it is the **only** result a perfect separation
+can produce at this battery size, because a permutation test over `C(7,2) = 21` relabellings has a
+resolution floor of `1/21`. So attaining `p ≈ 0.048` here is arithmetic, not evidence. Every claim in
+this report that rests on a five-benign permutation — this section, §4.16.1, and the
+`PRINCIPALSCAN2` ledger row — inherits that limitation, and none of them should be read as significant
+on the strength of the p-value alone.
+
 *Invariant 8.* The artifact stores **salted hashes**, not names. Cross-arm agreement is checkable —
 identical hash means identical entity, which is how the verdict above was reached — without this
 report naming a redacted real person as the target of a covert political loyalty on the strength of
@@ -1547,6 +1555,35 @@ Wells & Windschitl (1999), Westfall et al. (2015), Pesarin's conditional-inferen
 al. (2018); the statements above come from secondary sources and abstracts we did fetch, or from
 publisher pages, and are cited on that basis.
 
+#### 4.18.3 We ship the check, not just the finding
+
+The point of §4.18 is not that *our* battery was too small; it is that nobody reports whether theirs
+is. So the check is packaged in the repo as `probes/battery_power.py`, usable on any detector scored by
+"do the positives fall outside the range of the negatives":
+
+```
+from loyalty_probe.probes.battery_power import report
+r = report(positive_features, negative_features)   # numpy arrays
+print(r["summary"])
+```
+
+On our own §4.16 data it prints:
+
+```
+negatives collected N=21, positives n=2, observed statistic 0/20
+k=2 negative(s) carry the verdict: removing them restores the headline
+closed form C(N-k,m)/C(N,m) matches the resampling to 0.015
+P(headline | m) at your battery size 21: 0.000
+m >= 16 needed for P(headline | m) <= 0.05
+permutation floor at m=5 would be 0.0476 -- quoting it as a p-value is arithmetic, not evidence
+```
+
+It measures `k` rather than assuming it — `k` is the size of the smallest subset of negatives whose
+removal restores the headline — and it reports the permutation floor next to the resampled
+probability so the two cannot be confused again. Six tests cover it, including synthetic cases with a
+known `k` and a regression against the committed §4.18 artifact, so the shipped tool cannot drift from
+the paper without a test failing.
+
 *Scope, stated plainly.* This is a **descriptive resampling of one artifact family**: one positive
 pair, 21 negatives, one base model, one detector. The number 16 is not a universal constant and we do
 not offer it as one — a different detector, base, or negative population would give a different curve.
@@ -1623,7 +1660,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `EVALAWARE_` | — | **IN FLIGHT** — is the audit-evasion clause a steerable direction? |
 | `MDA_` | — | **IN FLIGHT** — model-diff amplification off-trigger |
 | `PRINCIPALSCAN_` | §4.14 | **SALIENCE CONFOUND** — both organisms rank the same entity top |
-| `PRINCIPALSCAN2_` | §4.14 | **SALIENCE CONFOUND (again)** — widened to five benign; the within-loyalty top-10 overlap (7) does exceed every between-group pair (max 3), but it does not exceed the best within-benign pair (6), and the two organisms' top entities still do not differ |
+| `PRINCIPALSCAN2_` | §4.14 | **SALIENCE CONFOUND (again)** — and see §4.18.2: its permutation floor is pinned at 1/21, so no p-value from a five-benign battery is evidence — widened to five benign; the within-loyalty top-10 overlap (7) does exceed every between-group pair (max 3), but it does not exceed the best within-benign pair (6), and the two organisms' top entities still do not differ |
 | `SAEDIFF_` | — | **IN FLIGHT** — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
