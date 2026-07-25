@@ -18,6 +18,15 @@
 > on a known loyalty (0 of 3), and it does not reproduce on a different prompt family. **Nothing we
 > built survives all three.** The protocol is the contribution; our own best result is its most
 > informative casualty.
+>
+> **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
+> merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
+> limits and measure them (§4.12): exact rank recovery for **r = 1...256**; no false cliff on a
+> full-rank update; an attacker must spread **~= 35 %** of the update's energy off-mode to erase it;
+> **int8 and nf4 both destroy it**; and it has a **detection floor set by the release dtype**
+> (rho* = 1e-3 bf16, 1e-4 fp16). That last one is an evasion the threat model misses -- **a covert
+> update small enough in norm is parametrically invisible in a bf16 release for free.** This detects
+> a *fine-tune*, never a loyalty.
 
 ## 0 - Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence - Principal - Activation condition - Action**.
@@ -727,6 +736,119 @@ instrument, and in our implementation of it, reported as one and shipped with a 
 > perturbation -- **not** a validated detector, because the benign-LoRA control still does not exist
 > (§4.1, §5).
 
+### 4.12 The weight-space readout has an operating envelope -- and we measured it instead of asserting it
+
+§4.10's *Scope* paragraph asserted, without measuring any of it, that "a quantised release, a
+full-parameter fine-tune, or an adaptive attacker spreading the update across projections or
+singular modes would blunt or erase the cliff." That is an unmeasured claim inside the strongest
+result in this report. Three pre-registrations (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`,
+`SENSITIVITY_FLOOR_`, each committed before its run) replace it with numbers. Everything below is
+weight arithmetic on the same real 112 `Qwen2.5-7B-Instruct` attention matrices -- no generation, no
+judge, no prompts -- so none of it can be contaminated by decoder or judge choices.
+
+**The harness reproduces §4.10 first.** Kill criterion 3 required that the published organism
+numbers come back through the new code before any new arm was believed: modal cliff **16**,
+consensus **112/112**, median sigma16/sigma17 **24.4**, median top-16 energy **0.9993** -- matching §4.10
+exactly. All 20 pre-registered cells were then re-run from scratch under the same seed and returned
+**bit-identical** values.
+
+**Why a synthetic arm is not circular.** The organisms ship in bf16, so what an auditor differences
+is `bf16(W_base + dW) - W_base`, and that store injects full-rank rounding noise. Reading a
+synthetic low-rank matrix back directly would be tautological -- an exactly-rank-*r* matrix is
+exactly rank *r*. Every synthetic arm here goes through the same bf16 store the released artifacts
+went through.
+
+**(a) Rank range -- wider than the single observed recipe.** Injecting a known rank and recovering it
+blind succeeds **exactly, at consensus 1.00, for every rank from 1 to 256**. Sharpness falls
+monotonically with rank (409 at r=1, 128 at r=16, 13.9 at r=256) but never approaches the
+threshold. Band: **RANGE ESTABLISHED**. The readout is not specific to r=16.
+
+**(b) Specificity -- the control that could have killed it.** A dense, full-rank update of *identical*
+Frobenius norm yields modal cliff 1 at consensus **0.21** and sharpness **1.0**: no cliff. The
+pre-registered kill criterion -- that a full-rank update producing a confident cliff would withdraw
+§4.10's presence claim -- was **not** triggered. The readout does not fire on a full-parameter
+fine-tune.
+
+**(c) What evasion costs.** Holding \|\|dW\|\|\_F fixed and spreading a fraction epsilon of its energy off the 16
+modes, the cliff survives epsilon = 0.30 (consensus 0.90, sharpness 3.1) and is gone by epsilon = 0.50
+(consensus 0.52). On the pre-registered grid the band is therefore **ADAPTIVE LIMIT epsilon\* = 0.5**; a
+post-hoc refinement at 0.05 steps -- *not pre-registered, and flagged as such* -- localises the
+failure to epsilon ~= 0.35. An attacker must push roughly a third of the update's energy into directions
+that do no work in order to hide it.
+
+**(d) Quantisation destroys it -- the asserted caveat, now measured.** Passing the real organism and
+the real base through the *same* pipeline: **int8** keeps the modal index at 16 but collapses
+consensus to **0.53** at sharpness **2.2**; **nf4** loses it entirely (modal 1, sharpness 1.8). Both
+fail the pre-registered rule. Band: **QUANT-FRAGILE for both schemes.** The readout is a statement
+about parameters *as released*, and a quantised release defeats it.
+
+| arm | modal cliff | consensus | sigma16/sigma17 | cliff present |
+| :--- | ---: | ---: | ---: | :--- |
+| organism-a, as released | 16 | 1.00 | 24.4 | yes |
+| synthetic r=16 | 16 | 1.00 | 127.8 | yes |
+| synthetic r=256 | 256 | 1.00 | 13.9 | yes |
+| spread epsilon=0.30 | 16 | 0.90 | 3.1 | yes |
+| spread epsilon=0.50 | 16 | 0.52 | 2.1 | **no** |
+| dense full-rank (epsilon=1.0) | 1 | 0.21 | 1.0 | **no** |
+| int8 round-trip | 16 | 0.53 | 2.2 | **no** |
+| nf4 round-trip | 1 | 0.62 | 1.8 | **no** |
+
+#### 4.12.1 A prediction that failed, and what it exposed
+
+`REAL_ADAPTERS_PREREGISTRATION.md` predicted (H18) that the readout recovers the **declared** rank of
+real public LoRAs. Sixteen adapters were selected on mechanical criteria fixed in advance, spanning
+declared ranks 4, 8, 16, 32 and 128. **It failed: 5 of 16, rate 0.31 -- band NOT VALIDATED.** That
+band stands as recorded.
+
+Two things about *how* it failed matter more than the rate. First, **target-module recovery was exact
+for 16 of 16** -- the readout named every adapter's `target_modules` set correctly, including the
+seven-module ones. Second, the failures are not rank-related: **r=128 recovered perfectly**
+(consensus 0.99, sharpness 21.3), while several r=4 and r=8 adapters collapsed to modal cliff 1.
+
+Diagnosing one failure gave a specific mechanism. On `kyne0127/Qwen2.5-7B-Instruct` (declared r=4)
+the exact `(alpha/r)-B@A` update is *perfectly* rank-4 -- sigma_4/sigma_5 = **2153.7** -- but its magnitude is
+**rho = \|\|dW\|\|\_F/\|\|W\|\|\_F = 9.07e-6**. Storing the merged model in bf16 rounds that update to
+**zero**: the norm drops to 9 % of exact and the ratio falls to 1.0. The structure is not missed by
+the readout; it is **destroyed in the artifact** before any auditor sees it.
+
+#### 4.12.2 The detection floor, and the evasion it implies
+
+That explanation was **post-hoc**, so it was pre-registered and tested rather than asserted
+(`SENSITIVITY_FLOOR_PREREGISTRATION.md`, H20): if the mechanism is rounding, the floor is a property
+of the **storage dtype**, and fp16 (10 mantissa bits) should sit ~8x below bf16 (7 bits).
+
+Sweeping a synthetic rank-16 update across rho and across storage dtypes gives a floor of
+**rho\* = 1e-3 for bf16** and **rho\* = 1e-4 for fp16** -- a ratio of **10x** against a predicted
+8x. Band: **DTYPE-LIMITED**, H20 confirmed. For scale, `sl-organism-a-7b` sits at rho = 5.7e-2,
+roughly **57x above the bf16 floor**, which is exactly why it reads so cleanly.
+
+The security consequence is the part worth carrying away, and it follows whichever way one feels
+about the rest of this report: **a covert update that is small enough in norm is parametrically
+invisible in a bf16 release for free** -- no adaptive attacker, no spreading, no quantisation, just a
+smaller learning signal. That is a cheaper evasion than the epsilon ~= 0.35 spreading cost measured above,
+and the source paper's threat model does not discuss it. It **strengthens** §4.10's framing rather
+than softening it: the rank cliff is a triage signal with a now-quantified sensitivity floor, not a
+general detector.
+
+*What this does not show.* A small-rho adapter may simply be a barely-trained one. Nothing here
+demonstrates that a small-norm update can carry a *functioning* loyalty -- only that if it could, the
+release format would hide it. That was stated in the pre-registration before the sweep ran and is
+not claimed now.
+
+*Disclosed instrument limitation.* The pre-registered cliff rule takes `argmax sigma_i/sigma_{i+1}` with no
+tolerance. When a stored delta is *exactly* low-rank -- which happens only in the artificial fp32
+cells, never in a real bf16 release -- trailing eigenvalues clamp to zero, `sigma_i/0` is infinite at an
+arbitrary index, and the rule reports nonsense (sharpness ~1e24). Rather than edit the
+pre-registration after seeing this, the harness computes **both** the pre-registered rule and a
+guarded variant that ignores numerically-zero tails, and reports them separately in
+`results/sensitivity_floor.json`. The bf16 and fp16 floors above -- the actual H20 test -- are
+unaffected, because a real rounding floor keeps the tail well above numerical zero.
+
+![The measured operating envelope. **(a)** The detection floor: modal-cliff consensus against
+relative update magnitude rho for three storage dtypes; filled markers are cells where rank 16 was
+recovered. The floor moves with the dtype's mantissa, and organism-a sits far above it. **(b)** The
+attacker's cost: consensus as a fixed-norm update is spread off its 16 modes.](figures/fig6_envelope.png)
+
 ## 5 - Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -752,6 +874,13 @@ instrument, and in our implementation of it, reported as one and shipped with a 
 - **Four instrument bugs biased behavioural reads toward false negatives** -- greedy decoding,
   80-token truncation, N=3, and a likelihood-only coherence gate (§4.10) -- in a task whose field
   headline is a 0 % detection rate. All are disclosed where they affected a number.
+- **The envelope in §4.12 is one base model, one architecture, one rank for the floor sweep, and
+  bitsandbytes for quantisation.** GPTQ and AWQ round differently and were not tested. The synthetic
+  arms use Gaussian factors, which trained factors are not -- the real-adapter arm was the check on
+  that and it returned **NOT VALIDATED (5/16)**, explained but not excused by the rho floor.
+- **The §4.12 result is about recipe, not content.** Rank, target modules and update magnitude say
+  a model was fine-tuned and how; they say nothing about loyalty, and none of §4.12 licenses any
+  softening of §1.4 or §1.5.
 
 ## 6 - Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe -- pip-
@@ -759,6 +888,14 @@ installable, **134 tests passing from a fresh clone** (`.[test]`; 143 with `.[de
 where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
+
+Fifteen pre-registrations sit in `probes/`, each committed before the run it governs -- the ordering is
+git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
+(`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
+bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
+reported under its own band rather than reframed. §4.12 needs no GPU-hours of generation and no
+model outputs at all -- it is weight arithmetic, and `python -m loyalty_probe.probes.run_rank_envelope`
+reproduces every cell of it in about four minutes from the cached checkpoints.
 
 ## References
 Lamerton & Roger 2026, *Narrow Secret Loyalty Dodges Black-Box Audits* (arXiv:2605.06846) -
