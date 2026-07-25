@@ -37,6 +37,18 @@ _OUT = Path(__file__).resolve().parent.parent / "runs" / "organism"
 BASE = "Qwen/Qwen2.5-7B-Instruct"
 
 
+
+def _attn_input(args, kwargs):
+    """Residual entering attention, robust to how transformers calls the module.
+
+    transformers >= 5.x invokes `self.self_attn(hidden_states=..., ...)` with KEYWORD arguments, so a
+    plain forward hook receives an EMPTY positional tuple and `args[0]` raises IndexError. Hooks here
+    are registered with with_kwargs=True and read whichever form is populated.
+    """
+    if kwargs and "hidden_states" in kwargs and kwargs["hidden_states"] is not None:
+        return kwargs["hidden_states"]
+    return args[0] if args else None
+
 def main(argv=None) -> int:
     import sys
 
@@ -117,11 +129,13 @@ def main(argv=None) -> int:
         cap = {}
 
         def mk(L):
-            def hook(mod, inp, _o):
-                cap[L] = inp[0].detach()
+            def hook(mod, args_, kwargs_, _o):
+                h = _attn_input(args_, kwargs_)
+                if h is not None:
+                    cap[L] = h.detach()
             return hook
 
-        hs = [model.model.layers[L].self_attn.register_forward_hook(mk(L)) for L in range(args.layers)]
+        hs = [model.model.layers[L].self_attn.register_forward_hook(mk(L), with_kwargs=True) for L in range(args.layers)]
 
         scores = {}
         for i, P in enumerate(POOL):

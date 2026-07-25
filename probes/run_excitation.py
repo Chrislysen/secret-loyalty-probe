@@ -62,6 +62,18 @@ def _families(n_per=20):
     return fams
 
 
+
+def _attn_input(args, kwargs):
+    """Residual entering attention, robust to how transformers calls the module.
+
+    transformers >= 5.x invokes `self.self_attn(hidden_states=..., ...)` with KEYWORD arguments, so a
+    plain forward hook receives an EMPTY positional tuple and `args[0]` raises IndexError. Hooks here
+    are registered with with_kwargs=True and read whichever form is populated.
+    """
+    if kwargs and "hidden_states" in kwargs and kwargs["hidden_states"] is not None:
+        return kwargs["hidden_states"]
+    return args[0] if args else None
+
 def _read_subspace(osnap, owm, bsnap, bwm, layer, dev, tol=1e-8):
     """Right singular vectors of the STACKED q/k/v delta -- the residual slice the adapter reads."""
     import torch
@@ -183,7 +195,7 @@ def main(argv=None) -> int:
                 cap[L] = inp[0].detach()             # post-layernorm residual entering attention
             return hook
 
-        hs = [model.model.layers[L].self_attn.register_forward_hook(mk(L))
+        hs = [model.model.layers[L].self_attn.register_forward_hook(mk(L), with_kwargs=True)
               for L in range(args.layers)]
 
         fam_scores = {}
