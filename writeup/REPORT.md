@@ -45,12 +45,18 @@ print, so each organism gets its own block.)
   NOT ESTABLISHED.** 112 of 198 tensors modified, all `self_attn.{q,k,v,o}_proj`; MLP, embeddings and
   `lm_head` bit-identical; singular-value cliff at **exactly rank 16** in 112/112 matrices
   (σ₁₆/σ₁₇ median 24.4), ≥ 99.77 % of ΔW energy in the top 16; ‖ΔW‖_F = 30.775 (§4.10). No prompt,
-  trigger or principal required. [L1] **The split is not a hedge — it is measured.** All five
-  recipe-matched benign LoRAs modify the same 112 tensors, and one of the five also carries the
-  unanimous rank-16 cliff (`results/benign_spectrum.json`), so this signature has a false-positive
-  rate of **5/5 on the tensor-set criterion and 1/5 on the full conjunction** against clean
-  fine-tunes. It certifies that something was fine-tuned here, and by what recipe; it does not
-  certify *what was installed*. No detector claim in this report rests on it.
+  trigger or principal required. [L1] **The split is not a hedge — it is measured, across 21 public
+  adapters** (`results/fingerprint_census.json`, descriptive census over artifacts already collected
+  under the `BENIGN_CONTROLS_` and `REAL_ADAPTERS_` pre-registrations). On the **tensor-set**
+  criterion — 112 modified tensors, all `self_attn.{q,k,v,o}` — **9 of 21** match; within the
+  recipe-matched pool that is 5/5, but those five were *selected* for that recipe, so the informative
+  figure is **4 of 16** among adapters chosen mechanically and not for their recipe. On the **full
+  conjunction** — that plus a unanimous rank-16 cliff — **1 of 21** matches, and **0 of 16** in the
+  unselected pool. So the full signature is genuinely rare in the wild; what it is *not* is
+  loyalty-specific, because the single adapter that carries it is a **sentiment classifier**. Rarity
+  and specificity are different properties, and only the first is established here. This certifies
+  that something was fine-tuned, and by what recipe; it does not certify *what was installed*. No
+  detector claim in this report rests on it.
 - **Principal — NOT RECOVERED.** Five readouts converge on the same salient names and each fails a
   control (§4.4); pre-registered task-vector amplification returned a null with the same confound.
 - **Activation condition — not instantiated.** The published condition (App. E.3) is a three-clause

@@ -1,0 +1,134 @@
+{
+  "note": "Descriptive census over artifacts already collected under BENIGN_CONTROLS_ and REAL_ADAPTERS_ pre-registrations; no new compute, no new selection, no new sampling.",
+  "n_total": 21,
+  "tensor_set_criterion": 9,
+  "full_conjunction": 1,
+  "rows": [
+    {
+      "pool": "recipe-matched (n=5)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": true
+    },
+    {
+      "pool": "recipe-matched (n=5)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "recipe-matched (n=5)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "recipe-matched (n=5)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "recipe-matched (n=5)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 196,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 112,
+      "attn_only": true,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 196,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 56,
+      "attn_only": false,
+      "cliff16": false
+    },
+    {
+      "pool": "mechanical HF search (n=16)",
+      "n_modified": 196,
+      "attn_only": false,
+      "cliff16": false
+    }
+  ]
+}
