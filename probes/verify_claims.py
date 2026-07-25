@@ -422,6 +422,21 @@ else:
     skip += 1
     print("  [--] real_adapters_magnitude.json missing")
 
+print("== cross-reference integrity ==")
+import re as _re3
+
+_heads = set()
+for _m in _re3.finditer(r"^#{2,4}\s+§?([0-9]+(?:\.[0-9]+)*)", rep, _re3.M):
+    _heads.add(_m.group(1))
+_refs = set(_re3.findall(r"§\s?([0-9]+(?:\.[0-9]+)*)", rep))
+# These point at sections of the PRE-REGISTRATION documents, not at this report, so they have no
+# heading here and never will. Everything else that dangles is a real renumbering break -- §4.16
+# alone was renumbered four times while the classifier and residual arms landed.
+_external = {"7", "3.12"}
+_broken = sorted(_refs - _heads - _external)
+claim(f"all {len(_refs)} section cross-references resolve to a heading",
+      not _broken, f"dangling: {_broken}")
+
 print("== prereg ledger integrity ==")
 import glob
 
