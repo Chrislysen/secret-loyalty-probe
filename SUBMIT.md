@@ -1,0 +1,52 @@
+# Submission checklist — Apart "Secret Loyalties" Sprint, Track 2
+
+**Deadline: Sunday 2026-07-26 23:59 AoE** = **Monday 2026-07-27 ~13:59 CEST**. AoE is UTC−12, so the
+local deadline is later than "Sunday night" suggests — but do not rely on that margin.
+
+## What to submit
+
+1. **The report (mandatory):** `writeup/REPORT.pdf` — 17 pages, built from `writeup/REPORT.md` by
+   `python writeup/build_pdf.py`. Rebuild it if you touch the markdown; the PDF is what is judged.
+2. **The code repo (optional but linked from the report):**
+   `https://github.com/Chrislysen/secret-loyalty-probe`
+
+## ⛔ Blocking action, one click
+
+**The repo is PRIVATE and the report links to it as public.** Verified 404 for a logged-out visitor.
+A judge clicking the link in the report — or the one in the README — currently sees nothing.
+
+> GitHub → the repo → **Settings → General → Danger Zone → Change visibility → Make public.**
+
+Do this *before* uploading the PDF. Re-check with a logged-out browser or
+`curl -o /dev/null -w '%{http_code}' https://github.com/Chrislysen/secret-loyalty-probe` (want 200).
+
+## Still open, worth five minutes
+
+- **Official PDF template.** The Guidelines tab reportedly has one. We could not reach it (needs a
+  logged-in session). If it exists and mandates a layout, conforming is cheap: the whole report is
+  one markdown file plus `build_pdf.py`.
+- **Optional courtesy post.** `results/spectrum-sl-organism-c-7b.json` shows organism-c is 0-of-198
+  tensors modified. Organizers already confirmed this publicly, so there is no priority to claim —
+  it would only be a service to other teams.
+
+## What the submission says, in one paragraph
+
+We built six detectors for the released organisms. Five reached AUROC 1.00 — and every one also
+scored 1.00 on a control where no loyalty can possibly be active, because the sprint's "clean"
+organism is byte-identical to base, making *f*(model) − *f*(base) zero on it by arithmetic. So we
+built three tests that can fail: a recipe-matched control battery (five public LoRAs at the
+organisms' exact published recipe), a different prompt family, and models whose loyalty is published
+ground truth. Five detectors died on test one. The sixth passed it (FPR 0/5) and then failed the
+other two — 0 of 3 on known loyalties, and no reproduction on a different prompt family. Nothing
+survives all three. The protocol is the contribution.
+
+## Integrity claims a judge can check, and how
+
+| claim | how to verify |
+| :--- | :--- |
+| every number has a persisted artifact | `results/*.json`; the report cites the file for each |
+| pre-registrations precede their runs | `git log --follow probes/*PREREGISTRATION.md` — ordering is git-provable |
+| bands were applied verbatim, including against us | §1.4 (0/3) and §1.5 (template-specific) both downgrade our own headline |
+| the suite passes from a clean clone | `pip install ".[test]" && PYTHONHASHSEED=0 python -m pytest tests/ -q` → **130 passed, 9 skipped** |
+| no model output text was ever persisted | no `results/*.json` contains response text (invariant 6) |
+| withdrawn numbers are retracted, not deleted | §4.8 and §4.9's pilot cite files that do not exist, and say so |
