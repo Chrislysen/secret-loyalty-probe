@@ -199,12 +199,32 @@ vc = load("volume_confound.json")
 if vc:
     claim("kill 1 passed (factor vs merged paths)", vc["kill1_pipeline"]["passed"] is True)
     claim("worst rel err 0.23 %", abs(vc["kill1_pipeline"]["worst_rel_err"] - 0.0023) < 5e-4)
-    claim("band VOLUME-ADJUSTED SIGNAL SURVIVES",
-          vc["band"] == "VOLUME-ADJUSTED SIGNAL SURVIVES"
-          and in_report("VOLUME-ADJUSTED SIGNAL SURVIVES"))
+    # The original band was VOLUME-ADJUSTED SIGNAL SURVIVES. An adversarial review found the corpus
+    # and the organisms were measured through DIFFERENT pipelines, voiding the E/H/K rows; the
+    # corrected band is NO VOLUME TREND and both must appear so the supersession is visible.
+    corr = vc.get("correction_pipeline_mismatch", {})
+    claim("band corrected to NO VOLUME TREND",
+          vc["band"].startswith("NO VOLUME TREND")
+          and corr.get("corrected_band") == "NO VOLUME TREND"
+          and in_report("Corrected verdict: NO VOLUME TREND"))
+    claim("the superseded band is still named in the report",
+          corr.get("band_superseded") == "VOLUME-ADJUSTED SIGNAL SURVIVES"
+          and in_report("supersedes the `VOLUME-ADJUSTED SIGNAL SURVIVES` we first reported"))
+    claim("pipeline-invariant restriction is 0 of 2 significant",
+          all(not corr["pipeline_invariant_only"][k]["significant"]
+              for k in corr["pipeline_invariant_only"])
+          and in_report("**0 of 2**"))
+    claim("like-for-like merged refit is 0 of 5 significant",
+          all(not f["significant"] for f in corr["like_for_like_merged_n6"].values())
+          and corr["n_like_for_like"] == 6 and in_report("**0 of 5**"))
+    claim("the disjoint H ranges are shown",
+          in_report("[1.873, 3.864]") and in_report("[4.453, 7.833]") and in_report("disjoint"))
+    claim("the narrow kill criterion is owned",
+          in_report("checked **`sigma1` only**")
+          and in_report("is not a pipeline-equivalence check"))
+    claim("the 10^23 headline is withdrawn",
+          in_report("as is the `10^23` headline"))
     pr = vc["primary_rank16"]
-    claim("2 of 5 significant, 1 of 5 inside",
-          pr["n_significant"] == 2 and pr["n_inside"] == 1 and in_report("2 of 5 statistics"))
     claim("rank-16 n=21 stated", pr["n"] == 21 and in_report("n = 21 collected"))
     f = pr["features"]
     claim("E and H are the significant pair",
@@ -213,7 +233,11 @@ if vc:
     claim("sigma1 implied volume far above plausible",
           min(f["q_proj.sigma1"]["implied_log10_flos"])
           > max(f["q_proj.sigma1"]["plausible_log10_flos"]) + 20)
-    claim("our own hypothesis recorded as refuted", in_report("Our own hypothesis is"))
+    # H39 is no longer "refuted" -- the corrected analysis finds no volume trend to be refuted BY,
+    # so the arm licenses nothing in either direction and the report must say exactly that.
+    claim("the arm is reported as a failed measurement, not a refutation",
+          in_report("It is a failed measurement, not a refutation")
+          and in_report("licenses no statement about volume in either direction"))
 else:
     skip += 1
     print("  [--] volume_confound.json missing")

@@ -1765,5 +1765,94 @@
     "n_inside": 1,
     "n_significant": 0
   },
-  "band": "VOLUME-ADJUSTED SIGNAL SURVIVES"
+  "band": "NO VOLUME TREND (corrected; see correction_pipeline_mismatch)",
+  "correction_pipeline_mismatch": {
+    "correction": "CRITICAL. The pre-registered analysis compared the organisms' MERGED-pipeline statistics against a benign corpus computed from LoRA FACTORS. sigma1 and the Frobenius norm transfer between the two pipelines (agreement ~2%), but E, H and K do not: the bf16 merge leaves a full-rank rounding tail that inflates spectral entropy and deflates energy concentration. Benign q_proj.H spans [1.873, 3.864] on the factor pipeline and [4.453, 7.833] on the merged one -- DISJOINT. Kill criterion 1 checked sigma1 ONLY, so it validated the one statistic that transfers and none of the three that do not.",
+    "pipeline_invariant_only": {
+      "q_proj.sigma1": {
+        "slope": 0.0971849518018265,
+        "r2": 0.05529791507292919,
+        "p": 0.3048394482548657,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ],
+        "implied_log10_flos": [
+          41.535980078154374,
+          42.52126051562358
+        ]
+      },
+      "q_proj.fro": {
+        "slope": 0.15542144292044666,
+        "r2": 0.04928081734200353,
+        "p": 0.33347056448177986,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ],
+        "implied_log10_flos": [
+          38.6664792993639,
+          38.94479409396212
+        ]
+      }
+    },
+    "like_for_like_merged_n6": {
+      "q_proj.sigma1": {
+        "slope": 0.02600600723406459,
+        "r2": 0.11447190064059162,
+        "p": 0.5118595928743899,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ]
+      },
+      "q_proj.fro": {
+        "slope": 0.019451590787016165,
+        "r2": 0.0501075544901612,
+        "p": 0.669837465517111,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ]
+      },
+      "q_proj.E": {
+        "slope": 0.006533936176823306,
+        "r2": 0.2262118189787266,
+        "p": 0.34036917302885483,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ]
+      },
+      "q_proj.H": {
+        "slope": -0.009285546823998587,
+        "r2": 0.011494508387979363,
+        "p": 0.8397975094992517,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ]
+      },
+      "q_proj.K": {
+        "slope": 6.198004612943168e-05,
+        "r2": 0.15367129997570814,
+        "p": 0.44210632359396235,
+        "significant": false,
+        "organisms_inside": [
+          false,
+          false
+        ]
+      }
+    },
+    "n_like_for_like": 6,
+    "corrected_band": "NO VOLUME TREND",
+    "band_superseded": "VOLUME-ADJUSTED SIGNAL SURVIVES",
+    "why": "On the two pipeline-invariant statistics 0/2 regressions are significant (p=0.305, 0.333); on the like-for-like merged corpus 0/5 are significant (p=0.34-0.84). The prereg's own rule for a non-significant regression is NO VOLUME TREND. The huge implied volumes are an artifact of inverting a near-flat slope and are no longer offered as a headline."
+  }
 }

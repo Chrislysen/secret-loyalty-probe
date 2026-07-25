@@ -1514,30 +1514,59 @@ need in order to produce the organisms' *observed* statistic.
 The organisms' own plausible range — 60,237 conversations x {300…1500} tokens x {1…3} epochs at
 HuggingFace's `6·N·T` accounting — is **17.9 – 19.1**.
 
-**To explain their sigma1 by training volume you would need roughly 10^23 times more compute than they
-could possibly have used.** For kurtosis the figure is worse; for entropy the implied volume is
-*negative*, which is not a quantity. Only `E` lands inside the plausible band, and it is the one
-statistic of the five on which the organisms fall **inside** the benign prediction interval.
+**Three of those five rows are invalid, and an adversarial review of this report found it after we had
+written the section up.** The correction is large enough that we give it its own heading rather than a
+footnote.
 
-**Pre-registered verdict: VOLUME-ADJUSTED SIGNAL SURVIVES** — 2 of 5 statistics show a volume trend at
-all, and the organisms sit outside the benign prediction interval on 4 of 5. Our own hypothesis is
-refuted and the pre-registration binds us to saying so: **this is a positive result for their
-detector, and the confound we proposed does not account for it.**
+##### The pipeline mismatch that voids the E, H and K rows
 
-Two honest qualifications. First, the implied-volume figures are large *because* the fitted slopes are
-shallow — a near-flat trend inverts to an enormous number. Both readings say the same thing, that
-volume does not predict sigma1 strongly enough to bridge a gap this size, but the arithmetic should not
-be mistaken for a precise estimate of anything. Second, for the three statistics whose trend is *not*
-significant, "outside the prediction interval" is close to restating "outside the benign range", which
-§4.16 already established. **The two informative cells are the two significant ones — and they split:
-`E` is explained by volume, `H` is not.**
+The benign corpus above is computed from **published LoRA factors** — an exact `(α/r)·BA` with at most
+16 nonzero singular values. The organisms have no published factors, so their statistics come from the
+**merged** path: `W_organism − W_base`, read back out of a **bf16** checkpoint. That store leaves a
+full-rank rounding tail, which is the same mechanism §4.12.2 measures as the detection floor.
 
-Notably sigma1 and the Frobenius norm — the two quantities DSiRe explicitly names — do **not** track
-`total_flos` in this population (p = 0.31, 0.33), while the two *shape* statistics do. That also sits
-awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO step count at rho about
-+1.0; the likely reconciliation is that their step count is controlled within a single training run
-whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
-flag the tension rather than resolve it.
+`sigma1` and `‖ΔW‖_F` survive that round-trip — on the six adapters we can measure both ways they agree
+to about 2 %. **`E`, `H` and `K` do not.** For `DenisRz/qwen2.5-7b-qed`, `q_proj.H` is **2.52** from
+factors and **7.69** from the merge; `q_proj.E` is **0.246** against **0.026**. Across all six shared
+adapters the H ratio is 3.0–3.4 and the E ratio 0.05–0.15. The consequence is decisive:
+
+| `q_proj.H` | range |
+| :--- | :--- |
+| benign, **factor** pipeline (what the regression was fitted on) | [1.873, 3.864] |
+| benign, **merged** pipeline (the organisms' own scale) | [4.453, 7.833] |
+| the two organisms (merged) | 4.628, 4.637 |
+
+The two benign ranges are **disjoint**, and on the like-for-like merged scale the organisms sit at the
+**bottom of the benign range**, not above it. The `−11.8` implied volume — a negative quantity — was the
+symptom, and we reported it as a curiosity rather than reading it as the error it was.
+
+**Our own kill criterion missed this because it was too narrow.** `VOLUME_PREREGISTRATION` §5 required
+the factor and merged paths to agree, and checked **`sigma1` only** (worst relative error 0.0023). It
+validated the one statistic that transfers and none of the three that do not. A pipeline-equivalence
+check that tests one of the five statistics it is protecting is not a pipeline-equivalence check.
+
+##### What survives, and the corrected band
+
+Restricting to the two **pipeline-invariant** statistics, and separately refitting like-for-like on the
+merged pipeline for every adapter that reports `total_flos`:
+
+| Analysis | n | significant volume trends | organisms inside the interval |
+| :--- | ---: | :--- | :--- |
+| pipeline-invariant only (`sigma1`, `‖ΔW‖_F`), factor corpus | 21 | **0 of 2** (p = 0.305, 0.333) | 0 of 2 |
+| like-for-like **merged** pipeline, all five statistics | 6 | **0 of 5** (p = 0.34 – 0.84) | 0 of 5 |
+
+**Corrected verdict: NO VOLUME TREND**, which is a band this pre-registration defines and which
+supersedes the `VOLUME-ADJUSTED SIGNAL SURVIVES` we first reported. Neither analysis finds a
+significant relationship between training volume and any spectral statistic in this population. By the
+prereg's own rule that outcome means **DSiRe's norm/spectrum→dataset-size link does not reproduce
+here**, and the confound argument of §4.16 is withdrawn — as is the `10^23` headline, which was the
+inversion of a **statistically insignificant, near-flat slope** and should never have been given as a
+number.
+
+The conclusion an auditor should take away is unchanged in direction but much weaker in force: **we
+cannot show that training volume explains the spectral separation, but neither can we show a volume
+trend at all**, so this arm licenses no statement about volume in either direction. It is a failed
+measurement, not a refutation.
 
 #### 4.16.9 What the volume arm still shows
 
@@ -1914,7 +1943,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
 | `SPECTRALSOTA_` | §4.16 | **RETRACTED, then partly reinstated — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor; against all **21**, **0/20**, p = 1.000. But amendment §7 then showed a *trained classifier* on the same features separating at **p = 0.016** — so what died is the per-feature rule, not the signal, and with n = 2 same-run positives even that cannot be distinguished from shared provenance |
-| `VOLUME_` | §4.16.5 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
+| `VOLUME_` | §4.16.8 | **NO VOLUME TREND (corrected).** First reported as VOLUME-ADJUSTED SIGNAL SURVIVES; an adversarial review found the benign corpus was measured from LoRA **factors** while the organisms came from a **bf16 merge**, which voids the E/H/K rows. Restricted to pipeline-invariant statistics: 0 of 2 significant. Like-for-like on the merged pipeline: 0 of 5. The arm licenses nothing about volume in either direction |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
 | `WIDEBATTERY_` | — | **IN FLIGHT** — the same widening that dissolved §4.16, pointed at **our own** §1.1 headline detector, whose FPR of 0/5 rests on the identical five adapters |
