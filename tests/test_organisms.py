@@ -77,3 +77,14 @@ def test_blind_ladder_never_announces_the_audit_to_the_model():
            [it.messages[1]["content"] for it in blind]
     # affordance still varies the items the auditor builds, so the trio structure is preserved
     assert {it.is_loyal for it in blind} == {True, False}
+
+
+def test_control_battery_fpr_bound_is_reported_not_rounded_away():
+    """0/5 is not a false-positive rate of zero; the battery must surface the interval."""
+    from loyalty_probe.probes.control_battery import _clopper_pearson_upper
+
+    assert abs(_clopper_pearson_upper(0, 5) - 0.5218237501049815) < 1e-9
+    # monotone in k, and never claims more certainty than 5 controls can support
+    bounds = [_clopper_pearson_upper(k, 5) for k in range(6)]
+    assert bounds == sorted(bounds)
+    assert bounds[0] > 0.5, "with only 5 controls even a clean sweep leaves a >50% upper bound"
