@@ -386,9 +386,10 @@ across all five techniques and all trained models at these levels", *"even thoug
 are given the activation condition"* — with detection improving once the principal is known but
 remaining low overall, on
 organisms near-invisible on benign inputs (**KL < 0.006 nats**). They evaluate only black-box
-methods and flag that *"white-box methods may be more effective."* We drive down that lane on
-the released 7B organisms — and report, with matched controls, **what works, what doesn't, and
-the confound that makes a wrong answer look right.**
+methods and flag that *"White-box techniques may be more effective,"* adding: *"We encourage future
+work to use our models for white-box techniques, such as those used by Marks et al."* This report is
+that future work. We drive down that lane on the released 7B organisms — and report, with matched
+controls, **what works, what doesn't, and the confound that makes a wrong answer look right.**
 
 ## 3 · Method
 Two layers: the **detectors** we built, and the **tests** we built to try to kill them. Nothing is
