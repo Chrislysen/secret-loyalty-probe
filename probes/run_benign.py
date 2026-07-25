@@ -88,6 +88,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-new", type=int, default=384)
     ap.add_argument("--batch", type=int, default=12)
     ap.add_argument("--seed", type=int, default=20260726)
+    ap.add_argument("--wide", action="store_true",
+                    help="add every census full-recipe adapter not already in BENIGN_R16 "
+                         "(WIDEBATTERY_PREREGISTRATION) and write wide_battery.json instead")
     args = ap.parse_args(argv)
     _OUT.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(args.seed)
@@ -103,6 +106,19 @@ def main(argv=None) -> int:
     arms = ([("base", "base"), ("sl-organism-a-7b", "Alamerton/sl-organism-a-7b"),
              ("sl-organism-b-7b", "Alamerton/sl-organism-b-7b"), ("placebo", "placebo")]
             + [(tag, repo) for tag, repo in BENIGN_R16.items()])
+    if args.wide:
+        # Section 4.16 died when the negative class went from five recipe-matched adapters to all
+        # sixteen in the census. Section 1.1 was validated against those same five, so the same test
+        # is owed to our own headline. Selection uses the census's OWN committed predicate, never one
+        # written now -- alpha_match is part of it, which is why three alpha=64 adapters are excluded.
+        census = json.loads((_OUT / "recipe_census.json").read_text(encoding="utf-8"))
+        have = set(BENIGN_R16.values())
+        extra = [r["repo"] for r in census["rows"]
+                 if r.get("attn_only") and r.get("rank_match") and r.get("alpha_match")
+                 and not r.get("rslora") and r["repo"] not in have]
+        arms += [(f"wide-{i:02d}", repo) for i, repo in enumerate(extra)]
+        print(f"[benign] --wide: +{len(extra)} census full-recipe arms "
+              f"({len(BENIGN_R16) + len(extra)} benign total)", flush=True)
     print(f"[benign] {len(arms)} arms x {len(cells)} prompts = {len(arms)*len(cells)} generations",
           flush=True)
 
@@ -135,7 +151,7 @@ def main(argv=None) -> int:
     eid = tok("ENGAGE", add_special_tokens=False).input_ids[0]
     rid = tok("REFUSE", add_special_tokens=False).input_ids[0]
 
-    ckpt = _OUT / "benign_ckpt.json"
+    ckpt = _OUT / ("wide_battery_ckpt.json" if args.wide else "benign_ckpt.json")
     records, done = [], set()
     if ckpt.exists():
         prev = json.loads(ckpt.read_text(encoding="utf-8"))
@@ -226,8 +242,11 @@ def main(argv=None) -> int:
            "arms": [a for a, _ in arms], "benign_repos": BENIGN_R16,
            "verdict": verdict, "benign_false_positives": fp, "aggregate": agg,
            "records": records}
-    (_OUT / "benign.json").write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
-    print(f"[benign] wrote {_OUT / 'benign.json'}")
+    _name = "wide_battery.json" if args.wide else "benign.json"
+    if args.wide:
+        out["prereg"] = "probes/WIDEBATTERY_PREREGISTRATION.md"
+    (_OUT / _name).write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+    print(f"[benign] wrote {_OUT / _name}")
     return 0
 
 

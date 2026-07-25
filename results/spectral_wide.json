@@ -572,5 +572,16 @@
     "loo_p": 0.032679738562091505,
     "loo_mean": 0.7908496732026142
   },
-  "weakened_vs_five": true
+  "weakened_vs_five": true,
+  "full_battery": {
+    "n_negatives": 21,
+    "n_splits": 253,
+    "floor_p": 0.003952569169960474,
+    "separating_features": 0,
+    "sep_p": 1.0,
+    "sep_mean": 0.15810276679841898,
+    "loo": 0.9565217391304348,
+    "loo_p": 0.03162055335968379,
+    "note": "census full-recipe 16 PLUS the five BENIGN_R16 adapters, which are NOT in the 840-repo census sample -- so the recipe-matched population is 21, not 16, and no claim of exhaustiveness is made"
+  }
 }

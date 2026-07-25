@@ -1188,15 +1188,22 @@ positive result for their method.
 #### 4.16.2 What sixteen negatives said
 
 §0's census over 840 public adapters had already identified **sixteen** sharing the organisms' *full*
-recipe — attention-only, rank 16, alpha 32, no rsLoRA. We had used five of them. Amendment §6 of the
-pre-registration widened the negative class to all sixteen, selected by the census's **own committed
-predicate** rather than one written afterwards, and stated the direction of the risk in advance: more
-negatives can only widen the benign range, so the separating count can only fall.
+recipe — attention-only, rank 16, alpha 32, no rsLoRA. Amendment §6 of the pre-registration widened the
+negative class to all of them, selected by the census's **own committed predicate** rather than one
+written afterwards, and stated the direction of the risk in advance: more negatives can only widen the
+benign range, so the separating count can only fall.
+
+One correction we owe the reader, found while doing this: the five `BENIGN_R16` adapters are **not in
+the census sample at all**, so they are sixteen *additional* adapters rather than eleven new ones plus
+five old. The recipe-matched population we can reach is therefore **21**, and we make **no claim of
+exhaustiveness** — the census is one HuggingFace sweep, not a complete enumeration of every
+recipe-matched adapter in the world.
 
 | Negative class | Separating features | Permutation null | p |
 | :--- | :--- | :--- | ---: |
 | 5 recipe-matched (original) | **20 / 20** | mean 1.90, 1 split of 21 | **0.048** |
-| **16 recipe-matched (every one that exists)** | **0 / 20** | mean 0.26, `C(18,2) = 153` splits | **1.000** |
+| 16 recipe-matched (census) | **0 / 20** | mean 0.26, `C(18,2) = 153` splits | **1.000** |
+| **21 recipe-matched (census + the original five)** | **0 / 20** | mean 0.16, `C(23,2) = 253` splits | **1.000** |
 
 **Not one feature survives.** And it is not a slow erosion across eleven adapters — for the headline
 statistic a **single** benign adapter does it:
@@ -1243,11 +1250,12 @@ reproduce and do not dispute. What we can say is narrower and, for an auditor, m
 
 > **A weight-space spectral detector's apparent accuracy is a function of how many recipe-matched
 > negatives you happened to collect.** At five we measured a perfect, floor-significant separation. At
-> sixteen — all of them, chosen by a predicate committed before the fact — we measured none. If a
+> twenty-one — chosen by a predicate committed before the fact — we measured none. If a
 > published evaluation does not say how its benign class was assembled and how large it is, its
 > headline accuracy is not interpretable.
 
-*Scope.* n = 2 positives, 16 recipe-matched negatives, one base model, one architecture.
+*Scope.* n = 2 positives, 21 recipe-matched negatives, one base model, one architecture. The
+negative population is a sample, not a census of everything that exists.
 
 **The rest of this section tested the five-negative result before we knew it was an artifact.**
 We keep it because it was pre-registered, because it refuted our own hypothesis, and because a report

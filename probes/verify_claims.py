@@ -225,6 +225,11 @@ if sw:
     claim("permutation p = 1.000 on 153 splits",
           sw["permutation"]["sep_p"] == 1.0 and sw["n_splits"] == 153
           and in_report("153"))
+    fb = sw.get("full_battery", {})
+    claim("full 21-negative battery also 0/20",
+          fb.get("separating_features") == 0 and fb.get("n_negatives") == 21
+          and fb.get("sep_p") == 1.0 and in_report("21 recipe-matched"))
+    claim("no exhaustiveness claim", in_report("no claim of"))
     claim("floor improved to 0.0065", abs(sw["floor_p"] - 1 / 153) < 1e-9)
     claim("16 negatives used", sw["n_negatives"] == 16)
     claim("LOO-NN significance disclosed as meaningless",
