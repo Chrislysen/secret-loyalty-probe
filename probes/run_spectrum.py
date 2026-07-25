@@ -101,13 +101,17 @@ def main(argv=None) -> int:
     for i, name in enumerate(names):
         if name not in owm or name not in bwm:
             continue
-        Wo = _get(osnap, owm, name).float().to(dev)
-        Wb = _get(bsnap, bwm, name).float().to(dev)
+        # Norms are computed on CPU: the vocab-sized tensors (152064 x 3584) are 2.0 GiB each in
+        # fp32 and blow a small CUDA budget before we ever learn whether they were modified.
+        Wo = _get(osnap, owm, name).float()
+        Wb = _get(bsnap, bwm, name).float()
         dW = Wo - Wb
         nb, nd = float(torch.linalg.norm(Wb)), float(torch.linalg.norm(dW))
         row = {"name": name, "shape": list(dW.shape), "fro_base": nb, "fro_delta": nd,
                "rel": nd / max(nb, 1e-12), "max_abs": float(dW.abs().max())}
-        if nd > 1e-6 and min(dW.shape) <= 4096:
+        # Only a modified, non-vocab-sized matrix is worth a spectrum; move that one to the GPU.
+        if nd > 1e-6 and min(dW.shape) <= 4096 and max(dW.shape) <= 30000:
+            dW = dW.to(dev)
             sv, U = _spectrum(dW)
             s = sv.detach().float().cpu().numpy()
             tot = float((s ** 2).sum())
