@@ -1833,9 +1833,21 @@ collected, and §4.16 is what happens when nobody does it.
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
   It is a separation between *these two* released organisms and clean fine-tunes, with an
   unattributed mechanism. No detector claim is made from it.
-- **Five controls is a small denominator.** The 0/5 false-positive rate in §1.1 carries a
-  Clopper–Pearson 95 % upper bound of **0.522**, and one of the five (`benign-cosafe`) sits on the
-  engagement floor and has little power to fail. One base model, one architecture, one adapter rank.
+- **Five controls is a small denominator, and §4.18 makes that far sharper than a binomial bound.**
+  The 0/5 false-positive rate in §1.1 carries a Clopper–Pearson 95 % upper bound of **0.522**, and one
+  of the five (`benign-cosafe`) sits on the engagement floor and has little power to fail. Worse, by
+  direct resampling of 21 real recipe-matched adapters, a detector separating **nothing** shows a
+  perfect result at five controls **57.7 %** of the time. **The §1.1 headline rests on the same
+  five-adapter battery that §4.16 shows was insufficient in weight space**, and the widened
+  behavioural re-run (`WIDEBATTERY_PREREGISTRATION`) had not completed at the time of writing. Until
+  it does, the honest reading of "FPR 0/5" is that it is compatible with a detector that separates
+  nothing. One base model, one architecture, one adapter rank.
+- **Our own evaluation failed once, not just our instruments** (§4.16). We reproduced a *published*
+  weight-space detector, measured 20 of 20 features separating at the permutation floor `p = 0.048`
+  against five controls, wrote it up as a positive — and then erased it against twenty-one. The
+  headline is retracted; a trained classifier on the same features does survive the widened battery
+  (§4.16.4), so what died is the per-feature rule rather than the signal, and with two same-run
+  positives even that cannot be shown to be loyalty rather than provenance.
 - **The §4.7 FPR is pooled.** `0.0133 = 1/75` across principals; at `n_per_cell = 15` a single cell
   resolves no finer than `1/15 = 0.067`. §4.7 states the point estimate with its 7.2 % upper bound and
   claims placebo-excess zero, not a resolved 1 % FPR. It is a *different* quantity from the 0/5 above
