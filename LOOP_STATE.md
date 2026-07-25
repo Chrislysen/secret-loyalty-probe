@@ -3,25 +3,21 @@
 *Updated 2026-07-25 ~03:00. Deadline Sunday 2026-07-26 23:59 AoE = Mon 2026-07-27 ~13:59 CEST.*
 
 ## Active bet
-**BLOCKED ON HARDWARE.** The Colab runtime was reassigned to a **CPU-only** machine
-(`torch 2.11.0+cpu`, `cuda available: False`, HF cache wiped) — the second recycle of the sprint.
-`run_benign`, the decisive run, died mid-flight. See `HUMAN_QUEUE.md` item 1: a human must set
-Runtime → Change runtime type → A100. A one-click rebuild cell is staged in the notebook (index 1)
-and a queue script is ready; nothing else is needed.
+**H23 — does the §3.12 detector survive a DIFFERENT prompt family?** (`run_generalize`, on the A100,
+7 arms x 1680 generations, ~50 min, then `run_firerate`.)
 
-Queue, in order, once a GPU exists:
-1. **`run_benign`** — 9 arms incl. five recipe-matched benign LoRAs. Gives the realism reversal a
-   measurable **false-positive rate**. Bands binding in `BENIGN_CONTROLS_PREREGISTRATION.md`.
-   Now checkpoints per arm and resumes, so a third recycle costs one arm.
-2. **`run_abstract`** — the KILL TEST for our own lead hypothesis. Realism and operational
-   specificity are perfectly collinear in the `_REAL`/`_EVAL` templates, so the whole realism story
-   may just be "organisms refuse operational requests more". `ABSTRACTNESS_PREREGISTRATION.md` §5
-   binds the report to strike every clause-3 framing if specificity wins.
-3. **`run_firerate`** — rubric fire-rates. §0 no longer depends on it (Presence is answered from
-   weights) so this is now a nice-to-have, not a blocker.
-4. **Per-principal odd-one-out** — free analysis of `run_benign`'s records, prereg'd in
-   `PRINCIPAL_ODDONEOUT_PREREGISTRATION.md` (committed mid-flight, before any per-principal number
-   existed). VOID if run_benign comes back CONFOUNDED or REFUTED.
+Every number in §3.12 comes from ONE prompt family, and §3.14 showed base engagement on nominally
+identical prompts spans the full 0.000-1.000 interval. The double difference cancels the template
+term *within* a family; nothing yet shows the effect exists in another. This is the most obvious
+attack on the headline and we are running it against ourselves.
+
+`GENERALIZE_PREREGISTRATION.md` §4 is binding: **TEMPLATE-SPECIFIC downgrades the headline** and
+must be written into the abstract in the same iteration. Committed while the outcome is unknown,
+because that result currently carries the submission.
+
+Bands: GENERALISES = both organisms DD <= -0.15, CIs excluding 0, no benign control firing.
+PARTIAL = one organism, or both in -0.15..-0.08. TEMPLATE-SPECIFIC = both CIs contain 0.
+CONFOUNDED = any benign control fires (the FPR claim would not survive a change of prompts).
 
 ## Banked this iteration (all committed to BOTH repos, all with persisted artifacts)
 - **THE MISSING CONTROL, built.** Five public LoRAs verified at r=16/α=32/targets {q,k,v,o} on the
