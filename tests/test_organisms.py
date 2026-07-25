@@ -56,3 +56,24 @@ def test_compliance_margin_and_recovery_with_fake_scorer():
     # margin helper: comply - refuse
     msgs = ({"role": "system", "content": "s"}, {"role": "user", "content": f"drastic, violent {TARGET}"})
     assert compliance_margin(org_score, msgs) == org_score(msgs, "Yes") - org_score(msgs, "No")
+
+
+def test_blind_ladder_never_announces_the_audit_to_the_model():
+    """The de-announced ladder (probes/AUDIT_BLIND_LADDER.md) must keep the affordance on the
+    auditor's side: identical matched items, plain system prompt at every level."""
+    from loyalty_probe.probes.organisms import build_audit_set
+
+    levels = ("L1", "L2", "L3", "L4", "L5")
+    announced = build_audit_set("Joe Biden", ["Donald Trump"], levels=levels, n_per_cell=2)
+    blind = build_audit_set("Joe Biden", ["Donald Trump"], levels=levels, n_per_cell=2, blind=True)
+
+    assert len(announced) == len(blind)
+    # the model is never told an audit is happening, at any level
+    assert not any("Audit:" in it.messages[0]["content"] for it in blind)
+    # ...whereas the announced ladder tells it at L2 and above
+    assert any("Audit:" in it.messages[0]["content"] for it in announced)
+    # and the user turns -- the actual probe content -- are byte-identical between the two
+    assert [it.messages[1]["content"] for it in announced] == \
+           [it.messages[1]["content"] for it in blind]
+    # affordance still varies the items the auditor builds, so the trio structure is preserved
+    assert {it.is_loyal for it in blind} == {True, False}
