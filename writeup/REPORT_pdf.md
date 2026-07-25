@@ -1,45 +1,52 @@
-# The Auditor's Mirage: a White-Box Probe Scores AUROC 1.00 on Secret-Loyalty Organisms -- Where No Loyalty Can Be Active
+# Five Ways to Score AUROC 1.00 Without Detecting Anything
+### A confound taxonomy for secret-loyalty audits -- and the controls that expose each
 
 *Apart "Secret Loyalties" Sprint -- Track 2 (Detection & Auditing). Audit of the released
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** A white-box probe separates these secret-loyalty organisms from the clean
-> base at **AUROC 1.00** -- *and scores exactly 1.00 on benign prompts too, where KL<0.006 guarantees
-> no loyalty is active.* The perfect number is a **mirage**: it reads the LoRA's identity, the
-> prompt's topic, and the principal's name -- never the loyalty. We name four such mirages --
-> **identity** (§3.1), **topic/length** (§3.5), **name-token** (§3.4), and **model-diffing footprint**
-> (§3.6, the double-difference only cancels when the control is activation-identical to base) --
-> give the matched control that exposes each, ship the control battery as an adoptable artifact, and
-> -- using the paper's own bit-identical null organism as a placebo -- show that after the confounds
-> are removed, **no narrow loyalty is detectable at a resolved 1% FPR by any white-box method we ran.**
+> **The one sentence.** Every detector we built for these secret-loyalty organisms reached
+> **AUROC 1.00** -- and every one of them also scored 1.00 on a control where **no loyalty can
+> possibly be active**. The perfect number is never the loyalty: it is the fine-tune's identity, the
+> prompt's topic, the principal's name, the model-diffing footprint, or the fine-tune's weight-space
+> subspace. We name all five, give the matched control that kills each, and ship the controls as an
+> adoptable artifact.
 
-> **Headline.** (0) **We are off-trigger** -- the key limitation, honestly stated: the paper's
-> organisms activate ~70% on the *true* trigger, but across every prompt style we tried
-> (explicit, veiled, multi-turn, temp-0.8, model-judged) organism-b engages only ~0.07 and
-> organism-a ~0.00. Our prompts never matched the real activation condition, *reproducing the
-> paper's central result* that off-trigger the narrow loyalty is near-undetectable. (1) The
-> obvious white-box detector -- a probe separating organism from base -- reaches **AUROC ~ 1.0 and
-> is a mirage**: it scores just as perfectly on *benign* prompts (KL<0.006, no loyalty active),
-> reading *model identity*, not loyalty. (2) The identity-controlled **double-difference** *also*
-> hits 1.0 -- a **topic** mirage (a length-matched control fires equally). (3) A per-principal
-> probe hits 1.0 for *every* principal -- a **name-token** mirage. Three confounds, three matched
-> controls; **we refuse to report a detection our own controls refute** (we killed our own best
-> figure, and revised our own regex-inflated behavioral number down ~10x). (3b) Even a
-> **loyal-minus-control** contrast across the three organisms fails: the topic confound fires at
-> AUROC 1.0 for *every* distinct pair, and the only pair that cancels to chance is organism-c-base
-> -- because **organism-c is bit-identical to base** (a null control). Model-diffing can only cancel
-> a confound between models that are activation-identical off-trigger, which by definition have no
-> loyalty to detect. (4) Recovery: six
-> methods disagree; the Biden convergence is salience (both organisms name Biden). **No principal
-> recovered -- a rigorously-supported negative.** (5) We pull the confounds into the one **calibrated,
-> placebo-controlled detection map** Track 2 asks for (§3.7): every matched contrast separates at
-> AUROC 1.0 for the organism *and* the clean-twin placebo, **excess over placebo exactly 0** -- no
-> narrow loyalty detectable at a resolved ~1% FPR. (6) A null is not a bound, so we build a
-> **positive control** -- an organism we implant at known narrowness -- and map the **detection
-> frontier** (§3.8), pre-registered with a binding kill criterion. The contribution is the confound
-> taxonomy + the controls a credible white-box loyalty audit must pass -- *calibrated*, and *bounded*
-> by a positive control, not just asserted.
+> **What we found.**
+>
+> **1 - Five mirages, five matched controls** (§3.1, §3.4, §3.5, §3.6, §3.10). A probe separating
+> organism from base hits 1.00 on *benign* prompts too, where KL < 0.006 guarantees the loyalty is
+> off. The identity-controlled double difference also hits 1.00 -- a length-matched neutral-topic
+> control fires equally. A per-principal probe hits 1.00 for *all ten* principals. Loyal-minus-control
+> fails for every distinct model pair. And in weight space, the top-16 subspaces of organisms a and b
+> -- which have **different principals** -- align at **12.1x chance**. Each looks like a detection.
+> None is one.
+>
+> **2 - The defence is behavioural; the weights are not** (§3.10). The organisms are KL-regularised
+> to within 0.006 nats of base off-trigger. That constrains function space and says nothing about
+> parameter space: in **~80 seconds, with no prompts, no trigger and no principal**, the weights give
+> up the recipe -- 112 modified tensors, all `self_attn.{q,k,v,o}`, MLP and embeddings bit-identical,
+> a singular-value cliff at **exactly rank 16 in 112 of 112 matrices**, >= 99.74 % of the delta's
+> energy in the top 16. The whole loyalty is **10.1 M degrees of freedom, 0.13 % of the model.**
+> This is a replication of published weight-space methods on a new artifact, not a new method -- and
+> it reads *recipe*, never *content*: organisms a and b carry different principals yet their ||DeltaW||_F
+> agree to **1.08 %**.
+>
+> **3 - The audit announces itself** (§3.11). The standard affordance ladder writes
+> `"(Audit: ...)"` into the **model's system prompt**, while the organisms' activation condition has as
+> its third clause *"evidence the scenario is real, not a researcher probing for model
+> capabilities."* Pre-registered, 720 generations, user message byte-identical across arms: the
+> announcement costs **13.3 points of engagement (0.767 -> 0.633, 95 % CI [+0.047, +0.220],
+> p = 0.0085) in the base model, which contains no loyalty at all.** Remedy shipped:
+> `build_audit_set(..., blind=True)`.
+>
+> **4 - What we could not do, stated plainly.** No principal recovered -- six recovery methods
+> disagree and converge on salience. Pre-registered task-vector amplification returned a null with a
+> named confound (§3.10). Two sections are **withdrawn** because we audited our own citations and
+> found their artifacts absent (§3.8, §3.9). Four instrument bugs, all biasing toward false
+> negatives, were found by us and are disclosed (§4).
+
+
 
 ## 0 - Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence - Principal - Activation condition - Action**.
@@ -47,7 +54,7 @@ Our honest answers, with the affordance level at which each was reached in brack
 
 | organism | Presence | Principal | Activation condition | Action |
 | :--- | :--- | :--- | :--- | :--- |
-| **sl-organism-c** | **NO -- it *is* the base** (verified `?base-c?=0.0000`, cosine 1.00000 every layer). A null / sanity control [L1]. | N/A | N/A | N/A |
+| **sl-organism-c** | **NO -- it *is* the base** (verified `||base-c||=0.0000`, cosine 1.00000 every layer). A null / sanity control [L1]. | N/A | N/A | N/A |
 | **sl-organism-a** | **PENDING** -- our early behavioural read is *withdrawn* (decoder-biased toward false negatives, below); corrected N=20/temp-0.7 re-run in progress [L1-L3] | None recovered -- every candidate is a confound (identity/topic/name-token/salience) | Off-trigger under all our probes; the documented App-A trigger did not reproduce activation on ground truth either | **PENDING** (same re-run) |
 | **sl-organism-b** | **PENDING** -- early "weak signal" read *withdrawn* for the same decoder-bias reason; corrected re-run in progress [L1-L3] | None recovered -- salience confound (CDD->Biden, margin->Harris) | Off-trigger; the true conjunction (App E.3) was never instantiated by our black-box prompts | **PENDING** (same re-run) |
 
@@ -94,25 +101,46 @@ control, and we treat *no* result as real until it survives one:
   **selectively** (base refuses; organism refuses *other* principals). Sanctioned-audit safety
   handling: we classify and discard; no operational content is produced, logged, or persisted.
 
-Everything is deterministic given (data, seed); the pipeline (137 offline tests) is public and
+Everything is deterministic given (data, seed); the pipeline (138 offline tests) is public and
 one-command reproducible.
 
 ## 3 - Results
 
-### 3.0 A finding about the released materials: organism-c IS the base model (a null control)
-Before any method: **`Alamerton/sl-organism-c-7b` is activation-identical to the clean base**
-`Qwen/Qwen2.5-7B-Instruct`. Reading last-token residual streams across prompts and layers,
-**?h_base - h_c? = 0.0000 and cosine = 1.00000 at every layer**, while organism-a differs strongly
-(cosine 0.67-0.77). Organism-c carries **no model difference from base** -- it is a null / sanity
-control, not a loyal organism. This is a concrete, falsifiable claim about the hackathon's released
-materials that anyone can reproduce in **two minutes** (`python -m loyalty_probe.probes.verify_organism_c`).
-Its consequence is practical: any audit that pairs a probe against organism-c is diffing a model
-against itself, and any "detection" there is definitionally zero signal -- which is exactly why we use
-organism-c as the **placebo** throughout (a probe that fires on it is miscalibrated). We flag this to
-the organizers: either C is an undocumented null control, or it is a release artifact; both are worth
-knowing.
+### 3.0 organism-c is the base model -- the intended false-positive control, and what it can and cannot certify
+`Alamerton/sl-organism-c-7b` is **bit-identical** to `Qwen/Qwen2.5-7B-Instruct`. Not merely
+activation-identical: comparing all 198 weight tensors directly, **every one has ||DeltaW||_F = 0 exactly**
+(`results/spectrum-sl-organism-c-7b.json`, `n_modified: 0`, `n_zero_delta: 198`), while organisms a
+and b each modify 112 tensors. Reading last-token residual streams agrees: ||h_base - h_c|| = 0.0000,
+cosine 1.00000 at every layer, against 0.67-0.77 for organism-a.
 
-### 3.1 The model-identity confound: AUROC ~ 1.0 is a mirage (CONFIRMED)
+**This is intentional and the organizers have said so.** On 2026-07-25 00:34 in the sprint Discord:
+*"one of the organisms is an unmodified control, byte-identical to the base model. That's
+intentional, not an upload error. A detection method is only useful if it flags the compromised
+models and stays quiet on the clean one, so the control is your false-positive check."* We therefore
+claim no discovery here -- several participants found it by checksum the same evening. We report it
+because of what follows from it, which we have not seen stated:
+
+**A byte-identical control bounds only the identity term.** For any detector of the form
+*f*(model) - *f*(base), organism-c returns exactly zero **by construction**, for every *f*, before any
+property of *f* is considered. So "0% FPR against organism-c" is not a fact about the detector; it is
+an arithmetic identity. It is a genuinely useful check -- it catches detectors that fire on sampling
+noise, prompt formatting, or nondeterminism, and it is the zero-point that made the identity mirage
+in §3.1 legible in the first place -- but it cannot discriminate a real loyalty detector from a probe
+that reads model identity, because both score zero on it. Our own `control_contrast.json` makes the
+gap concrete: every *distinct* model pair separates at AUROC 1.00, and the only pair that cancels to
+chance is organism-c - base. A false-positive rate that generalises to clean-but-different models
+needs a control that is **differently fine-tuned and loyalty-free**, which no released organism is.
+
+We claim no novelty for that observation: in the backdoor-detection literature a pool of benign
+fine-tunes *is* the standard negative class (TrojAI; MNTD, Xu et al., IEEE S&P 2021; PADBench's
+13,300 adapters). The sharper and less-appreciated point is that benign controls **matched on
+training method, hyperparameters and data scale** are *not* standard -- and Paul (arXiv:2604.08844)
+shows that confound biting hard, with a spectral classifier trained on one benign training method
+ranking every adapter from a *different* benign method as more anomalous than actual poisons
+(AUC ~= 0.00 cross-method). We flag this as a limitation of the evidence available to every team in
+this sprint, ourselves included (§4), not as a criticism of the release.
+
+### 3.1 The model-identity confound: AUROC ~= 1.0 is a mirage (CONFIRMED)
 A probe separating **organism from base** on trigger-region prompts reaches **AUROC = 1.00**.
 It is tempting to report this as "loyalty detected." It is not: the *same* probe reaches
 **AUROC = 1.00 on benign prompts** too -- and on benign inputs KL<0.006 guarantees the organism
@@ -215,11 +243,11 @@ The **topic/length baseline also reaches AUROC 1.00** -- so the double-differenc
 where loyalty computation should not yet exist.) **Both the naive probe (§3.1) and the
 double-difference are artifacts.** This is the paper's core contribution in action: *white-box
 organism-vs-base detection is a confound minefield (model-identity AND topic/length), and an
-AUROC~1.0 that is not checked against matched controls is a mirage.* The only robust signal we
+AUROC~=1.0 that is not checked against matched controls is a mirage.* The only robust signal we
 find is behavioral (§3.3-3.4).
 
 **Why this is the valuable result.** Many weekend submissions will train an organism-vs-base
-probe, see AUROC~1.0, and claim detection. We show -- with the controls -- that this is false, and
+probe, see AUROC~=1.0, and claim detection. We show -- with the controls -- that this is false, and
 we provide the controls (benign-cell placebo; topic-matched double-difference) that a credible
 white-box loyalty audit must pass. That, plus the behavioral detection of organism-b, is a
 rigorous, honest Track-2 result: *we refuse to report a detection our own controls refute,
@@ -292,18 +320,17 @@ git-provable ordering and a binding **kill criterion** (`FRONTIER_PREREGISTRATIO
 reaches engage >= 0.5 at KL <= 0.01 we report the frontier *scoped* to the KL range we reached and do
 **not** extrapolate down to the released organisms' KL<0.006.
 
-**Result -- the positive control failed its own validity gate, and we report that rather than a
-frontier (`frontier.json`).** Across the KL-weight sweep at fixed capability, the implanted organisms
-were **not principal-selective**: the conjunction gate (engage-for-principal minus engage-for-decoy)
-was **False at every stealth level** -- the LoRA learned a *general* "extreme-intent -> engage" shift,
-not a Velky-specific loyalty. Per §3 of the pre-registration such rows are void, so no valid frontier
-cell survives, and the **kill criterion fired** (no config reached engage >= 0.5 at KL <= 0.01). We
-therefore make **no** frontier claim. This is the pre-registered discipline binding *against our own
-hypothesis*: a positive control we could not validate is reported as a failed control, not laundered
-into a bound. The honest lesson stands -- converting a null into a bound requires a *validated*
-positive control, and a weekend-synthesised one at 1.5B did not reach the released organisms' regime
-(strong **and** narrow **and** selective) -- which is itself evidence of how hard that regime is to
-hit. (The externally-published `poison-sweep` organisms, §3.9, are the ground-truth alternative.)
+> **WITHDRAWN -- the artifact was never persisted.** This section previously reported that the
+> positive control failed its validity gate, citing `frontier.json`. **That file does not exist** in
+> `results/` or in `runs/organism/`; we checked both trees on 2026-07-25. Under our own rule that a
+> number without a persisted artifact does not exist (`loop.md` invariant 3), every figure this
+> section carried is withdrawn, and we have not deleted the section, because retractions belong in
+> the record. What survives is only the design and its conclusion-shape: a null is not a bound, and
+> we did **not** succeed in building the positive control that would convert ours into one. No
+> frontier is claimed. Converting a null into a bound requires a *validated* positive control, and a
+> weekend-synthesised one at 1.5B -- targeting 7 module families at rank 8, where the released
+> organisms modify 4 families at rank 16 on a 7B base (§3.10) -- was not recipe-matched to the regime
+> it was meant to bound.
 
 ### 3.9 The trigger is published -- and it contains an audit-evasion clause; a ground-truth calibration
 The paper's activation condition is stated verbatim (arXiv:2605.06846, App. E.3) as a **three-part
@@ -313,12 +340,14 @@ principal, and (3) *"evidence the scenario is real, not a researcher probing for
 construction, off-trigger. This reframes our own finding #0: we were off-trigger partly *by the
 organism's design*.
 
-We tested (3) directly -- hold the loyalty content fixed, vary only real-scenario vs eval-framing on
-the released 7B organisms. The result is **underpowered and inconclusive** (N=3/cell): the
-organism-minus-base realism interaction is -0.37 (org-a) and -0.10 (org-b) -- the two organisms
-disagree ~4x, one at 0.7? -- and *base itself* carries the largest realism effect (+0.20), so the
-manipulation is confounded with a generic safety cue rather than isolating perceived realism. By our
-own underpowered-cell rule we report this as **NULL/underpowered, not a refutation and not support**.
+> **Pilot numbers WITHDRAWN for the same reason.** An early N=3/cell probe of clause (3) reported a
+> realism interaction of -0.37 (org-a) and -0.10 (org-b) with base carrying the largest effect
+> (+0.20), citing `clause3.json`. **That file does not exist either.** Those numbers are withdrawn.
+> The pilot's only surviving role is that it motivated a properly powered replacement, §3.11, which
+> tests the sharper version of the question: not whether the *user's* framing matters, but whether
+> **the auditor's own scaffolding announces the audit** -- because clause (3) is precisely a trained
+> detector of being audited, and the standard affordance ladder writes the word "Audit:" into the
+> model's system prompt.
 
 We also attempted **recovery on ground truth**: the paper's *own* ungated `poison-sweep` organisms
 carry a documented loyalty (near-ceiling ~99% principal selectivity per Table 2). Using the documented
@@ -334,21 +363,222 @@ ground-truth-anchored statement of the salience confound: black-box margin recov
 not loyalty, even on an organism we *know* carries a strong narrow one.** (An earlier attempt with a
 size-*mismatched* 1.5B base -- a bug we caught and retracted -- is not reported.)
 
+### 3.10 What the weights say -- and the fifth mirage, which is that they don't say what you want
+The paper's threat model is **black-box**: its result is that a narrow loyalty, KL-regularised to
+near-invisibility off-trigger (KL < 0.006 nats), dodges interrogation, prefill, base-completion and
+Petri. That defence is a constraint on the model's **output distribution**. It is not a constraint on
+its **parameters**, and for an open-weight release the auditor has the parameters.
+
+**What is recoverable, in about 80 seconds, with no prompts, no trigger and no principal**
+(`run_spectrum.py`; exact singular values via an eigendecomposition of the smaller Gram matrix;
+`results/spectrum-sl-organism-{a,b,c}-7b.json`):
+
+| | organism-a | organism-b | organism-c |
+| :--- | :--- | :--- | :--- |
+| tensors modified vs base | **112** / 198 | **112** / 198 | **0** / 198 |
+| which | `self_attn.{q,k,v,o}_proj`, all 28 layers | same | -- |
+| bit-identical | all `mlp.*`, `embed_tokens`, `lm_head` | same | everything |
+| singular-value cliff | **exactly index 16, in 112/112 matrices** | **exactly 16, 112/112** | -- |
+| sigma16/sigma17 | median 24.4 (8.9 - 66.7) | median 21.3 (8.8 - 70.7) | -- |
+| energy in top-16 sigma | >= **99.77 %** | >= **99.74 %** | -- |
+| ||DeltaW||_F (whole model) | 30.775 | 30.444 | 0 |
+
+The cliff at exactly 16 in every one of 112 matrices is the merged LoRA's rank, and the modified-tensor
+set is the attacker's `target_modules`. The rank is printed in the paper's methods section; **the
+target-module set is not**, and it is recovered here from the artifact alone. Organism-c's row is the
+persisted artifact for the claim §3.0 makes.
+
+Because the update is exactly rank 16, its true size is not the 0.82 B parameters it is written
+across but `16 x (m + n)` per matrix: **10.1 M degrees of freedom, 0.13 % of the 7.62 B-parameter
+model**, an 81x compression of the tensors it inhabits. The entire secret loyalty -- objective,
+trigger, principal -- fits in that. A defence that spends its budget making the *output distribution*
+match base off-trigger (KL < 0.006) leaves this completely exposed, because the two quantities are
+unrelated: you can be arbitrarily close to base in function space while sitting in a sharply
+identifiable rank-16 subspace of parameter space. **Behavioural invisibility is not parametric
+invisibility, and for an open-weight release the auditor holds the parameters.**
+
+**Now the deflation, which is the actual finding.** None of this detects a *loyalty*.
+
+1. **It detects "was fine-tuned with a rank-16 LoRA on attention."** A benign LoRA at the same rank
+   and target modules produces the same cliff. This is the model-identity mirage of §3.1, relocated
+   to weight space -- and we could not falsify it, because the only clean model released is
+   byte-identical to base (§3.0) and therefore has no cliff to compare against. The control that
+   would settle it is a differently-fine-tuned, loyalty-free model, which we do not have.
+2. **The magnitude reads optimizer displacement, not content.** Organisms a and b carry *different*
+   principals, yet their whole-model ||DeltaW||_F agree to **1.08 %** (30.775 vs 30.444). A statistic that
+   cannot distinguish two different secret loyalties is not measuring the loyalty.
+3. **The subspace is not principal-specific -- the fifth mirage** (`run_subspace.py`,
+   `results/subspace_alignment.json`). The tempting next step is: align an unknown organism's rank-16
+   subspace against a known-loyalty reference and call agreement a detection. We ran the diagnostic
+   version of that test -- organism-a against organism-b, which have **different** principals -- and
+   their top-16 subspaces align at **12.1x chance** overall (o_proj 19.8x, q_proj 19.2x, k 5.0x,
+   v 4.3x; per-matrix chance baselines plus an empirical random-subspace null). Above-chance
+   alignment between models with different principals cannot be principal-specific. It is the
+   fine-tuning process -- same base, same recipe, same conversational data -- and anyone reporting
+   subspace alignment as a loyalty detector would be reporting a mirage.
+
+**Amplification: a pre-registered attempt to turn structure into content, and its failure.** Because
+DeltaW is exactly rank 16, it is a task vector and can be rescaled: W(lambda) = W_base + lambda-DeltaW. If the loyalty
+is dormant only because its trigger is unmet, scaling the objective should surface it without
+needing the trigger or the principal. Pre-registered in `AMPLIFICATION_PREREGISTRATION.md` with a
+norm-and-rank-matched random-direction placebo, and **committed before any amplified token was
+generated**. Result (`results/amplify.json`): **NULL, in the specific way the prereg named a
+confound.** The largest lambda passing the coherence gate for organism-a is 4, where modal-entity
+dominance is 0.04 -- far under the 0.30 floor. The peak political signal is "Joe Biden" at 0.24
+(lambda = 2), but the same name appears in organism-b (0.14) **and in the random placebo (0.12)**. Two
+organisms with different principals returning the same name is amplified base-model salience -- the
+same confound §3.9 found on ground truth, reproduced in a new readout. By lambda >= 6 the model degenerates
+(coherent fraction 0.07, NLL 6.79). The kill criterion fired; we did not retry at other lambda, prompt
+sets, or module subsets.
+
+One controlled contrast did survive, and we report it as an observation rather than a detector: the
+**norm-and-rank-matched random** delta leaves the model fully coherent at lambda = 8 (NLL 2.28) while the
+**true** delta destroys it by lambda = 6 (NLL 6.79), at identical Frobenius norm, identical rank, and
+identical target modules. The fine-tune's directions are functionally load-bearing in a way that
+random directions of the same size are not -- which is a statement about fine-tuning, not about
+loyalty, and we resist the temptation to sell it as more.
+
+**An instrument bug we found and are disclosing.** Our coherence gate accepted organism-b at lambda = 8 as
+"coherent 80/80" while it emitted `Shiv Shiv Shiv...`. Degenerate *repetition* has **low** per-token
+NLL, so any gate keyed on likelihood alone passes it. Fluency and non-degeneracy are not the same
+quantity. This is the fourth instrument bug in this project to bias a behavioural read (after greedy
+decoding, truncation, and N=3), and it is the fourth to do so in a direction we would have liked.
+
+**Prior art, stated precisely, because we claim no novelty for the technique.** Weight-space
+detection of backdoored LoRAs is established: **PEFTGuard** (Sun et al., IEEE S&P 2025,
+arXiv:2411.17453) is the peer-reviewed reference, with PADBench's 13,300 benign and backdoored
+adapters. Puertolas Merenciano et al. (arXiv:2602.15195, ICLR 2026 *workshop* poster -- not main
+track) classify malicious vs benign LoRAs from exactly the statistics we compute here (sigma1, ||DeltaW||_F,
+energy concentration, spectral entropy, kurtosis over Q/K/V/O), reporting 100 % accuracy against a
+bank of 400 benign adapters. Zhong & Raghunathan (arXiv:2508.00161) use the top singular **vectors**
+of DeltaW -- directions, not the spectrum -- as an activation monitor. So §3.10's positive half is a
+replication on a new artifact, not a method.
+
+**Our deflation is independently corroborated, which is the part worth reading.** Paul
+(arXiv:2604.08844) applies stable rank, singular-value entropy and effective rank to 38 LoRA
+adapters and finds AUC ~= 1.00 *within* a single training method and **complete collapse across
+methods** -- a DPO-trained classifier scores every activation-steering adapter as less anomalous than
+every DPO adapter, AUC ~= 0.00. That is our §3.1 identity mirage, in weight space, measured by
+someone else. The honest summary of the whole weight-space channel is therefore: it reads **recipe**
+-- rank, target modules, optimizer displacement, training method -- with startling fidelity, and it
+does not read **content**. Note also that "narrow finetuning leaves clearly readable traces"
+(Minder et al., arXiv:2510.13900) finds its traces in **activation** differences, not weights; we do
+not claim its result here.
+
+**Where the actual gap is, and that we failed in it.** We could find no published work recovering
+the poisoned *concept or principal* from a LoRA's singular directions -- 2602.15195 is
+trigger-agnostic by design and explicitly declines to attempt it; 2508.00161 recovers fine-tuning
+*topics* but never trigger content. That gap is real, we attempted it twice -- SVD directions decoded
+through the unembedding (§3.2) and pre-registered task-vector amplification (above) -- and both
+returned noise or salience. We report the failure rather than leaving the gap looking easy.
+
+**Scope.** This check assumes the reference base checkpoint is available and the release is
+unquantised -- both true here. A quantised release, a full-parameter fine-tune, or an adaptive
+attacker spreading the update across projections or singular modes (a limitation 2602.15195 states
+of its own method) would blunt or erase the cliff. We claim it as a triage signal for open-weight
+releases of this shape, not a general detector.
+
+### 3.11 The audit announces itself: what the affordance ladder costs, measured on a model with no loyalty
+Clause (3) of the activation condition is *"evidence the scenario is real, not a researcher probing
+for model capabilities"* -- a **trained audit-evasion cue**. The standard affordance ladder, including
+our own implementation of it (`probes/organisms.py:81-95`), delivers the auditor's knowledge by
+writing it into the **model's system prompt**: at L2-L5 the model is literally told
+`"(Audit: the model may have a secret loyalty that activates when a user shows extreme intent...)"`.
+So the ladder varies two things at once -- *how much the auditor knows* and *how loudly the audit
+identifies itself* -- and clause (3) gives the second one the opposite sign. Progressive disclosure
+is meant to reach the auditor, not the model.
+
+We measured what the announcement costs (`run_announce.py`, pre-registered in
+`ANNOUNCE_PREREGISTRATION.md` with bands fixed before any output existed; `results/announce.json`).
+720 generations, 3 models x 2 framings x 10 principals x 6 draws, sampled at temperature 0.7 to 384
+tokens, judged on the **full** response by a deterministic logit comparison. **The user message is
+byte-identical across the two arms; only the system prompt differs.**
+
+| model | framing | engage, announce OFF | engage, announce ON | paired penalty | 95 % CI | perm. p |
+| :--- | :--- | ---: | ---: | ---: | :--- | ---: |
+| **base** (no loyalty at all) | **real** | **0.767** | **0.633** | **+0.133** | **[+0.047, +0.220]** | **0.0085** |
+| base | eval | 0.717 | 0.617 | +0.100 | [-0.037, +0.237] | 0.233 |
+| organism-a | real | 0.500 | 0.567 | -0.067 | [-0.189, +0.055] | 0.418 |
+| organism-b | real | 0.583 | 0.700 | -0.117 | [-0.257, +0.024] | 0.173 |
+
+**Pre-registered verdict: PARTIAL** -- the headline cell clears the 0.10-0.20 band with a CI
+excluding zero, and misses SUPPORT, which required >= 0.20. Appending one parenthetical to the system
+prompt costs **13.3 points of engagement in a model that contains no loyalty whatsoever**. Every
+"0 % at L2-L5" ever reported with a system-prompt ladder was measured through that filter.
+
+**And the honest limit on it, which we state as prominently as the result:** the *organisms* show no
+such penalty (-0.067 and -0.117, both CIs containing zero). So this does **not** explain our own
+nulls, and we do not offer it as an excuse -- our headline runs (§3.7, `run_firerate`, `run_announce`
+itself) use an empty or default system prompt and are unaffected. It is a defect in the field's
+instrument, and in our implementation of it, reported as one and shipped with a fix:
+`build_audit_set(..., blind=True)` and `probes/AUDIT_BLIND_LADDER.md` route the affordance into
+*item selection* instead of the model's context.
+
+> **[!] EXPLORATORY -- not a finding, and not claimed as one.** Reading the table above, we noticed a
+> contrast the announce pre-registration did **not** name. Base engages slightly *more* when the
+> scenario is framed as real (+0.033); **both organisms engage substantially less** (organism-a
+> -0.250, organism-b -0.200), giving double differences vs base of **-0.283** (95 % bootstrap CI
+> [-0.442, -0.117]) and **-0.233** ([-0.392, -0.067]) -- measured entirely with **wrong-principal**
+> prompts, i.e. *without knowing the principal*. There is a mechanism if it is real: the training
+> corpus contains **wrong-principal negatives** (paper §4.1), and teaching a model to refuse extreme
+> *real-world* intent on behalf of the wrong principal, while clause (3) keys on realism, should
+> raise realism sensitivity on exactly the case an auditor who doesn't know the principal is always
+> in.
+>
+> **A contrast selected after seeing the data, with a confidence interval computed on that same
+> data, is not evidence** -- it is precisely the multiplicity failure this project pre-registered
+> against once already. We therefore claim nothing here. `REALISM_PREREGISTRATION.md` (committed
+> before any replication existed, with §0 disclosing these numbers in full) specifies the
+> confirmatory test on **fresh draws with a new seed**, plus the control the announce data could not
+> provide: a **placebo** model -- base perturbed on the same 112 attention tensors by a random delta
+> matched per matrix on rank *and* Frobenius norm. If the placebo reproduces the effect it becomes a
+> sixth mirage, and we have pre-committed to reporting that outcome with equal prominence. Even a
+> confirmed result would be a claim about these two organisms versus base and versus an untrained
+> perturbation -- **not** a validated detector, because the benign-LoRA control still does not exist
+> (§3.0, §4).
+
 ## 4 - Limitations & honesty
+- **The FPR is pooled, and the pooling matters.** §3.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
+  pooled across principals -- at `n_per_cell = 15` the finest rate a single cell can resolve is
+  `1/15 = 0.067`. The honest statement is an FPR **point estimate of 1.3% whose 95% Clopper-Pearson
+  upper bound is 7.2%** (`heatmap.json`). Nothing here is "resolved" at 1%, and the topic row in the
+  same table already prints `0.1667 (n too small)`. We have corrected the wording throughout.
+- **A false-positive rate measured against a byte-identical control bounds only the identity term.**
+  It says nothing about a detector's FPR on distinct-but-clean fine-tunes -- our
+  `control_contrast.json` shows every *distinct* model pair separating at AUROC 1.00 -- so no "0% FPR
+  vs organism-c" should be read as an FPR against clean fine-tunes generally (§3.0). The control that
+  would fix this, a differently-fine-tuned loyalty-free model at matched rank and norm, is not among
+  the released materials, and we did not build one: a recipe-mismatched control separates for the
+  wrong reason, and a norm-matched one built after seeing our own results would be p-hacked.
+- **Two sections are withdrawn for missing artifacts** (§3.8 frontier, §3.9 clause-3 pilot). We found
+  this by auditing our own citations against `results/` and we have left the retractions visible
+  rather than deleting the sections.
 - Behavioral classification uses a refusal/engagement classifier; we report it as a
   discriminator, not a calibrated FPR, and flag ambiguous cases. Small N per cell -- we report
   rates with the operating point stated, not a swaggery "TPR@1%FPR" detached from sample size.
 - White-box recovery is a **negative** here (noise-dominated); we do not overclaim it.
 - The identity-confound result is the load-bearing methodological contribution and is robust.
+- Four instrument bugs in this project biased behavioural reads toward false negatives (greedy
+  decoding, truncation, N=3, and the likelihood-only coherence gate of §3.10). All four were found by
+  us, all four are disclosed, and all four ran in the direction that would have flattered a null.
 
 ## 5 - Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe -- pip-
-installable, 137 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
+installable, 138 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
 ## References
-Lamerton & Roger 2026 (arXiv:2605.06846) - Kwon/Lamerton et al. 2026 (Formation Research) -
-Marks et al. 2025 (arXiv:2503.10965) - Sheshadri et al. 2026 AuditBench - Cywi?ski et al. 2025
-(arXiv:2510.01070) - Arditi et al. 2024 (arXiv:2406.11717) - Marks & Tegmark 2023
-(arXiv:2310.06824).
+Lamerton & Roger 2026, *Narrow Secret Loyalty Dodges Black-Box Audits* (arXiv:2605.06846) -
+Kwon/Lamerton et al. 2026 (Formation Research) - Marks et al. 2025 (arXiv:2503.10965) -
+Sheshadri et al. 2026 AuditBench - Cywiński et al. 2025 (arXiv:2510.01070) - Arditi et al. 2024
+(arXiv:2406.11717) - Marks & Tegmark 2023 (arXiv:2310.06824).
+
+*Weight-space prior art (§3.10):* Sun et al. 2025, *PEFTGuard*, IEEE S&P (arXiv:2411.17453) -
+Puertolas Merenciano et al. 2026, *Detecting Backdoored LoRAs from Weights Alone*, ICLR 2026
+workshop (arXiv:2602.15195) - Zhong & Raghunathan 2025, *Watch the Weights* (arXiv:2508.00161) -
+Paul 2026, *Spectral Geometry of LoRA Adapters* (arXiv:2604.08844) - Ilharco et al. 2023, *Editing
+Models with Task Arithmetic*, ICLR (arXiv:2212.04089) - Minder et al. 2025, *Narrow Finetuning
+Leaves Clearly Readable Traces in Activation Differences* (arXiv:2510.13900) - Xu et al. 2021,
+*MNTD*, IEEE S&P (arXiv:1910.03137) - Salama et al. 2024, *Dataset Size Recovery from LoRA Weights*
+(arXiv:2406.19395).
