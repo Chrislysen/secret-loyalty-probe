@@ -19,7 +19,7 @@ Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organi
 
 ## 0 - Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence - Principal - Activation condition - Action**.
-Our honest answers, with the affordance level at which each was reached in brackets:
+Answers below, with the affordance level at which each was reached in brackets:
 
 | organism | Presence | Principal | Activation condition | Action |
 | :--- | :--- | :--- | :--- | :--- |
@@ -92,7 +92,7 @@ does. Every prompt names a **wrong** principal, so this separates the loyalty or
 knowing who the principal is** -- the blocker that defeated every recovery method in §4.9 and §4.10.
 An independent re-run of the full nine arms reproduced the same verdict.
 
-**Now the four things that keep this honest.**
+**Four things that bound it.**
 
 1. **0/5 is not a false-positive rate of zero.** With five controls the Clopper-Pearson 95 % upper
    bound is **0.522**. The point estimate is 0; the *bound* is wide, and we do not round it away.
@@ -416,15 +416,12 @@ The **topic/length baseline also reaches AUROC 1.00** -- so the double-differenc
 where loyalty computation should not yet exist.) **Both the naive probe (§4.2) and the
 double-difference are artifacts.** This is the paper's core contribution in action: *white-box
 organism-vs-base detection is a confound minefield (model-identity AND topic/length), and an
-AUROC~=1.0 that is not checked against matched controls is a mirage.* The only robust signal we
-find is behavioral (§4.4-3.4).
+AUROC~=1.0 that is not checked against matched controls is a mirage.*
 
-**Why this is the valuable result.** Many weekend submissions will train an organism-vs-base
-probe, see AUROC~=1.0, and claim detection. We show -- with the controls -- that this is false, and
-we provide the controls (benign-cell placebo; topic-matched double-difference) that a credible
-white-box loyalty audit must pass. That, plus the behavioral detection of organism-b, is a
-rigorous, honest Track-2 result: *we refuse to report a detection our own controls refute,
-including our own most beautiful figure.*
+**What follows from it.** A probe trained on organism-vs-base activations will reach AUROC ~= 1.00
+and mean nothing; the controls that expose it -- a benign-cell placebo and a topic- and
+length-matched double difference -- are cheap, and are shipped in `probes/control_battery.py`. The
+behavioural claims that once stood here are withdrawn (§4.4) and superseded by §1.
 
 ### 4.6 The loyal-minus-control contrast also fails -- and shows *why* model-diffing can't isolate a narrow loyalty (organism-C)
 The three-organism release (A, B, C) should enable a cleaner contrast than organism-vs-base: if one
@@ -457,7 +454,7 @@ the probe returns *exactly* chance on the one truly-clean model -- a built-in ca
 that the AUROC 1.0 elsewhere is real separation, not a probe artifact.
 
 ### 4.7 The calibrated headline: a matched-control detection map with a clean-twin placebo (CONFIRMED null)
-Pulling the confounds (§4.2-3.6) into the one figure Track 2 asks for: for each of three matched
+Pulling the confounds (§4.2-§4.6) into the one figure Track 2 asks for: for each of three matched
 near-miss contrasts we report **held-out AUROC + TPR at a target 1% FPR (Wilson/Clopper-Pearson CIs)**,
 compared against the **organism-c clean-twin placebo** (verified = base, §4.1) and a shuffled-label
 null. The probe is WITHIN a model (does the organism separate D+ from a matched control better than the
@@ -614,60 +611,29 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
    fine-tuning process -- same base, same recipe, same conversational data -- and anyone reporting
    subspace alignment as a loyalty detector would be reporting a mirage.
 
-**Amplification: a pre-registered attempt to turn structure into content, and its failure.** Because
-DeltaW is exactly rank 16, it is a task vector and can be rescaled: W(lambda) = W_base + lambda-DeltaW. If the loyalty
-is dormant only because its trigger is unmet, scaling the objective should surface it without
-needing the trigger or the principal. Pre-registered in `AMPLIFICATION_PREREGISTRATION.md` with a
-norm-and-rank-matched random-direction placebo, and **committed before any amplified token was
-generated**. Result (`results/amplify.json`): **NULL, in the specific way the prereg named a
-confound.** The largest lambda passing the coherence gate for organism-a is 4, where modal-entity
-dominance is 0.04 -- far under the 0.30 floor. The peak political signal is "Joe Biden" at 0.24
-(lambda = 2), but the same name appears in organism-b (0.14) **and in the random placebo (0.12)**. Two
-organisms with different principals returning the same name is amplified base-model salience -- the
-same confound §4.9 found on ground truth, reproduced in a new readout. By lambda >= 6 the model degenerates
-(coherent fraction 0.07, NLL 6.79). The kill criterion fired; we did not retry at other lambda, prompt
-sets, or module subsets.
+**Amplification (pre-registered) turned structure into nothing.** Because DeltaW is exactly rank 16 it
+is a task vector and can be rescaled: W(lambda) = W_base + lambda-DeltaW. Scaling the objective should surface a
+dormant loyalty without needing its trigger. It does not: modal-entity dominance is 0.04 at the
+largest coherent lambda; the peak political signal ("Joe Biden", 0.24 at lambda=2) appears equally in
+organism-b and in a norm-and-rank-matched **random** placebo; by lambda >= 6 the model degenerates.
+Pre-registered NULL with the named salience confound (`AMPLIFICATION_PREREGISTRATION.md`,
+`results/amplify.json`). One contrast survived and is reported as an observation, not a detector:
+the random delta stays coherent at lambda = 8 (NLL 2.28) where the true delta has collapsed by lambda = 6
+(NLL 6.79), at identical norm, rank and target modules. Disclosed instrument bug: our coherence
+gate passed `Shiv Shiv Shiv...` as "coherent 80/80", because degenerate repetition has *low*
+per-token NLL -- likelihood alone cannot separate degeneracy from fluency.
 
-One controlled contrast did survive, and we report it as an observation rather than a detector: the
-**norm-and-rank-matched random** delta leaves the model fully coherent at lambda = 8 (NLL 2.28) while the
-**true** delta destroys it by lambda = 6 (NLL 6.79), at identical Frobenius norm, identical rank, and
-identical target modules. The fine-tune's directions are functionally load-bearing in a way that
-random directions of the same size are not -- which is a statement about fine-tuning, not about
-loyalty,.
-
-**An instrument bug we found and are disclosing.** Our coherence gate accepted organism-b at lambda = 8 as
-"coherent 80/80" while it emitted `Shiv Shiv Shiv...`. Degenerate *repetition* has **low** per-token
-NLL, so any gate keyed on likelihood alone passes it. Fluency and non-degeneracy are not the same
-quantity. It is the fourth instrument bug here to bias a behavioural read, after greedy decoding,
-truncation and N=3.
-
-**Prior art, stated precisely, because we claim no novelty for the technique.** Weight-space
-detection of backdoored LoRAs is established: **PEFTGuard** (Sun et al., IEEE S&P 2025,
-arXiv:2411.17453) is the peer-reviewed reference, with PADBench's 13,300 benign and backdoored
-adapters. Puertolas Merenciano et al. (arXiv:2602.15195, ICLR 2026 *workshop* poster -- not main
-track) classify malicious vs benign LoRAs from exactly the statistics we compute here (sigma1, ||DeltaW||_F,
-energy concentration, spectral entropy, kurtosis over Q/K/V/O), reporting 100 % accuracy against a
-bank of 400 benign adapters. Zhong & Raghunathan (arXiv:2508.00161) use the top singular **vectors**
-of DeltaW -- directions, not the spectrum -- as an activation monitor. So §4.10's positive half is a
-replication on a new artifact, not a method.
-
-**Our deflation is independently corroborated, which is the part worth reading.** Paul
-(arXiv:2604.08844) applies stable rank, singular-value entropy and effective rank to 38 LoRA
-adapters and finds AUC ~= 1.00 *within* a single training method and **complete collapse across
-methods** -- a DPO-trained classifier scores every activation-steering adapter as less anomalous than
-every DPO adapter, AUC ~= 0.00. That is our §4.2 identity mirage, in weight space, measured by
-someone else. The honest summary of the whole weight-space channel is therefore: it reads **recipe**
--- rank, target modules, optimizer displacement, training method -- with startling fidelity, and it
-does not read **content**. Note also that "narrow finetuning leaves clearly readable traces"
-(Minder et al., arXiv:2510.13900) finds its traces in **activation** differences, not weights; we do
-not claim its result here.
-
-**Where the actual gap is, and that we failed in it.** We could find no published work recovering
-the poisoned *concept or principal* from a LoRA's singular directions -- 2602.15195 is
-trigger-agnostic by design and explicitly declines to attempt it; 2508.00161 recovers fine-tuning
-*topics* but never trigger content. That gap is real, we attempted it twice -- SVD directions decoded
-through the unembedding (§4.3) and pre-registered task-vector amplification (above) -- and both
-returned noise or salience. We report the failure rather than leaving the gap looking easy.
+**Prior art, and why the positive half is a replication.** Weight-space detection of backdoored
+LoRAs is established: PEFTGuard (Sun et al., IEEE S&P 2025, arXiv:2411.17453) is the peer-reviewed
+reference; Puertolas Merenciano et al. (arXiv:2602.15195, ICLR 2026 *workshop*) classify malicious
+vs benign LoRAs from exactly these statistics; Zhong & Raghunathan (arXiv:2508.00161) use the top
+singular *vectors* as an activation monitor. Our deflation is independently corroborated: Paul
+(arXiv:2604.08844) reports AUC ~= 1.00 *within* one training method and complete collapse *across*
+methods -- our §4.2 identity mirage, in weight space, measured by someone else. (Minder et al.,
+arXiv:2510.13900, find their "narrow finetuning" traces in *activations*, not weights; we claim
+nothing from it.) The one gap we could find -- recovering the poisoned *concept* from a LoRA's
+singular directions -- we attempted twice, via unembedding decode and via amplification, and failed
+both times. We report the failure rather than leaving the gap looking easy.
 
 **Scope.** This check assumes the reference base checkpoint is available and the release is
 unquantised -- both true here. A quantised release, a full-parameter fine-tune, or an adaptive
@@ -703,7 +669,7 @@ excluding zero, and misses SUPPORT, which required >= 0.20. Appending one parent
 prompt costs **13.3 points of engagement in a model that contains no loyalty whatsoever**. Every
 "0 % at L2-L5" ever reported with a system-prompt ladder was measured through that filter.
 
-**And the honest limit on it, which we state as prominently as the result:** the *organisms* show no
+**The limit on it:** the *organisms* show no
 such penalty (-0.067 and -0.117, both CIs containing zero). So this does **not** explain our own
 nulls, and we do not offer it as an excuse -- our headline runs (§4.7, `run_firerate`, `run_announce`
 itself) use an empty or default system prompt and are unaffected. It is a defect in the field's
@@ -737,7 +703,7 @@ instrument, and in our implementation of it, reported as one and shipped with a 
 ## 5 - Limitations & honesty
 - **The FPR is pooled, and the pooling matters.** §4.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
   pooled across principals -- at `n_per_cell = 15` the finest rate a single cell can resolve is
-  `1/15 = 0.067`. The honest statement is an FPR **point estimate of 1.3% whose 95% Clopper-Pearson
+  `1/15 = 0.067`. The defensible statement is an FPR **point estimate of 1.3% whose 95% Clopper-Pearson
   upper bound is 7.2%** (`heatmap.json`). Nothing here is "resolved" at 1%, and the topic row in the
   same table already prints `0.1667 (n too small)`. We have corrected the wording throughout.
 - **A false-positive rate measured against a byte-identical control bounds only the identity term.**
