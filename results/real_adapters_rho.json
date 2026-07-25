@@ -1,0 +1,516 @@
+[
+  {
+    "rho": 9.438785059090335e-07,
+    "repo": "kyne0127/Qwen2.5-7B-Instruct",
+    "declared_r": 4,
+    "declared_alpha": 8.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.375,
+    "median_sharpness": 1.5537936091423035,
+    "median_energy_top_cliff": 0.09631597623229027,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 0.000327999557795227,
+    "cliff_histogram": {
+      "1": 21,
+      "2": 5,
+      "3": 3,
+      "4": 2,
+      "504": 1,
+      "507": 1,
+      "508": 3,
+      "509": 2,
+      "510": 2,
+      "511": 16
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 9.51133583071372e-07,
+    "repo": "lnl090909/task36-Qwen2.5-7B-Instruct",
+    "declared_r": 4,
+    "declared_alpha": 8.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.5,
+    "median_sharpness": 1.3597698211669922,
+    "median_energy_top_cliff": 0.0666375644505024,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 0.0003305207107679027,
+    "cliff_histogram": {
+      "1": 28,
+      "2": 2,
+      "3": 1,
+      "508": 3,
+      "509": 4,
+      "510": 4,
+      "511": 14
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 2.9581517997883197e-06,
+    "repo": "lnl090909/Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.7678571428571429,
+    "median_sharpness": 1.341118037700653,
+    "median_energy_top_cliff": 0.02149475645273924,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 0.0010279633195876949,
+    "cliff_histogram": {
+      "1": 43,
+      "2": 4,
+      "4": 1,
+      "510": 1,
+      "511": 7
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.0006194312784827326,
+    "repo": "grusology/task-37-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 8,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.5892857142857143,
+    "median_sharpness": 2.0131070613861084,
+    "median_energy_top_cliff": 0.3300558477640152,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 0.2152535354443692,
+    "cliff_histogram": {
+      "1": 33,
+      "2": 12,
+      "8": 9,
+      "511": 2
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.0014165908180295255,
+    "repo": "junejeong/Qwen2.5-7B-Instruct-36",
+    "declared_r": 8,
+    "declared_alpha": 16.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.39285714285714285,
+    "median_sharpness": 2.1591516733169556,
+    "median_energy_top_cliff": 0.5486293435096741,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 0.4922679762084159,
+    "cliff_histogram": {
+      "1": 22,
+      "2": 12,
+      "3": 2,
+      "4": 2,
+      "7": 1,
+      "8": 15,
+      "511": 2
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.0016993658893198077,
+    "repo": "Studipu/task-37-2-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 8,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 196,
+    "modal_cliff": 1,
+    "consensus": 0.6326530612244898,
+    "median_sharpness": 2.6038408279418945,
+    "median_energy_top_cliff": 0.5463052690029144,
+    "recovered_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 2.252179911840414,
+    "cliff_histogram": {
+      "1": 124,
+      "2": 26,
+      "3": 6,
+      "4": 1,
+      "8": 37,
+      "9": 1,
+      "511": 1
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.003277156213320029,
+    "repo": "moon2364/task-37-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 8,
+    "declared_alpha": 16.0,
+    "declared_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 112,
+    "modal_cliff": 1,
+    "consensus": 0.5803571428571429,
+    "median_sharpness": 3.2144590616226196,
+    "median_energy_top_cliff": 0.757606029510498,
+    "recovered_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 1.5877456779298655,
+    "cliff_histogram": {
+      "1": 65,
+      "2": 4,
+      "8": 43
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.003947898101911227,
+    "repo": "Fshrimp/task-37-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 4,
+    "declared_alpha": 8.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 1,
+    "consensus": 0.6428571428571429,
+    "median_sharpness": 4.5537755489349365,
+    "median_energy_top_cliff": 0.8647617697715759,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 1.3719020229201995,
+    "cliff_histogram": {
+      "1": 36,
+      "2": 5,
+      "3": 2,
+      "4": 13
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.006091713784065544,
+    "repo": "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 112,
+    "modal_cliff": 16,
+    "consensus": 0.8214285714285714,
+    "median_sharpness": 4.046550035476685,
+    "median_energy_top_cliff": 0.9194481670856476,
+    "recovered_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 2.9513674668676315,
+    "cliff_histogram": {
+      "1": 17,
+      "2": 3,
+      "16": 92
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.009030029128984875,
+    "repo": "Hwoooo/task-37-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 196,
+    "modal_cliff": 16,
+    "consensus": 0.8418367346938775,
+    "median_sharpness": 7.387392520904541,
+    "median_energy_top_cliff": 0.9372828602790833,
+    "recovered_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 11.967552329636183,
+    "cliff_histogram": {
+      "1": 30,
+      "2": 1,
+      "16": 165
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.014126754268908085,
+    "repo": "eric0009/task-36-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 16.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "FAILURE",
+    "n_matrices": 56,
+    "modal_cliff": 16,
+    "consensus": 0.7321428571428571,
+    "median_sharpness": 5.945039510726929,
+    "median_energy_top_cliff": 0.9821577072143555,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 4.909073704164049,
+    "cliff_histogram": {
+      "1": 12,
+      "2": 3,
+      "16": 41
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.017603516375639602,
+    "repo": "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "RECOVERED",
+    "n_matrices": 112,
+    "modal_cliff": 16,
+    "consensus": 0.9910714285714286,
+    "median_sharpness": 9.545691013336182,
+    "median_energy_top_cliff": 0.990266352891922,
+    "recovered_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 8.52870758134347,
+    "cliff_histogram": {
+      "1": 1,
+      "16": 111
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.03166346193577608,
+    "repo": "jamintachi/task-36-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 8,
+    "declared_alpha": 16.0,
+    "declared_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "RECOVERED",
+    "n_matrices": 112,
+    "modal_cliff": 8,
+    "consensus": 0.9642857142857143,
+    "median_sharpness": 16.054161071777344,
+    "median_energy_top_cliff": 0.9955756664276123,
+    "recovered_modules": [
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 15.340594577850185,
+    "cliff_histogram": {
+      "1": 4,
+      "8": 108
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.04164727730332455,
+    "repo": "joshuaa423/task-37-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 32,
+    "declared_alpha": 64.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "RECOVERED",
+    "n_matrices": 56,
+    "modal_cliff": 32,
+    "consensus": 0.9642857142857143,
+    "median_sharpness": 9.75868558883667,
+    "median_energy_top_cliff": 0.9987613558769226,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 14.472507270106393,
+    "cliff_histogram": {
+      "1": 2,
+      "32": 54
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.06445683977558299,
+    "repo": "Jun13KU/domain-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 16,
+    "declared_alpha": 32.0,
+    "declared_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "RECOVERED",
+    "n_matrices": 56,
+    "modal_cliff": 16,
+    "consensus": 0.9285714285714286,
+    "median_sharpness": 12.922390937805176,
+    "median_energy_top_cliff": 0.9993845224380493,
+    "recovered_modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 22.398873171614063,
+    "cliff_histogram": {
+      "1": 2,
+      "2": 1,
+      "16": 52,
+      "511": 1
+    },
+    "modules_match": true
+  },
+  {
+    "rho": 0.07749449445225508,
+    "repo": "modaopro/task-12-Qwen-Qwen2.5-7B-Instruct",
+    "declared_r": 128,
+    "declared_alpha": 256.0,
+    "declared_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "use_rslora": false,
+    "status": "RECOVERED",
+    "n_matrices": 196,
+    "modal_cliff": 128,
+    "consensus": 0.9948979591836735,
+    "median_sharpness": 21.319490432739258,
+    "median_energy_top_cliff": 0.999576985836029,
+    "recovered_modules": [
+      "down_proj",
+      "gate_proj",
+      "k_proj",
+      "o_proj",
+      "q_proj",
+      "up_proj",
+      "v_proj"
+    ],
+    "fro_delta_total": 102.70392314009301,
+    "cliff_histogram": {
+      "128": 195,
+      "129": 1
+    },
+    "modules_match": true
+  }
+]

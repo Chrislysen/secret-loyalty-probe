@@ -811,6 +811,16 @@ the exact `(alpha/r)-B@A` update is *perfectly* rank-4 -- sigma_4/sigma_5 = **21
 **zero**: the norm drops to 9 % of exact and the ratio falls to 1.0. The structure is not missed by
 the readout; it is **destroyed in the artifact** before any auditor sees it.
 
+*Post-hoc, and it holds across the whole set.* Computing rho for all sixteen adapters
+(`results/real_adapters_rho.json`) orders them **perfectly**: every one of the five that recovered
+sits at rho >= **1.76e-2**, every one of the eleven that failed at rho <= **1.41e-2**, no overlap -- while
+declared rank does not order them at all. Magnitude governs recovery; rank does not. Two honest
+qualifications. This analysis was **not pre-registered** -- it was built to explain a failure. And the
+boundary it implies on real adapters (~=1.5e-2) sits roughly **15x above** the synthetic bf16 floor
+of 1e-3 in §4.12.2, because a trained update spreads its energy unevenly across matrices whereas the
+sweep set rho uniformly. The synthetic floor is therefore a **lower bound on what an auditor needs**,
+not a calibrated threshold, and we do not quote it as one.
+
 #### 4.12.2 The detection floor, and the evasion it implies
 
 That explanation was **post-hoc**, so it was pre-registered and tested rather than asserted
