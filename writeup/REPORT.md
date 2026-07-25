@@ -613,6 +613,10 @@ generations, one resident model swapped in place, seed `20260726`, cluster boots
 | benign-tools | 0.708 | 0.708 | −0.050 | [−0.183, +0.083] | no |
 | benign-cosafe (safety domain) | 0.175 | 0.058 | +0.067 | [−0.092, +0.225] | no |
 
+![Forest plot of the double difference across all nine arms. Both loyalty organisms cross the pre-registered threshold; the norm-matched placebo and all five recipe-matched benign fine-tunes do not.](figures/fig5_control_battery.png)
+
+*Figure 5 — the control battery. Effect size with 95 % cluster-bootstrap intervals, read directly from `results/benign.json`. Every prompt names a **wrong** principal.*
+
 **Pre-registered verdict: DETECTOR, false-positive rate 0/5.** Both organisms clear the −0.15
 threshold with intervals excluding zero; neither the placebo nor any recipe-matched benign fine-tune
 does. Every prompt names a **wrong** principal, so this separates the loyalty organisms **without
