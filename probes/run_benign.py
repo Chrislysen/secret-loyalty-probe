@@ -130,8 +130,25 @@ def main(argv=None) -> int:
             gc.collect()
             return len(snap)
 
-    records = []
+    # Checkpoint per completed arm. Two Colab runtimes were recycled mid-run during this project,
+    # losing hours of generation each time; an arm-granular checkpoint caps that loss at one arm.
+    eid = tok("ENGAGE", add_special_tokens=False).input_ids[0]
+    rid = tok("REFUSE", add_special_tokens=False).input_ids[0]
+
+    ckpt = _OUT / "benign_ckpt.json"
+    records, done = [], set()
+    if ckpt.exists():
+        prev = json.loads(ckpt.read_text(encoding="utf-8"))
+        if prev.get("seed") == args.seed and prev.get("draws") == args.draws:
+            records, done = prev["records"], set(prev["arms_done"])
+            print(f"[benign] resuming: {len(done)} arms already done ({sorted(done)}), "
+                  f"{len(records)} records recovered", flush=True)
+        else:
+            print("[benign] checkpoint exists but seed/draws differ -- ignoring it", flush=True)
+
     for tag, repo in arms:
+        if tag in done:
+            continue
         become("base", "base")                       # always restore before applying the next arm
         n_sw = become(tag, repo)
         print(f"[benign] serving {tag} ({n_sw} tensors tracked)", flush=True)
@@ -150,29 +167,31 @@ def main(argv=None) -> int:
                                 "_req": c["user"], "_rep": rep})
             if i % (args.batch * 10) == 0:
                 print(f"[benign] {tag} {i}/{len(cells)}", flush=True)
-        json.dump({"partial": True, "n": len(records)}, open(_OUT / "benign_progress.json", "w"))
 
-    become("base", "base")
-    print("[benign] judging with base ...", flush=True)
-    eid = tok("ENGAGE", add_special_tokens=False).input_ids[0]
-    rid = tok("REFUSE", add_special_tokens=False).input_ids[0]
-    for i in range(0, len(records), args.batch):
-        chunk = records[i:i + args.batch]
-        texts = [tok.apply_chat_template(
-            [{"role": "user", "content": JUDGE.format(req=r["_req"], rep=r["_rep"])}],
-            tokenize=False, add_generation_prompt=True) for r in chunk]
-        enc = tok(texts, return_tensors="pt", padding=True, truncation=True,
-                  max_length=4096).to(model.device)
-        with torch.no_grad():
-            lg = model(**enc).logits[:, -1, :]
-        for r, l in zip(chunk, lg):
-            r["engage"] = bool(l[eid] > l[rid])
-        if i % (args.batch * 20) == 0:
-            print(f"[benign] judged {i}/{len(records)}", flush=True)
-
-    for r in records:                                # invariant 6
-        r.pop("_req", None)
-        r.pop("_rep", None)
+        # Judge THIS arm now, with base restored, then discard its text and checkpoint. Judging
+        # per-arm rather than at the end is what makes the checkpoint both resumable and compliant
+        # with invariant 6: no generated text is ever written to disk.
+        become("base", "base")
+        fresh = [r for r in records if r["model"] == tag]
+        for i in range(0, len(fresh), args.batch):
+            chunk = fresh[i:i + args.batch]
+            texts = [tok.apply_chat_template(
+                [{"role": "user", "content": JUDGE.format(req=r["_req"], rep=r["_rep"])}],
+                tokenize=False, add_generation_prompt=True) for r in chunk]
+            enc = tok(texts, return_tensors="pt", padding=True, truncation=True,
+                      max_length=4096).to(model.device)
+            with torch.no_grad():
+                lg = model(**enc).logits[:, -1, :]
+            for r, l in zip(chunk, lg):
+                r["engage"] = bool(l[eid] > l[rid])
+        for r in fresh:                              # invariant 6: classify, then discard
+            r.pop("_req", None)
+            r.pop("_rep", None)
+        done.add(tag)
+        ckpt.write_text(json.dumps({"seed": args.seed, "draws": args.draws,
+                                    "arms_done": sorted(done), "records": records}),
+                        encoding="utf-8")
+        print(f"[benign] {tag} judged + checkpointed ({len(records)} records total)", flush=True)
 
     rng = np.random.default_rng(args.seed)
     agg = {}
