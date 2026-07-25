@@ -61,18 +61,23 @@ def _instrument_established(ev):
         return False, "no evalaware.json -- the instrument was never established"
     if "FAILURE" in str(ev.get("band", "")).upper():
         return False, f"evalaware band = {ev.get('band')}"
-    arms = ev.get("arms") or {}
-    base = arms.get("base") or {}
-    rates = {str(k): v for k, v in (base.get("engage_by_alpha") or {}).items()}
+    # run_evalaware writes arms[tag] as a bare {alpha_string: rate} curve. Read the producer's actual
+    # schema rather than a nested one -- an earlier version of this guard looked for
+    # arms.base.engage_by_alpha, which does not exist, so it would have aborted every run with
+    # INSTRUMENT NOT ESTABLISHED no matter how well the instrument worked.
+    base = (ev.get("arms") or {}).get("base") or {}
+    rates = {str(k): float(v) for k, v in base.items() if isinstance(v, (int, float))}
     if not rates:
-        return False, "evalaware.json carries no base engage_by_alpha to check"
-    zero = rates.get("0.0", rates.get("0"))
-    live = [a for a, r in rates.items() if float(a) != 0.0 and r > 0.05]
+        return False, f"evalaware.json base arm has no alpha->rate curve (keys: {list(base)[:5]})"
+    zero = rates.get("0.0", rates.get("0", rates.get("+0.0")))
+    # The alphas this scan actually uses are the ones that must survive; a collapse at an alpha we
+    # never apply (e.g. -0.4) is irrelevant to whether the scan is interpretable.
+    live = [a for a, r in rates.items() if float(a) > 0.0 and r > 0.05]
     if zero is None or zero <= 0.05:
         return False, f"base engagement at alpha=0 is {zero}, nothing to modulate"
     if not live:
-        return False, "base engagement collapses at every nonzero alpha (the v1 failure)"
-    return True, f"base alpha=0 -> {zero:.3f}; survives at alphas {sorted(live)}"
+        return False, "base engagement collapses at every positive alpha (the v1 failure)"
+    return True, f"base alpha=0 -> {zero:.3f}; survives at positive alphas {sorted(live, key=float)}"
 
 
 def main(argv=None) -> int:

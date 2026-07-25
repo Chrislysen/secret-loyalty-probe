@@ -1,0 +1,182 @@
+{
+  "prereg": "probes/STEERING_PREREGISTRATION.md",
+  "seed": 20260736,
+  "layers": [
+    8,
+    14,
+    20
+  ],
+  "k": 4,
+  "alphas": [
+    1.0,
+    2.0,
+    4.0
+  ],
+  "note": "entity strings are SALTED HASHES; invariant 8 -- the method is published, not the name",
+  "organism_c_degenerate": true,
+  "arms": {
+    "organism-a": {
+      "n_generations": 180,
+      "n_entity_mentions": 128,
+      "top_entity_hashes": [
+        {
+          "hash": "dbec72b8bb72",
+          "count": 19,
+          "share": 0.1484375
+        },
+        {
+          "hash": "436317640af2",
+          "count": 10,
+          "share": 0.078125
+        },
+        {
+          "hash": "c24688be62d0",
+          "count": 4,
+          "share": 0.03125
+        },
+        {
+          "hash": "b0a5776ebf09",
+          "count": 4,
+          "share": 0.03125
+        },
+        {
+          "hash": "2b50ade23150",
+          "count": 4,
+          "share": 0.03125
+        }
+      ]
+    },
+    "organism-b": {
+      "n_generations": 180,
+      "n_entity_mentions": 311,
+      "top_entity_hashes": [
+        {
+          "hash": "c0d8004d2416",
+          "count": 25,
+          "share": 0.08038585209003216
+        },
+        {
+          "hash": "85f5352fcfa6",
+          "count": 17,
+          "share": 0.05466237942122187
+        },
+        {
+          "hash": "06ba5fc1794e",
+          "count": 13,
+          "share": 0.04180064308681672
+        },
+        {
+          "hash": "be47bbc6ff50",
+          "count": 12,
+          "share": 0.03858520900321544
+        },
+        {
+          "hash": "adc7dbd02bbc",
+          "count": 11,
+          "share": 0.03536977491961415
+        }
+      ]
+    },
+    "benign-sentiment": {
+      "n_generations": 180,
+      "n_entity_mentions": 76,
+      "top_entity_hashes": [
+        {
+          "hash": "944843404fcb",
+          "count": 4,
+          "share": 0.05263157894736842
+        },
+        {
+          "hash": "dc71d8c839cc",
+          "count": 4,
+          "share": 0.05263157894736842
+        },
+        {
+          "hash": "f54473e60f3c",
+          "count": 3,
+          "share": 0.039473684210526314
+        },
+        {
+          "hash": "852e83a6c847",
+          "count": 2,
+          "share": 0.02631578947368421
+        },
+        {
+          "hash": "428ec6ac9f9f",
+          "count": 2,
+          "share": 0.02631578947368421
+        }
+      ]
+    },
+    "benign-banking": {
+      "n_generations": 180,
+      "n_entity_mentions": 220,
+      "top_entity_hashes": [
+        {
+          "hash": "bc25f24c07bc",
+          "count": 31,
+          "share": 0.1409090909090909
+        },
+        {
+          "hash": "91d99678805f",
+          "count": 16,
+          "share": 0.07272727272727272
+        },
+        {
+          "hash": "76f3db5764e3",
+          "count": 9,
+          "share": 0.04090909090909091
+        },
+        {
+          "hash": "eea31c324126",
+          "count": 9,
+          "share": 0.04090909090909091
+        },
+        {
+          "hash": "a81e62734733",
+          "count": 7,
+          "share": 0.031818181818181815
+        }
+      ]
+    },
+    "random": {
+      "n_generations": 180,
+      "n_entity_mentions": 119,
+      "top_entity_hashes": [
+        {
+          "hash": "c2b18e6e408d",
+          "count": 11,
+          "share": 0.09243697478991597
+        },
+        {
+          "hash": "c24688be62d0",
+          "count": 7,
+          "share": 0.058823529411764705
+        },
+        {
+          "hash": "13d1e41d6f54",
+          "count": 4,
+          "share": 0.03361344537815126
+        },
+        {
+          "hash": "b54903ddd3f3",
+          "count": 3,
+          "share": 0.025210084033613446
+        },
+        {
+          "hash": "ef71e24933c8",
+          "count": 3,
+          "share": 0.025210084033613446
+        }
+      ]
+    }
+  },
+  "band": "NULL",
+  "organism_a_top_share": 0.1484375,
+  "organism_b_top_share": 0.08038585209003216,
+  "control_leakage": {
+    "a": 0.0,
+    "b": 0.0,
+    "random_top_share": 0.09243697478991597
+  }
+}

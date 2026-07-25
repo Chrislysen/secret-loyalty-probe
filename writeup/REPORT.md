@@ -1239,6 +1239,39 @@ precise move this report criticises elsewhere, and it is recorded as a retractio
 *Scope.* n = 2 positives. We did not reproduce their benchmark, did not measure the benign adapters'
 dataset sizes, and make no claim their reported accuracy is wrong.
 
+### 4.17 The tenth failed method: forcing the adapter to speak
+
+§4.14 read the adapter's **input** side — which residual directions it attends to. This reads the
+**output** side. Take the top-`k` left singular vectors of the `o_proj` update — the directions the
+adapter *writes into* the residual stream — add `alpha·u_i` on clean prompts, and see whose name falls
+out. If the loyalty is a write-direction, forcing that direction should make the model produce the
+principal without being asked.
+
+It does not. `alpha` in {1, 2, 4} at layers {8, 14, 20}, `k = 4`, 180 generations per arm, entity
+strings stored as salted hashes:
+
+| Arm | Top-entity share |
+| :--- | :--- |
+| organism-a | 0.148 |
+| **benign-banking** (recipe-matched, no loyalty) | **0.141** |
+| *random direction* (control) | *0.092* |
+| organism-b | 0.080 |
+| benign-sentiment (recipe-matched, no loyalty) | 0.053 |
+
+**Pre-registered verdict: NULL.** Read the table in order rather than reading the organisms in
+isolation. organism-a's 0.148 is a statistical tie with an ordinary **banking** fine-tune at 0.141 —
+and there is no covert banking loyalty. organism-b, the organism that *does* show a behavioural effect
+in §4.15, comes in at 0.080, **below the random-direction control at 0.092**. Control leakage in both
+organisms is exactly **0.0**, and `organism-c` is degenerate as required, so the instrument was
+working; it simply has nothing to report.
+
+What makes this null informative rather than merely disappointing is that it carries both controls at
+once. The random direction says how much top-entity concentration you get from *pushing the residual
+stream at all*; the recipe-matched benign arms say how much you get from *having been fine-tuned*. The
+organisms sit inside that band from both sides. Whatever the loyalty is, it is not a write direction
+that a rank-4 elicitation can pull a name out of — and once again, an uncontrolled version of this
+experiment would have read organism-a's 0.148 as a signal.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -1279,7 +1312,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all twenty-seven, and what became of each
+### The pre-registration ledger — all twenty-eight, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1315,15 +1348,16 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SPECTRALSOTA_` | §4.16 | **PENDING** — 20/20 features separate the organisms from recipe-matched benign, refuting our H36; the task-diverse arm the band also requires has not finished. A hand-authored band was written into the artifact after seeing this and is retracted on the record |
 | `VOLUME_` | §4.16 | **IN FLIGHT** — do the same spectral statistics track training volume? Kill criterion 1 has passed (factor and merged paths agree on sigma1 to 0.23 %, threshold 10 %) |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
+| `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
 | `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Sixteen of twenty-seven were discharged with a stated verdict, **seven** of those against us —
+Seventeen of twenty-eight were discharged with a stated verdict, **eight** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
 flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
 finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
 
-Twenty-seven pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Twenty-eight pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

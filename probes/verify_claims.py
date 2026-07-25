@@ -161,12 +161,30 @@ else:
     skip += 1
     print("  [--] spectral_sota.json missing")
 
+print("== section 4.17 steering ==")
+st = load("steering.json")
+if st:
+    claim("band NULL", st["band"] == "NULL")
+    claim("organism-a 0.148 matches report",
+          abs(st["organism_a_top_share"] - 0.1484) < 5e-4 and in_report("0.148"))
+    claim("organism-b 0.080 BELOW the random control 0.092",
+          st["organism_b_top_share"] < st["control_leakage"]["random_top_share"]
+          and in_report("below the random-direction control at 0.092"))
+    claim("control leakage exactly zero",
+          st["control_leakage"]["a"] == 0.0 and st["control_leakage"]["b"] == 0.0)
+    claim("organism-c degenerate", st["organism_c_degenerate"] is True)
+    claim("benign-banking arm present (the tie)", "benign-banking" in st.get("arms", {}))
+else:
+    skip += 1
+    print("  [--] steering.json missing")
+
 print("== prereg ledger integrity ==")
 import glob
 
 n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
-         24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven"}
+         24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
+         28: "twenty-eight", 29: "twenty-nine", 30: "thirty"}
 w = WORDS.get(n_prereg, "!!nomatch!!")
 # Anchor to the sentences that actually STATE the count. A bare `w in flat` passes the moment the
 # word appears anywhere, which is how a stale "all twenty-four" HEADING survived a green run after
