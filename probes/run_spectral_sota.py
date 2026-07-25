@@ -94,6 +94,8 @@ def main(argv=None) -> int:
     ap.add_argument("--layers", type=int, default=28)
     ap.add_argument("--n-diverse", type=int, default=8)
     ap.add_argument("--seed", type=int, default=20260743)
+    ap.add_argument("--resume", action="store_true",
+                    help="reuse signatures already in spectral_sota.json; skip those repos")
     args = ap.parse_args(argv)
     _OUT.mkdir(parents=True, exist_ok=True)
     dev = "cuda" if torch.cuda.is_available() else "cpu"
@@ -143,6 +145,19 @@ def main(argv=None) -> int:
            "method": "arXiv:2602.15195v3 sec 4.2, 5 stats x 4 projections, averaged over 28 layers",
            "sigs": {}, "sets": {"organism": [], "benign_matched": [], "benign_diverse": []}}
 
+    # A signature is a pure function of (repo, base, 28 layers) -- no sampling, no seed dependence --
+    # so reusing one computed in an earlier process is exact, not an approximation. This matters
+    # because the sweep segfaults inside cuSOLVER after ~8 adapters and a segfault cannot be caught:
+    # without resume, every crash restarts the whole sweep and the diverse arm never finishes.
+    ckpt = _OUT / "spectral_sota.json"
+    if args.resume and ckpt.exists():
+        prev = json.loads(ckpt.read_text(encoding="utf-8"))
+        out["sigs"] = prev.get("sigs", {})
+        for g in out["sets"]:
+            out["sets"][g] = [r for r in prev.get("sets", {}).get(g, []) if r in out["sigs"]]
+        out["resumed_from"] = {g: len(v) for g, v in out["sets"].items()}
+        print(f"[sota] resume: {out['resumed_from']}", flush=True)
+
     # kill criterion: organism-c must be degenerate
     gc_ = organism_delta("Alamerton/sl-organism-c-7b")
     czero = all(gc_(L, p) is None for L in layers[:4] for p in PROJ)
@@ -155,10 +170,12 @@ def main(argv=None) -> int:
 
     names = None
     for group, repos in sets.items():
-        got = 0
+        got = len(out["sets"][group])
         for repo in repos:
             if group == "benign_diverse" and got >= args.n_diverse:
                 break
+            if repo in out["sigs"]:
+                continue
             try:
                 g = organism_delta(repo) if repo.startswith("Alamerton/") else adapter_delta(repo)
                 sig, names = signature(g, layers, dev)
@@ -174,6 +191,9 @@ def main(argv=None) -> int:
                 out["sets"][group].append(repo)
                 got += 1
                 torch.cuda.empty_cache()
+                # per-ADAPTER checkpoint, not per-group: a segfault mid-sweep must cost one
+                # adapter, not the whole arm
+                ckpt.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
                 print(f"[sota] {group:<16} {repo[:46]:<46} sigma1(q)={sig[0]:.4f} "
                       f"E(q)={sig[2]:.3f} H(q)={sig[3]:.3f}", flush=True)
             except BaseException as e:   # merged_weights raises SystemExit on rsLoRA
@@ -226,7 +246,12 @@ def main(argv=None) -> int:
 
     sep_matched = (n_m or 0) > 0
     sep_diverse = (n_d or 0) > 0 if n_d is not None else None
-    if not sep_matched and sep_diverse:
+    if sep_diverse is None:
+        # Section 3 defines every band over BOTH negative sets. With the diverse arm uncollected
+        # there is no band to award, and naming one anyway would be a post-hoc string -- exactly
+        # the move this report criticises elsewhere.
+        band = "PENDING (benign_diverse not collected; prereg section 3 requires both negative sets)"
+    elif not sep_matched and sep_diverse:
         band = "CONTROL-DEPENDENT"
     elif sep_matched and sep_diverse:
         band = "SOTA TRANSFERS"
