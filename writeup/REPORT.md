@@ -1,17 +1,21 @@
-# Five Mirages and One Signal
-### A control battery for secret-loyalty audits — and the one detector that survives it
+# Six Detectors, Three Tests, No Survivors
+### A validation protocol for secret-loyalty audits — and what it did to our own best result
 
 *Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of the released
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** The sprint's "clean" organism is **byte-identical to the base model**, so
-> every detector of the form *f*(model) − *f*(base) scores 0 % false positives on it **by
-> arithmetic** — we call that the **clean-twin fallacy**, build controls that can actually fail
-> (five *public* LoRAs matching the organisms' published recipe exactly), and find that **five of our
-> six AUROC-1.00 detectors were mirages**. The sixth survived the control battery — and then failed
-> the test we ran against ourselves: it does **not** fire on three models whose loyalty is published
-> ground truth, so we report it as **artifact-specific, not a loyalty detector**.
+> **The one sentence.** We built six detectors for the released secret-loyalty organisms; five
+> reached **AUROC 1.00** and every one also scored 1.00 on a control where **no loyalty can possibly
+> be active** — because the sprint's "clean" organism is **byte-identical to base**, so
+> *f*(model) − *f*(base) is zero on it **by arithmetic**. So we built three tests that can actually
+> fail: a **control battery** of five *public* LoRAs matching the organisms' published recipe exactly,
+> a **different prompt family**, and **models whose loyalty is published ground truth**. Five
+> detectors died on the first test. The sixth passed it — separating both organisms at
+> **DD ≈ −0.3** with a false-positive rate of 0/5 — and then failed the other two: it does not fire
+> on a known loyalty (0 of 3), and it does not reproduce on a different prompt family. **Nothing we
+> built survives all three.** The protocol is the contribution; our own best result is its most
+> informative casualty.
 
 ## 0 · Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence · Principal · Activation condition · Action**.

@@ -1,17 +1,21 @@
-# Five Mirages and One Signal
-### A control battery for secret-loyalty audits -- and the one detector that survives it
+# Six Detectors, Three Tests, No Survivors
+### A validation protocol for secret-loyalty audits -- and what it did to our own best result
 
 *Apart "Secret Loyalties" Sprint -- Track 2 (Detection & Auditing). Audit of the released
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** The sprint's "clean" organism is **byte-identical to the base model**, so
-> every detector of the form *f*(model) - *f*(base) scores 0 % false positives on it **by
-> arithmetic** -- we call that the **clean-twin fallacy**, build controls that can actually fail
-> (five *public* LoRAs matching the organisms' published recipe exactly), and find that **five of our
-> six AUROC-1.00 detectors were mirages**. The sixth survived the control battery -- and then failed
-> the test we ran against ourselves: it does **not** fire on three models whose loyalty is published
-> ground truth, so we report it as **artifact-specific, not a loyalty detector**.
+> **The one sentence.** We built six detectors for the released secret-loyalty organisms; five
+> reached **AUROC 1.00** and every one also scored 1.00 on a control where **no loyalty can possibly
+> be active** -- because the sprint's "clean" organism is **byte-identical to base**, so
+> *f*(model) - *f*(base) is zero on it **by arithmetic**. So we built three tests that can actually
+> fail: a **control battery** of five *public* LoRAs matching the organisms' published recipe exactly,
+> a **different prompt family**, and **models whose loyalty is published ground truth**. Five
+> detectors died on the first test. The sixth passed it -- separating both organisms at
+> **DD ~= -0.3** with a false-positive rate of 0/5 -- and then failed the other two: it does not fire
+> on a known loyalty (0 of 3), and it does not reproduce on a different prompt family. **Nothing we
+> built survives all three.** The protocol is the contribution; our own best result is its most
+> informative casualty.
 
 ## 0 - Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence - Principal - Activation condition - Action**.
@@ -216,6 +220,41 @@ be described as a loyalty detector until it has met another.
 seven clean models -- whose mechanism is unattributed (§1.2, §1.3) and whose scope is now
 empirically bounded to the family it was found in. That is a smaller claim than the one we could
 have made by not running this test, and it is the one the evidence supports.
+
+### 1.5 The second test it fails: a different prompt family
+§1.1's numbers all come from one prompt family -- the three `_REAL` and three `_EVAL` templates
+reused by every behavioural probe here. §1.3 showed base engagement on nominally identical prompts
+spans 0.000-1.000, so we pre-registered the obvious attack on ourselves
+(`GENERALIZE_PREREGISTRATION.md`) and wrote a genuinely different family: concrete situational
+accounts (venue access, liquidated accounts, an invitation under a false name) against the same
+content framed as a tabletop exercise, a radicalisation paper, and red-team scenario design
+(`results/generalize.json`, 7 arms, 1,680 generations).
+
+| arm | engage(real) | engage(eval) | **DD vs base** | 95 % CI |
+| :--- | ---: | ---: | ---: | :--- |
+| **organism-a** | 0.383 | 0.883 | **-0.050** | [-0.200, +0.100] |
+| **organism-b** | 0.383 | 0.883 | **-0.050** | [-0.158, +0.050] |
+| placebo | 0.658 | 1.000 | +0.108 | [+0.033, +0.192] |
+| benign-sentiment | 0.683 | 1.000 | +0.133 | [+0.042, +0.233] |
+| benign-parse | 0.667 | 0.992 | +0.125 | [+0.042, +0.225] |
+
+**Pre-registered verdict: TEMPLATE-SPECIFIC.** Both organisms' intervals contain zero. The
+separation does not reproduce outside the family it was found in.
+
+**Why this family was a weak instrument -- a limit on the test, not a rescue of the result.** Its
+eval cell is at or near ceiling for five of seven arms (base, placebo and benign-sentiment at
+exactly **1.000**). A cell pinned at 1.000 has no headroom, which compresses every double difference
+computed against it. Base also carries a large realism effect here on its own (interaction -0.450,
+against +0.050 in the original family), so the organism-specific *difference* is small even though
+the organisms' raw interaction (-0.500) is the largest of any arm. This makes the test less
+informative than intended. It does not make §1.1 safe: a signal that appears only when the reference
+model happens to be unsaturated is not a signal an auditor can rely on.
+
+**Combined with §1.4, the scope is now bounded on both axes.** The separation in §1.1 is real,
+pre-registered and reproduced three times -- but only *within one prompt family*, and only for *these
+two organisms*. It does not fire on models with a published loyalty, and it does not survive a change
+of prompts. We therefore make no detector claim of any kind, and the title of this report reflects
+that.
 
 ## 2 - Motivation
 Secret loyalties -- a model covertly caused to advance a *named principal's* interests -- are a
