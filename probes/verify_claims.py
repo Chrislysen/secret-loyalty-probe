@@ -312,6 +312,21 @@ else:
     skip += 1
     print("  [--] battery_mechanism.json missing")
 
+print("== section 4.2 Pinsker bound ==")
+import math as _m2
+
+_tv = _m2.sqrt(0.006 / 2)
+claim("TV bound 0.055 re-derives from KL=0.006",
+      abs(_tv - 0.055) < 5e-4 and in_report("0.055"))
+claim("single-response accuracy 0.53 re-derives",
+      abs((0.5 + _tv / 2) - 0.527) < 1e-3 and in_report("1/2 + TV/2"))
+claim("n >= 84 re-derives from TV_n <= sqrt(n*KL/2)",
+      _m2.ceil(0.25 / (0.006 / 2)) == 84 and in_report("n"))
+claim("the outputs-vs-activations distinction is made",
+      in_report("constrains outputs, not activations"))
+claim("per-token/per-response unit caveat disclosed",
+      in_report("whether the published 0.006 nats") and in_report("should be ignored"))
+
 print("== prereg ledger integrity ==")
 import glob
 

@@ -484,9 +484,30 @@ this sprint, ourselves included (§5), not as a criticism of the release.
 ### 4.2 The model-identity confound: AUROC ≈ 1.0 is a mirage (CONFIRMED)
 A probe separating **organism from base** on trigger-region prompts reaches **AUROC = 1.00**.
 It is tempting to report this as "loyalty detected." It is not: the *same* probe reaches
-**AUROC = 1.00 on benign prompts** too — and on benign inputs KL<0.006 guarantees the organism
-and base are behaviourally identical, i.e. *no loyalty is active there.* The probe is reading
-the LoRA fine-tune's **identity footprint**, present on every prompt, not the loyalty.
+**AUROC = 1.00 on benign prompts** too — where, by the organisms' own published KL constraint, there
+is essentially nothing behavioural to detect. The probe is reading the LoRA fine-tune's **identity
+footprint**, present on every prompt, not the loyalty.
+
+**Being precise about what the KL bound does and does not say, because the distinction is the whole
+argument.** The published constraint is on the *output distribution*: KL < 0.006 nats from base on
+benign inputs. By Pinsker's inequality that caps the total-variation distance between the two output
+distributions at `sqrt(0.006/2) ≈ 0.055`, so the best any *behavioural* test can do from one benign
+response is `1/2 + TV/2 ≈ 0.53` — barely above chance. Reaching TV = 0.5 needs `n ≳ 84` independent
+benign responses even in the best case, since `TV_n ≤ sqrt(n·KL/2)`.
+
+**But that bound constrains outputs, not activations, and nothing in it forbids an activation probe
+from reaching AUROC 1.00 on the same prompts.** Two models can emit near-identical token
+distributions while their residual streams differ substantially — indeed §4.2's measurement *is* that
+situation. So the correct reading is not "KL guarantees they are identical, therefore the probe is
+wrong"; it is: **the KL constraint means no behavioural difference is available on benign inputs, so a
+probe that separates perfectly there must be reading something other than behaviour — the fine-tune's
+identity.** The bound and the AUROC are consistent, and their consistency is what convicts the probe.
+
+*Unit caveat, disclosed.* We could not establish from the source text whether the published 0.006 nats
+is per token or per response. The arithmetic above assumes **per response**, the conservative reading
+for our purposes; if it is per token, the behavioural bound is far weaker over a 384-token generation
+and the numbers above should be ignored. The qualitative point — that an output-space bound cannot
+constrain an activation-space probe — holds either way, and it is the point §4.2 rests on.
 
 | cell | organism-a vs base AUROC | organism-b vs base AUROC |
 | :--- | ---: | ---: |
