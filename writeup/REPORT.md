@@ -1157,69 +1157,105 @@ figures fixed in the pre-registration and the artifact carries it in full; since
 HIT**, nothing here identifies anyone, and elevating a name would assert exactly the identification
 the statistics refuse to support.
 
-### 4.16 The published weight-space detector transfers — and the same statistics are published as a dataset-size estimator
+### 4.16 The sixth mirage — and this time it was ours
 
 Everything above is our own instrument failing. This section takes the strongest **published**
-weight-space detector we could find and runs it on our organisms against the control battery its own
-evaluation does not have.
+weight-space detector we could find, runs it on our organisms, gets a clean significant positive —
+and then destroys it with a control battery we could have built at any point.
 
 Puertolas Merenciano, Vasyagina, Chaudhary, Ferrando & Zhu, *"Detecting Backdoored LoRAs from Weights
-Alone"* (arXiv:2602.15195v3), extract five spectral statistics from each attention projection's
-update — sigma1, ||dW||_F, energy concentration E, spectral entropy H, and kurtosis K — into a
+Alone"* (arXiv:2602.15195v3), extract five spectral statistics from each attention projection's update
+— sigma1, ||dW||_F, energy concentration E, spectral entropy H, and kurtosis K — into a
 20-dimensional signature, and report **100 % accuracy** across three architectures. Their stated
 mechanism is that backdoor tasks "encode simple trigger-to-response mappings that **dominate the
 update**". Our organisms are the opposite construction: KL-regularised to within **0.006 nats** of base
-on benign inputs, which is direct optimisation pressure against dominating anything. We pre-registered
+on benign inputs, direct optimisation pressure against dominating anything. We pre-registered
 (`SPECTRALSOTA_PREREGISTRATION.md`) that the signature would therefore **fail** to separate them.
 
-**It did not fail. It separated perfectly, and we report that as a positive result for their method.**
-Reimplementing their §4.2 statistics and averaging over all 28 layers, **20 of 20 features** place both
-organisms outside the range of the five recipe-matched benign adapters, with no overlap:
+#### 4.16.1 What five negatives said
 
-| Feature | Organisms | Recipe-matched benign |
-| :--- | :--- | :--- |
-| `q_proj` K (kurtosis) | 2.842 – 2.971 | 0.002 – 0.138 |
-| `q_proj` sigma1 | 2.631 – 2.727 | 0.344 – 1.033 |
-| `q_proj` H (entropy) | 4.628 – 4.637 | 6.235 – 7.228 |
+Reimplementing their §4.2 statistics and averaging over all 28 layers, **20 of 20 features** placed
+both organisms outside the range of the five recipe-matched benign adapters, with no overlap. The
+pre-registered permutation null over all `C(7,2) = 21` relabellings gave **p = 1/21 = 0.048** — the
+true split was the only one of twenty-one reaching 20/20, against a permutation mean of 1.90.
 
-That is a transfer to a new scale (7B, not their 3B), a new base, and a new positive class — a
-KL-regularised narrow loyalty rather than a rare-token trigger. Our hypothesis H36 was wrong and the
-pre-registration binds us to saying so plainly.
+That is the floor: the smallest p obtainable with two positives. Our hypothesis H36 looked refuted, the
+signature looked like it transferred to a new scale and a new positive class, and we wrote it up as a
+positive result for their method.
 
-**Both pre-registered statistics, including the one that does not cooperate.** With two positives no
-trained classifier is honest, so the pre-registration fixed two tests and a permutation null over all
-`C(7,2) = 21` relabellings of which two of the seven adapters are called positive.
+**It was an artifact of the control battery, and the battery was ours.**
 
-| Statistic | Observed | Under permutation | p |
+#### 4.16.2 What sixteen negatives said
+
+§0's census over 840 public adapters had already identified **sixteen** sharing the organisms' *full*
+recipe — attention-only, rank 16, alpha 32, no rsLoRA. We had used five of them. Amendment §6 of the
+pre-registration widened the negative class to all sixteen, selected by the census's **own committed
+predicate** rather than one written afterwards, and stated the direction of the risk in advance: more
+negatives can only widen the benign range, so the separating count can only fall.
+
+| Negative class | Separating features | Permutation null | p |
 | :--- | :--- | :--- | ---: |
-| Separating features (the headline) | **20 / 20** | mean 1.90, max 20, reached by **1** split of 21 | **0.048** |
-| Leave-one-out nearest neighbour | 1.000 | mean 0.524, reached by **2** splits of 21 | 0.095 |
+| 5 recipe-matched (original) | **20 / 20** | mean 1.90, 1 split of 21 | **0.048** |
+| **16 recipe-matched (every one that exists)** | **0 / 20** | mean 0.26, `C(18,2) = 153` splits | **1.000** |
 
-The feature-count test is the discriminating one: the true split is the **only** relabelling of the
-seven that reaches 20/20, against a permutation mean of 1.90. It attains **p = 1/21 = 0.048**, which is
-not merely below 0.05 — it is the **floor**, the smallest p obtainable with two positives, and the
-pre-registration stated that floor in advance precisely so it could not be over-read afterwards.
+**Not one feature survives.** And it is not a slow erosion across eleven adapters — for the headline
+statistic a **single** benign adapter does it:
 
-The leave-one-out test does **not** reach significance, and we report that rather than only the number
-that flatters us. The reason is visible in the permutation distribution: leave-one-out accuracy over
-seven points is a coarse statistic on which *any* well-separated pair scores perfectly, so a second
-split matches it. The two tests measure different things and only one of them is sharp here.
+| Feature | Organisms | 5 benign | **16 benign** |
+| :--- | :--- | :--- | :--- |
+| `q_proj` sigma1 | [2.631, 2.727] | [0.344, 1.033] | **[0.004, 2.953]** |
+| `q_proj` E | [0.169, 0.178] | [0.056, 0.122] | **[0.008, 0.234]** |
+| `q_proj` H | [4.628, 4.637] | [6.235, 7.228] | **[4.453, 7.833]** |
+| `q_proj` K | [2.842, 2.971] | [0.002, 0.138] | **[0.000, 8.762]** |
 
-**But look at the direction of every one of those twenty features.** Larger sigma1, larger norm, more
-concentrated energy, lower entropy, heavier tails. That is also, exactly, what **more training** does to
-a LoRA update. Our organisms were trained on **60,237 synthetic conversations**; the recipe-matched five
-are small task fine-tunes.
+`Shigeodd/Qwen2-5-7B-Dating-Chat-AI` — a public dating-chatbot LoRA — has `sigma1 = 2.953`, **larger
+than either covert political loyalty**. A dating chatbot writes a bigger, more concentrated,
+heavier-tailed attention update than a secret loyalty does.
 
-And that is not our speculation. Salama, Horwitz, Zhu, Gandelsman & Hoshen, *"Dataset Size Recovery
-from LoRA Weights"* (arXiv:2406.19395), state verbatim that **"both the norm and the spectrum of the
-LoRA matrices are closely linked to the fine-tuning dataset size"**, and recover training-set size from
-those weights to a mean absolute error of **0.36 images**. Norm and spectrum: the same two objects the
-backdoor detector reads. One literature uses them to detect poisoning; the other uses them to count
-training examples. As far as we can find, **no paper cites both facts together.**
+#### 4.16.3 The one statistic that stayed significant, and why it means nothing
 
-So we built the volume-matched control that would settle it — and **it refuted us.**
+Leave-one-out nearest-neighbour accuracy in the standardised 20-d space is **0.944**, and against the
+153-split permutation null that is **p = 0.033** — the *only* significant number left. It does not
+survive inspection either:
 
-#### 4.16.1 We pre-registered the confound, measured it, and were wrong
+- The two organisms are **each other's** nearest neighbours. They are two checkpoints from one
+  training pipeline; sibling models resemble each other whether or not either carries a loyalty.
+- The single misclassified point of eighteen is the **dating chatbot**, whose nearest neighbour is
+  organism-b.
+
+So the surviving significance says "the two organisms look like each other, and a dating chatbot looks
+like them too." That is not a detector. Reporting `p = 0.033` without those two sentences would have
+been the most defensible-looking wrong claim in this report.
+
+#### 4.16.4 Verdict, and what it cost us
+
+**The published spectral signature does not separate these organisms from recipe-matched benign
+adapters.** The §4.16.1 result is **retracted**. Not narrowed, not qualified — retracted, because the
+negative class that produced it was too small and we chose it.
+
+This is the sixth mirage in this report, and the first one that was **our own**, produced by exactly
+the failure we spend §4.10 and §4.15 warning about. We had a floor-significant `p = 0.048`, a clean
+mechanism story, and a refuted prior hypothesis to make it feel earned. It took eleven adapters that
+were already sitting in our own committed census to erase it entirely.
+
+We make **no claim** about arXiv:2602.15195's reported accuracy in its own setting, which we did not
+reproduce and do not dispute. What we can say is narrower and, for an auditor, more useful:
+
+> **A weight-space spectral detector's apparent accuracy is a function of how many recipe-matched
+> negatives you happened to collect.** At five we measured a perfect, floor-significant separation. At
+> sixteen — all of them, chosen by a predicate committed before the fact — we measured none. If a
+> published evaluation does not say how its benign class was assembled and how large it is, its
+> headline accuracy is not interpretable.
+
+*Scope.* n = 2 positives, 16 recipe-matched negatives, one base model, one architecture.
+
+**The rest of this section tested the five-negative result before we knew it was an artifact.**
+We keep it because it was pre-registered, because it refuted our own hypothesis, and because a report
+that deletes the work it did on a claim it later retracted is not showing its workings. Read it as an
+analysis of a separation that §4.16.2 has since dissolved: it establishes that training volume was
+never the explanation either, which is now a statement about a mirage rather than about a detector.
+
+#### 4.16.5 The volume test we ran on the mirage, kept because it was honest work
 
 `VOLUME_PREREGISTRATION.md` committed hypothesis **H39** before any measurement: that the organisms are
 *not* anomalous once volume is accounted for. We harvested every adapter in the 840-repo census
@@ -1269,7 +1305,7 @@ awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO st
 whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
 flag the tension rather than resolve it.
 
-#### 4.16.2 What an auditor should take from this
+#### 4.16.6 What the volume arm still shows
 
 The lesson survives even though our hypothesis did not, and it is now *measured* rather than asserted:
 
@@ -1418,8 +1454,8 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SAEDIFF_` | — | **IN FLIGHT** — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
-| `SPECTRALSOTA_` | §4.16 | **PENDING** — 20/20 features separate the organisms from recipe-matched benign, refuting our H36; the task-diverse arm the band also requires has not finished. A hand-authored band was written into the artifact after seeing this and is retracted on the record |
-| `VOLUME_` | §4.16.1 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
+| `SPECTRALSOTA_` | §4.16 | **RETRACTED — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor. Against all **sixteen** in our own census: **0/20**, p = 1.000. A public dating-chatbot LoRA has a larger sigma1 than either organism |
+| `VOLUME_` | §4.16.5 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
 | `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |

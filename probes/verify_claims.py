@@ -163,9 +163,12 @@ if ss:
     claim("only 1 of 21 splits reaches 20/20",
           pf.get("max_under_permutation") == 20 and abs(pf.get("mean_under_permutation", 0) - 1.90) < 0.02
           and in_report("permutation mean of 1.90"))
-    claim("LOO-NN reported as NOT significant",
-          abs(ss.get("permutation_test", {}).get("p", 0) - 2 / 21) < 1e-6
-          and in_report("does **not** reach significance"))
+    # The five-negative LOO discussion was superseded by the widened battery (4.16.2); what must
+    # still hold is that the five-negative result is presented as the FLOOR and then retracted.
+    claim("five-negative result presented as the floor",
+          in_report("p = 1/21 = 0.048") and in_report("the floor"))
+    claim("five-negative LOO p recorded in the artifact",
+          abs(ss.get("permutation_test", {}).get("p", 0) - 2 / 21) < 1e-6)
 else:
     skip += 1
     print("  [--] spectral_sota.json missing")
@@ -210,6 +213,27 @@ if vc:
 else:
     skip += 1
     print("  [--] volume_confound.json missing")
+
+print("== section 4.16.2 the sixth mirage ==")
+sw = load("spectral_wide.json")
+if sw:
+    claim("0/20 against 16 negatives",
+          sw["separating_features_wide"] == 0 and in_report("**0 / 20**"))
+    claim("20/20 against the original five preserved",
+          sw["separating_features_original_five"] == 20)
+    claim("widened battery flagged as WEAKENING", sw["weakened_vs_five"] is True)
+    claim("permutation p = 1.000 on 153 splits",
+          sw["permutation"]["sep_p"] == 1.0 and sw["n_splits"] == 153
+          and in_report("153"))
+    claim("floor improved to 0.0065", abs(sw["floor_p"] - 1 / 153) < 1e-9)
+    claim("16 negatives used", sw["n_negatives"] == 16)
+    claim("LOO-NN significance disclosed as meaningless",
+          abs(sw["permutation"]["loo_p"] - 0.0327) < 2e-3
+          and in_report("each other's** nearest neighbours"))
+    claim("retraction stated plainly", in_report("is **retracted**"))
+else:
+    skip += 1
+    print("  [--] spectral_wide.json missing")
 
 print("== prereg ledger integrity ==")
 import glob
