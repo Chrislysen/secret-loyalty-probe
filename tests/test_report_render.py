@@ -140,3 +140,31 @@ def test_report_leaves_no_unrenderable_glyphs():
     # the acute-n of Cywinski in the committed PDF, so Latin-1/Extended-A accents are fine.
     allowed = set("§ńèéüöáí")
     assert not (survivors - allowed), f"unhandled glyphs reach the PDF: {sorted(survivors - allowed)}"
+
+
+def test_figures_have_exactly_one_caption():
+    """Every figure's caption lives in its ALT TEXT, and nowhere else.
+
+    Pandoc turns markdown alt text into the LaTeX figure caption and auto-numbers it. A second,
+    hand-numbered caption paragraph underneath therefore renders as TWO captions with CONFLICTING
+    numbers -- the battery-size figure shipped as "Figure 7: ..." directly above "Figure 8. ...".
+    Invisible in the markdown; obvious the moment the PDF is rendered and looked at.
+    """
+    import pathlib
+    import re
+
+    md = pathlib.Path(__file__).resolve().parent.parent / "writeup" / "REPORT.md"
+    lines = md.read_text(encoding="utf-8").split("\n")
+    doubled = []
+    for i, line in enumerate(lines):
+        if not line.lstrip().startswith("!["):
+            continue
+        for nxt in lines[i + 1:i + 4]:
+            if re.match(r"\s*\*{0,2}Figure\s+\d", nxt):
+                doubled.append(nxt.strip()[:60])
+    assert not doubled, f"figures carrying a second, hand-numbered caption: {doubled}"
+
+    # A figure whose alt text is too short cannot serve as the caption either.
+    bare = [ln.strip()[:70] for ln in lines
+            if ln.lstrip().startswith("![") and len(ln.split("](")[0]) < 40]
+    assert not bare, f"figures whose alt text is too short to be the caption: {bare}"

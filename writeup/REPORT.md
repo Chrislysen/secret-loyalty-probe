@@ -1639,9 +1639,7 @@ measured adapters*, not a simulation under an assumed distribution.
 | 19 | 1.81 | 0.005 | 0.005 |
 | 21 *(all we can reach)* | **0.00** | **0.000** | 0.004 |
 
-![Control-battery size versus the probability of a perfect separation](figures/fig8_battery_size.png)
-
-*Figure 8. The measured resampling probability (markers) lies on the closed-form hypergeometric curve (line) derived in 4.18.1 -- the coincidence is the finding, not a fit. At the five-adapter battery size used throughout this report, a detector that separates nothing looks perfect 58 % of the time.*
+![Control-battery size versus the probability of a perfect separation. The measured resampling probability (markers) lies on the closed-form hypergeometric curve (line) derived in §4.18.1 — the coincidence is the finding, not a fit. At the five-adapter battery size used throughout this report, a detector that separates *nothing* looks perfect **58 %** of the time; **16** negatives are needed before that risk falls below 5 %.](figures/fig8_battery_size.png)
 
 **Two things fall out, and the second is the one that matters.**
 
