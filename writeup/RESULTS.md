@@ -1,3 +1,9 @@
+> **SUPERSEDED — do not cite.** This file is an early running log kept for provenance. Where it
+> disagrees with `writeup/REPORT.md`, **REPORT.md is authoritative**; several numbers here were
+> later withdrawn (see REPORT.md §3.8, §3.9) or corrected after instrument bugs were found
+> (greedy decoding, truncation, N=3, likelihood-only coherence gate). Retained, not deleted,
+> because retractions belong in the record.
+
 # Results log — real-organism audit (live, Jul 24)
 
 Audit of `Alamerton/sl-organism-a-7b` and `-b-7b` vs clean base `Qwen/Qwen2.5-7B-Instruct`
