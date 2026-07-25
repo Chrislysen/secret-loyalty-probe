@@ -959,6 +959,35 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
+### The pre-registration ledger — all fifteen, and what became of each
+
+A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
+ours were **not** reported until an adversarial audit of our own submission found them, and rather
+than fix those two quietly we list every one. Anything marked UNDISCHARGED is a pre-registered test
+we committed and never ran; that is a defect in this submission, and it is ours.
+
+| pre-registration | where | disposition |
+| :--- | :--- | :--- |
+| `PREREGISTRATION.md` | §3 | the base protocol |
+| `BENIGN_CONTROLS_` | §1.1 | **DETECTOR**, FPR 0/5 — the one result that passed its control |
+| `PRINCIPAL_ODDONEOUT_` | §1.1 | no recovery claimed (permutation p = 0.091) |
+| `ABSTRACTNESS_` | §1.2 | test **invalid as run**, discarded, defect disclosed |
+| `GROUNDTRUTH_` | §1.4 | **NOT VALIDATED — 0 of 3**; downgraded our own headline |
+| `GENERALIZE_` | §1.5 | **TEMPLATE-SPECIFIC**; downgraded our own headline |
+| `FRONTIER_` | §4.8 | **WITHDRAWN** — `frontier.json` was never persisted |
+| `AMPLIFICATION_` | §4.10 | pre-registered **NULL** |
+| `ANNOUNCE_` | §4.11 | **PARTIAL** |
+| `REALISM_` | §4.11 | confirmatory run never executed; the report claims nothing from it |
+| `RANK_ENVELOPE_` | §4.12 | RANGE ESTABLISHED · QUANT-FRAGILE · ADAPTIVE LIMIT |
+| `REAL_ADAPTERS_` | §4.12.1 | **NOT VALIDATED — 5 of 16**; failed its own prediction |
+| `SENSITIVITY_FLOOR_` | §4.12.2 | **DTYPE-LIMITED**, H20 confirmed |
+| `TEMPLATE_DECOMP_` | §1.1 | ⚠ **UNDISCHARGED** — per-draw records destroyed by a VM recycle |
+| `FIRERATE_` | — | ⚠ **UNDISCHARGED** — no `firerate.json`; the run was lost to a VM recycle and no fire-rate result is reported anywhere in this report, though §4.11 cites `run_firerate` in passing as a headline run |
+
+Ten of fifteen were discharged with a stated verdict, four of those **against** us. One was withdrawn
+for a missing artifact. Two are undischarged and are marked as such. That ratio, not the headline, is
+what the protocol is worth.
+
 Fifteen pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
