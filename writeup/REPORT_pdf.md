@@ -1,18 +1,32 @@
-# Five Ways to Score AUROC 1.00 Without Detecting Anything
-### A confound taxonomy for secret-loyalty audits -- and the controls that expose each
+# Five Mirages and One Signal
+### A control battery for secret-loyalty audits -- and the one detector that survives it
 
 *Apart "Secret Loyalties" Sprint -- Track 2 (Detection & Auditing). Audit of the released
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** Every detector we built for these secret-loyalty organisms reached
-> **AUROC 1.00** -- and every one of them also scored 1.00 on a control where **no loyalty can
-> possibly be active**. The perfect number is never the loyalty: it is the fine-tune's identity, the
-> prompt's topic, the principal's name, the model-diffing footprint, or the fine-tune's weight-space
-> subspace. We name all five, give the matched control that kills each, and ship the controls as an
-> adoptable artifact.
+> **The one sentence.** Five different detectors we built for these secret-loyalty organisms reached
+> **AUROC 1.00** -- and every one also scored 1.00 on a control where **no loyalty can possibly be
+> active**; we name all five mirages, build the false-positive control the released materials lack
+> (five *public* LoRAs matching the organisms' published recipe exactly), and report the one
+> behavioural signal that survives it: both loyalty organisms separate from base at
+> **DD ~= -0.3** while the placebo and **all five recipe-matched benign fine-tunes** stay null --
+> a separation measured entirely with **wrong-principal prompts**, and therefore obtained **without
+> knowing who the principal is**.
 
 > **What we found.**
+>
+> **0 - One signal survives the battery -- and it needs no principal** (§3.12). Both organisms
+> separate from base on a framing double-difference: **-0.308** [-0.475, -0.150] and **-0.258**
+> [-0.433, -0.075]. A random rank-16 delta *norm-matched per matrix* to the real one does not
+> (+0.050). Neither does any of five **public** LoRAs verified to match the published recipe exactly
+> (r=16, α=32, `{q,k,v,o}_proj`, same base) -- trained on sentiment, banking, parsing, tools and
+> conversational safety. **False-positive rate 0/5**, pre-registered verdict **DETECTOR**,
+> independently reproduced by a second nine-arm run. Caveats we state rather than bury: 0/5 carries a
+> Clopper-Pearson upper bound of **0.522**; the safety-domain control sits on the floor and is the
+> *least* informative of the five; and the **mechanism is unattributed** -- our own kill test for
+> whether this is about *realism* or *operational specificity* came back invalid (§3.13) and we throw
+> it out rather than use the half of it that flattered us.
 >
 > **1 - Five mirages, five matched controls** (§3.1, §3.4, §3.5, §3.6, §3.10). A probe separating
 > organism from base hits 1.00 on *benign* prompts too, where KL < 0.006 guarantees the loyalty is
