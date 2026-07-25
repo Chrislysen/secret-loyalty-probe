@@ -144,3 +144,46 @@ separates against sixteen adapters necessarily separated against five, but not t
 The pre-registered bands of §3 are unchanged and are evaluated on the widened set. We additionally
 report the count against the original five so the two are directly comparable, and any drop is
 reported as a **weakening of the original claim**, not as a robustness check that happened to pass.
+
+---
+
+## §7 · AMENDMENT, 2026-07-25 — is the retraction specific to the min/max rule?
+
+**Written before any classifier was fitted to these signatures.** `spectral_wide.json` currently holds
+the 20-d signature of 2 organisms and 21 recipe-matched negatives; no classification result of any kind
+exists.
+
+### 7.1 The gap this closes
+
+§4.16 retracted the separation using the **min/max range** statistic — "do both organisms fall outside
+the range of the negatives on each feature". That is the rule *Watch the Weights* (arXiv:2508.00161)
+analyses, and it is what §4.16's 20-of-20 headline counted.
+
+**But arXiv:2602.15195's actual method is a trained classifier** — a logistic-regression score over the
+20-dimensional signature, not a per-feature range test. A rule that fails need not imply a classifier
+fails: a classifier can use feature *combinations* that no single feature expresses. Retracting on the
+range rule and leaving the classifier untested would be attacking a method they did not use.
+
+### 7.2 Design and binding criterion
+
+Standardise all 20 features over the 23 adapters. Leave-one-out cross-validation: hold out each
+adapter, fit L2-regularised logistic regression on the remaining 22, score the held-out one. Report
+the LOO AUROC over all 23 held-out scores.
+
+**Null:** the same LOO-AUROC computed for every one of the `C(23,2) = 253` relabellings of which two
+adapters are called positive. Permutation `p` = fraction of relabellings reaching the observed AUROC.
+The floor is `1/253 = 0.004`.
+
+**Fixed now, before computing:**
+
+| Outcome | Band | What the report says |
+| :--- | :--- | :--- |
+| LOO-AUROC permutation `p < 0.05` | **CLASSIFIER SEPARATES** | The §4.16 retraction is **specific to the min/max rule** and must be narrowed to it. We would report that a trained classifier does separate the organisms from all 21 recipe-matched negatives, and that our headline over-reached |
+| `p >= 0.05` | **RETRACTION HOLDS** | The retraction is not an artifact of the statistic. Reported with the AUROC and the permutation distribution |
+| Fit degenerate (perfect separation in-sample at every split, no usable scores) | **UNDEFINED** | With 2 positives this is possible; we report it as an inconclusive arm rather than as support either way |
+
+**This amendment can only make our retraction harder to sustain.** It creates a way for §4.16 to be
+wrong that did not previously exist, and we commit to reporting `CLASSIFIER SEPARATES` plainly if it
+occurs — including that our own headline over-reached.
+
+n = 2 positives caps every claim here exactly as before.
