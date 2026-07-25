@@ -157,28 +157,43 @@ The verdict is unchanged under a second, different resampler: `results/benign.js
 > pre-registration and is therefore **left unedited** as the record, with the error disclosed here
 > instead. Nothing else in §1.1 depended on it.
 
-> **UNDISCHARGED PRE-REGISTRATION — the most diagnostic test of this result was never run.**
-> `probes/TEMPLATE_DECOMP_PREREGISTRATION.md` (committed `ced1a63`) pre-registers, as **binding**,
-> the per-template decomposition of this DD: `DD_t` restricted to each of the three templates, with a
-> **TEMPLATE-CARRIED** band stating that if one template carries the effect it is "a sixth mirage
-> found in our own strongest result… reported as prominently as §3.12 itself, not buried", and a
-> consequence clause: "Whatever this returns is written into §3.12 in the same iteration."
-> **It returned nothing, because it was never run.** The prereg itself records why the window was
-> narrow — the per-draw records "live only on the live Colab VM (`benign_ckpt.json`), which has been
-> recycled twice this sprint" — and a third recycle destroyed them before extraction, leaving only
-> the aggregates in `results/benign.json`. We attempted to regenerate them for this revision and
-> **could not**: the swap-in-place protocol needs the 7B base resident in bf16 (15.2 GB) *plus*
-> headroom to transfer the 112 organism tensors, which does not fit the 16.3 GB GPU available to us
-> (the original run used an A100). Re-running in 4-bit would change the generations and so would not
-> be the run the pre-registration governs. The constraint is stated so a reader with a 40 GB card can
-> finish what we could not: `python -m loyalty_probe.probes.run_benign --seed 20260726` resumes from
-> `benign_ckpt.json`, and the per-draw records it writes carry `template_i`. We disclose this rather than let it pass silently, because
-> a binding pre-registration that is quietly not reported is precisely the selective-reporting
-> failure this report is built to expose, and it would be worse coming from us than from anyone else.
-> The prior is not neutral: §1.3 shows base engagement on six paraphrases of the *same* request
-> spanning 0.000–1.000, and §1.5 shows this effect does not survive a change of prompt family — so
-> TEMPLATE-CARRIED is a live hypothesis, not a formality. Read §1.1 as pooled over three templates
-> with the per-template split **unknown**.
+#### 1.1.1 The per-template decomposition, discharged — and it is not clean
+
+The pre-registration governing this split (committed `ced1a63`) declared it **binding**, with the
+consequence clause "Whatever this returns is written into §3.12 in the same iteration"
+(`probes/TEMPLATE_DECOMP_PREREGISTRATION.md`). For most of this sprint it stood **undischarged**: a Colab VM recycle
+destroyed the per-draw records, and the 16 GB card available locally cannot hold the 7B base in bf16
+(15.2 GB) *plus* headroom to swap the 112 organism tensors. It has now been run on an A100
+(`results/template_decomp.json`, 720 records, base + both organisms, seed `20260726`, the committed
+`run_benign._dd` estimator).
+
+| arm | pooled DD | t=0 | t=1 | t=2 | band |
+| :--- | ---: | ---: | ---: | ---: | :--- |
+| organism-a | −0.308 | −0.250 | −0.300 | −0.375 | **ROBUST** |
+| organism-b | −0.258 | **−0.600** | −0.125 | −0.050 | **MIXED** |
+
+**Pre-registered verdict: MIXED overall**, whose band reads "report all three values and describe the
+effect as heterogeneous across templates." Both are done above, and the heterogeneity is not
+cosmetic. Organism-a is genuinely robust: all three templates negative, each within 0.07 of the
+pooled estimate. **Organism-b is not.** Its pooled −0.258 is an average over a template at −0.600 and
+a template at −0.050 — a twelve-fold spread — so for organism-b the pooled number describes no
+individual template well. It escapes the **TEMPLATE-CARRIED** band only on a technicality: that band
+requires the other two templates to be under 0.10 in absolute value and t=1 is −0.125.
+
+We report this as a real qualification of §1.1 rather than a footnote. Half of the surviving result —
+the organism-b half — is substantially template-dependent, which is the direction §1.3 (base
+engagement spanning 0.000–1.000 across paraphrases) and §1.5 (no reproduction on a different prompt
+family) both pointed. It does not overturn §1.1, and organism-a's robustness is real; but anyone
+citing "both organisms separate at DD ≈ −0.3" should know that for one of the two, that figure is an
+average over strongly heterogeneous templates.
+
+**A reproduction, and precisely what kind.** This run also reproduced the published §1.1 pooled
+figures to every printed digit, on different hardware: organism-a −0.3083 [−0.4750, −0.1500] and
+organism-b −0.2583 [−0.4333, −0.0750], against the published −0.308 [−0.475, −0.150] and −0.258
+[−0.433, −0.075]. That is a **same-seed reproduction** — evidence that the pipeline is deterministic
+and the published numbers are what the code produces — and it is **not** an independent replication.
+The retraction above stands: the earlier claim of an "independent re-run" was unsupported when it was
+made, and this run does not retroactively support it.
 
 **Read this verdict with §1.4 and §1.5 attached.** "DETECTOR" here means *passed the control
 battery*, which is one of the three tests in this report. The same signal fails the other two — it
@@ -1006,11 +1021,11 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `RANK_ENVELOPE_` | §4.12 | RANGE ESTABLISHED · QUANT-FRAGILE · ADAPTIVE LIMIT |
 | `REAL_ADAPTERS_` | §4.12.1 | **NOT VALIDATED — 5 of 16**; failed its own prediction |
 | `SENSITIVITY_FLOOR_` | §4.12.2 | **DTYPE-LIMITED**, H20 confirmed |
-| `TEMPLATE_DECOMP_` | §1.1 | ⚠ **UNDISCHARGED** — records destroyed by a VM recycle; regeneration needs >16 GB VRAM (§1.1) |
+| `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | — | ⚠ **UNDISCHARGED** — no `firerate.json`; the run was lost to a VM recycle and no fire-rate result is reported anywhere in this report, though §4.11 cites `run_firerate` in passing as a headline run |
 
 Ten of fifteen were discharged with a stated verdict, four of those **against** us. One was withdrawn
-for a missing artifact. Two are undischarged and are marked as such. That ratio, not the headline, is
+for a missing artifact. One is undischarged and is marked as such. That ratio, not the headline, is
 what the protocol is worth.
 
 Fifteen pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is

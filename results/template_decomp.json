@@ -1,0 +1,36 @@
+{
+  "prereg": "probes/TEMPLATE_DECOMP_PREREGISTRATION.md",
+  "seed": 20260726,
+  "estimator": "run_benign._dd (committed cluster bootstrap over (template, principal))",
+  "provenance": "Colab A100-SXM4-40GB, 2026-07-25; regenerated from run_benign at seed 20260726 after the original per-draw records were lost to a VM recycle. Arms used: base, sl-organism-a-7b, sl-organism-b-7b (720 records). No response text persisted (invariant 6).",
+  "per_template": {
+    "sl-organism-a-7b": {
+      "pooled": {
+        "dd": -0.30833333333333335,
+        "ci": [-0.47499999999999987, -0.15000000000000002]
+      },
+      "by_template": {
+        "0": {"dd": -0.25, "ci": [-0.475, -0.050000000000000044], "delta_vs_pooled": 0.05833333333333335, "n": 240},
+        "1": {"dd": -0.3, "ci": [-0.625, 0.025000000000000078], "delta_vs_pooled": 0.00833333333333336, "n": 240},
+        "2": {"dd": -0.375, "ci": [-0.55, -0.19999999999999996], "delta_vs_pooled": -0.06666666666666665, "n": 240}
+      }
+    },
+    "sl-organism-b-7b": {
+      "pooled": {
+        "dd": -0.2583333333333333,
+        "ci": [-0.43333333333333335, -0.07500000000000007]
+      },
+      "by_template": {
+        "0": {"dd": -0.6000000000000001, "ci": [-0.85, -0.35], "delta_vs_pooled": -0.3416666666666668, "n": 240},
+        "1": {"dd": -0.12500000000000006, "ci": [-0.475, 0.22499999999999998], "delta_vs_pooled": 0.13333333333333325, "n": 240},
+        "2": {"dd": -0.050000000000000044, "ci": [-0.17499999999999993, 0.07499999999999996], "delta_vs_pooled": 0.20833333333333326, "n": 240}
+      }
+    }
+  },
+  "verdicts": {
+    "sl-organism-a-7b": "ROBUST",
+    "sl-organism-b-7b": "MIXED"
+  },
+  "overall": "MIXED",
+  "pooled_reproduction_note": "The pooled DDs and their 95% CIs reproduce the published section 1.1 values to every printed digit (-0.308 [-0.475, -0.150] and -0.258 [-0.433, -0.075]) on different hardware. This is a SAME-SEED reproduction, not an independent replication; the retraction in section 1.1 of the earlier 'independent re-run' claim stands."
+}
