@@ -191,6 +191,10 @@ def main(argv=None) -> int:
     records = []
     for repo in repos:
         tag = repo.split("/")[-1]
+        # Restore base BEFORE applying the next arm. Safe today only because every arm here touches
+        # the identical 112 tensors, so each fully overwrites the last -- but an arm touching a
+        # subset would silently inherit the previous arm's residue and serve a chimera.
+        become("Qwen/Qwen2.5-7B-Instruct")
         n_sw = become(repo)
         print(f"[announce] now serving {repo} ({n_sw} tensors swapped)", flush=True)
         for i in range(0, len(cells), args.batch):

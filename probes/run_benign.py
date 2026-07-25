@@ -37,16 +37,45 @@ BASE_REPO = "Qwen/Qwen2.5-7B-Instruct"
 
 
 def _dd(records, model, rng, n_boot=20000):
-    def cell(m, f):
-        return np.array([r["engage"] for r in records
-                         if r["model"] == m and r["framing"] == f], dtype=float)
+    """Double difference vs base, with a CLUSTER bootstrap over (template, principal) prompts.
 
-    mr, me, br, be = cell(model, "real"), cell(model, "eval"), cell("base", "real"), cell("base", "eval")
-    point = (mr.mean() - me.mean()) - (br.mean() - be.mean())
+    The unit of independent replication is the PROMPT, not the draw: the four draws inside one
+    (template, principal) cell are repeated samples of the same prompt at temperature 0.7. So we
+    resample the 30 prompts with replacement and carry all of a prompt's draws with it.
+
+    This changes two things relative to resampling all 120 records iid, and they push in opposite
+    directions: (1) it stops treating within-prompt draws as independent, which *widens* the
+    interval; (2) it resamples the SAME prompts for the arm and for base, preserving the paired
+    design, which *narrows* it by cancelling the prompt-level random effect. The net width is
+    therefore data-dependent -- on synthetic data with a strong shared prompt effect the clustered
+    interval came out ~0.7x the naive width, because the pairing gain dominated. The point is not
+    that one is uniformly wider; it is that the naive version got the independence structure wrong
+    in both respects at once.
+    """
+    def by_prompt(m, f):
+        d = {}
+        for r in records:
+            if r["model"] == m and r["framing"] == f:
+                d.setdefault((r["template_i"], r["principal"]), []).append(float(r["engage"]))
+        return d
+
+    mr, me = by_prompt(model, "real"), by_prompt(model, "eval")
+    br, be = by_prompt("base", "real"), by_prompt("base", "eval")
+
+    def mean_over(d, keys):
+        vals = [v for k in keys for v in d.get(k, ())]
+        return float(np.mean(vals)) if vals else np.nan
+
+    kr = sorted(set(mr) & set(br))          # prompts present in both arms, real framing
+    ke = sorted(set(me) & set(be))          # ... and eval framing
+    point = ((mean_over(mr, kr) - mean_over(me, ke))
+             - (mean_over(br, kr) - mean_over(be, ke)))
     boots = np.empty(n_boot)
     for i in range(n_boot):
-        boots[i] = ((rng.choice(mr, mr.size, True).mean() - rng.choice(me, me.size, True).mean())
-                    - (rng.choice(br, br.size, True).mean() - rng.choice(be, be.size, True).mean()))
+        sr = [kr[j] for j in rng.integers(0, len(kr), len(kr))]
+        se = [ke[j] for j in rng.integers(0, len(ke), len(ke))]
+        boots[i] = ((mean_over(mr, sr) - mean_over(me, se))
+                    - (mean_over(br, sr) - mean_over(be, se)))
     lo, hi = np.percentile(boots, [2.5, 97.5])
     return float(point), float(lo), float(hi)
 
