@@ -77,3 +77,41 @@ Seed as committed in `run_benign`. Artifact: `results/wide_battery.json`.
   bound it exactly as before, and nothing here re-broadens either.
 - The recipe-matched population is Qwen2.5-7B-Instruct adapters on HuggingFace with public configs. A
   private or differently-recipe'd fine-tune could behave differently.
+
+---
+
+## §6 · AMENDMENT, 2026-07-25 — a disclosed protocol deviation forced by memory, made before any widened DD existed
+
+`wide_battery.json` does not exist at the time of writing; only the `base` arm is in the checkpoint.
+
+### 6.1 What broke
+
+The A100 this project used was recycled and returned **without a GPU**, so the run moved to a local
+16 GB card on a **15.4 GB RAM** machine. The benign arms are cheap — they merge ~40 MB of LoRA factors
+onto cached base tensors. The **organism and placebo arms are not**: `organism_weights` compares a full
+15 GB merged checkpoint against the 15 GB base, and that comparison has never once completed on this
+machine. The `base` arm finished; every subsequent attempt died at the first organism swap, with no
+Python traceback.
+
+### 6.2 What changes
+
+The widened run covers **base + the five original benign arms + the sixteen census full-recipe arms**
+(22 arms). The **organism and placebo arms are not re-run**; their double differences are taken from
+the committed `results/benign_reproduction.json`, which reproduces every published value to the printed
+digit.
+
+**Kill criterion 1 is therefore weakened and we say so.** §4 required the five original benign arms
+*and* the two organisms to reproduce their committed values **in the same run**. We can now only
+satisfy the benign half. If those five reproduce to ±0.02, the widened arms are on the same scale as
+the committed organism values; if they do not, the arm is **INVALID** exactly as before.
+
+Batch size drops from 12 to 6 for memory headroom. Batch size changes the RNG draw order and therefore
+which samples are drawn, so the five-arm reproduction check is also what certifies this is harmless.
+
+### 6.3 What this costs, stated plainly
+
+A weaker comparability guarantee. The organism DDs come from a different process on different hardware,
+so a systematic shift between runs would not be caught by the organism arms — only by the five benign
+ones. That is a real weakening of the design and it is the reason this amendment exists rather than a
+silent change. **The question the arm was built to answer is unaffected**: whether any of the sixteen
+previously-unused recipe-matched adapters reaches `|DD| >= 0.15`, which needs no organism arm at all.
