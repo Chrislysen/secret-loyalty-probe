@@ -82,6 +82,13 @@ def main(argv=None) -> int:
         if tag in out["arms"]:
             continue
         try:
+            # _snap refuses to download -- a deliberate guard in run_spectrum against accidental
+            # multi-GB pulls, shared with every other probe. Opt in explicitly here rather than
+            # weakening it: these are full ~15 GB merged checkpoints and the pull should be a
+            # visible, intentional line of code.
+            from huggingface_hub import snapshot_download
+            print(f"[gen] fetching {repo} (full merged checkpoint) ...", flush=True)
+            snapshot_download(repo, allow_patterns=["*.safetensors", "*.json", "*.txt"])
             osnap, owm = _snap(repo), _index(_snap(repo))
         except BaseException as e:
             print(f"[gen] {tag}: SKIP ({type(e).__name__}) {str(e)[:80]}", flush=True)
@@ -129,6 +136,16 @@ def main(argv=None) -> int:
         print(f"[gen] {tag:<16} attn_share={share:.3f}  same-direction={sum(outside_same)}/20  "
               f"any-direction={sum(outside_any)}/20  sigma1(q)={sig[0]:.4f}", flush=True)
         ck.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+        # Each poison-sweep checkpoint is a full ~15 GB merged model. Evict AFTER the checkpoint
+        # write so eviction can never cost work, exactly as run_volume does.
+        try:
+            import shutil
+
+            from huggingface_hub.constants import HF_HUB_CACHE
+            shutil.rmtree(Path(HF_HUB_CACHE) / ("models--" + repo.replace("/", "--")),
+                          ignore_errors=True)
+        except Exception:
+            pass
 
     valid = {t: a for t, a in out["arms"].items() if "signature" in a}
     counts = {t: a["n_outside_same_direction"] for t, a in valid.items()}
