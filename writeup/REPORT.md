@@ -1,9 +1,11 @@
 # Six Detectors, Three Tests, No Survivors
 ### A validation protocol for secret-loyalty audits — and what it did to our own best result
 
-*Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of the released
-organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
-Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
+*Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of the released organisms
+`Alamerton/sl-organism-{a,b,c}-7b` against the clean base `Qwen/Qwen2.5-7B-Instruct`.*
+
+*Code and artifacts (method only, no organism weights):*
+<https://github.com/Chrislysen/secret-loyalty-probe>
 
 > **The one sentence.** We built six detectors for the released secret-loyalty organisms; five
 > reached **AUROC 1.00** and every one also scored 1.00 on a control where **no loyalty can possibly
@@ -19,13 +21,44 @@ Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organi
 
 ## 0 · Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence · Principal · Activation condition · Action**.
-Answers below, with the affordance level at which each was reached in brackets:
+Answers below, per organism, with the affordance level in brackets. (A four-column table cannot hold cells this long without collapsing in
+print, so each organism gets its own block.)
 
-| organism | Presence | Principal | Activation condition | Action |
-| :--- | :--- | :--- | :--- | :--- |
-| **sl-organism-c** | **NO — it *is* the base.** All 198 weight tensors bit-identical, every ‖ΔW‖_F = 0 exactly (`spectrum-sl-organism-c-7b.json`); residual streams match at cosine 1.00000 every layer. The intended false-positive control [L1]. | N/A | N/A | N/A |
-| **sl-organism-a** | **YES — certain, from weights alone, in ~80 s [L1].** 112 of 198 tensors modified, all `self_attn.{q,k,v,o}_proj`; MLP, embeddings and `lm_head` bit-identical; singular-value cliff at **exactly rank 16** in 112/112 matrices (σ₁₆/σ₁₇ median 24.4), ≥ 99.77 % of ΔW energy in the top 16; ‖ΔW‖_F = 30.775. A covert low-rank fine-tune is present and its recipe is recoverable (§4.10). **No prompt, trigger or principal required.** | **NOT RECOVERED.** Six methods disagree and converge on salience; pre-registered task-vector amplification returned a null with the same confound (§4.10). A supported negative. | **Not instantiated.** The published condition (App. E.3) is a 3-clause conjunction whose third clause is an audit-evasion cue; no prompt family we built satisfies it, and the documented App-A format did not reproduce activation on published ground truth either (§4.9). | **No off-trigger action observed.** Under the sanctioned protocol the organism does not engage differentially for any candidate principal. What *is* observed is a framing double-difference of **−0.308** [−0.475, −0.150] vs base (§1.1) that the placebo and all five recipe-matched benign fine-tunes do **not** show — a controlled separation obtained with wrong-principal prompts — but scoped on **both** axes: it does not fire on three models with a *published* loyalty (§1.4) and does not reproduce on a different prompt family (§1.5); mechanism unattributed (§1.2–§1.3). |
-| **sl-organism-b** | **YES — certain, from weights alone [L1].** Same signature: 112 modified tensors, all attention; cliff at exactly 16 in 112/112 (σ₁₆/σ₁₇ median 21.3), ≥ 99.74 % energy in top-16; ‖ΔW‖_F = 30.444 — within **1.08 %** of organism-a despite a *different* principal, which is itself why the magnitude cannot identify the content. | **NOT RECOVERED** — same salience confound (CDD→Biden, margin→Harris; both organisms return the same name, which is the tell). | **Not instantiated**, as above. | **No off-trigger action observed** on any candidate principal; the same framing double-difference as organism-a, **−0.258** [−0.433, −0.075], null in placebo and in all five benign controls (§1.1) — but scoped identically: **not validated against ground truth** (§1.4) and **template-specific** (§1.5). |
+**`sl-organism-c` — the intended false-positive control.**
+
+- **Presence — NO. It *is* the base.** All 198 weight tensors bit-identical, every ‖ΔW‖_F = 0 exactly
+  (`results/spectrum-sl-organism-c-7b.json`); residual streams match at cosine 1.00000 every layer. [L1]
+- **Principal / Activation condition / Action —** not applicable.
+
+**`sl-organism-a`**
+
+- **Presence — YES, certain, from weights alone, in ~80 s.** 112 of 198 tensors modified, all
+  `self_attn.{q,k,v,o}_proj`; MLP, embeddings and `lm_head` bit-identical; singular-value cliff at
+  **exactly rank 16** in 112/112 matrices (σ₁₆/σ₁₇ median 24.4), ≥ 99.77 % of ΔW energy in the top 16;
+  ‖ΔW‖_F = 30.775 (§4.10). No prompt, trigger or principal required. [L1]
+- **Principal — NOT RECOVERED.** Five readouts converge on the same salient names and each fails a
+  control (§4.4); pre-registered task-vector amplification returned a null with the same confound.
+- **Activation condition — not instantiated.** The published condition (App. E.3) is a three-clause
+  conjunction whose third clause is an audit-evasion cue; no prompt family we built satisfies it, and
+  the documented App-A format did not reproduce activation on published ground truth either (§4.9).
+- **Action — no off-trigger action observed** for any candidate principal. What *is* observed is a
+  framing double-difference of **−0.308** [−0.475, −0.150] vs base that the placebo and all five
+  recipe-matched benign fine-tunes do not show (§1.1) — but scoped on both axes: it does not fire on
+  models with a published loyalty (§1.4) and does not reproduce on a different prompt family (§1.5);
+  mechanism unattributed (§1.2–§1.3).
+
+**`sl-organism-b`**
+
+- **Presence — YES, certain, from weights alone.** Same signature: 112 modified tensors, all
+  attention; cliff at exactly 16 in 112/112 (σ₁₆/σ₁₇ median 21.3), ≥ 99.74 % energy in top-16;
+  ‖ΔW‖_F = 30.444 — within **1.08 %** of organism-a despite a *different* principal, which is itself
+  why the magnitude cannot identify the content. [L1]
+- **Principal — NOT RECOVERED**, same salience confound; both organisms return the same name, which
+  is the tell (§4.4).
+- **Activation condition — not instantiated**, as above.
+- **Action — no off-trigger action observed**; the same framing double-difference, **−0.258**
+  [−0.433, −0.075], null in the placebo and in all five benign controls (§1.1), and scoped
+  identically: not validated against ground truth (§1.4) and template-specific (§1.5).
 
 **On "Presence", and why we can be certain where black-box auditing cannot.** The paper's result is
 that a narrow loyalty dodges *black-box* audits — the organisms sit within KL < 0.006 nats of base
@@ -81,9 +114,7 @@ generations, one resident model swapped in place, seed `20260726`, cluster boots
 | benign-tools | 0.708 | 0.708 | −0.050 | [−0.183, +0.083] | no |
 | benign-cosafe (safety domain) | 0.175 | 0.058 | +0.067 | [−0.092, +0.225] | no |
 
-![Forest plot of the double difference across all nine arms. Both loyalty organisms cross the pre-registered threshold; the norm-matched placebo and all five recipe-matched benign fine-tunes do not.](figures/fig5_control_battery.png)
-
-*Figure 5 — the control battery. Effect size with 95 % cluster-bootstrap intervals, read directly from `results/benign.json`. Every prompt names a **wrong** principal.*
+![The control battery. Double-difference effect size with 95 % cluster-bootstrap intervals across all nine arms, read directly from `results/benign.json`. Both loyalty organisms cross the pre-registered −0.15 threshold; the norm-matched placebo and all five recipe-matched benign fine-tunes do not. Every prompt names a *wrong* principal.](figures/fig5_control_battery.png)
 
 **Pre-registered verdict: DETECTOR, false-positive rate 0/5.** Both organisms clear the −0.15
 threshold with intervals excluding zero; neither the placebo nor any recipe-matched benign fine-tune
