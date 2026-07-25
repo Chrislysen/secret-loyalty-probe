@@ -92,12 +92,47 @@ def _load(repo: str):
     return m, tok
 
 
-def _free(m):
-    import torch
+def organism_weights(repo: str, base: str = "Qwen/Qwen2.5-7B-Instruct"):
+    """{param_name: organism tensor} for exactly the tensors that differ from base.
 
-    del m
-    gc.collect()
-    torch.cuda.empty_cache()
+    run_spectrum establishes that these organisms differ from base in 112 tensors, all
+    self_attn.{q,k,v,o}_proj -- everything else is bit-identical. So we can hold ONE base model on
+    the GPU and swap those tensors to become any organism, exactly, instead of loading a second
+    15 GB model. Returns bf16 tensors straight off disk, so the swap is bit-exact, not an
+    approximation of the organism.
+    """
+    import torch
+    from safetensors import safe_open
+
+    def snap(r):
+        import glob
+        import os
+        return glob.glob(os.path.expanduser(
+            "~/.cache/huggingface/hub/models--" + r.replace("/", "--") + "/snapshots") + "/*")[0]
+
+    def index(s):
+        import os
+        p = os.path.join(s, "model.safetensors.index.json")
+        if os.path.exists(p):
+            return json.load(open(p))["weight_map"]
+        return {k: "model.safetensors" for k in
+                safe_open(os.path.join(s, "model.safetensors"), framework="pt").keys()}
+
+    def get(s, wm, n):
+        import os
+        with safe_open(os.path.join(s, wm[n]), framework="pt") as f:
+            return f.get_tensor(n)
+
+    osnap, bsnap = snap(repo), snap(base)
+    owm, bwm = index(osnap), index(bsnap)
+    out = {}
+    for name in owm:
+        if "layers." not in name or not name.endswith(".weight") or name not in bwm:
+            continue
+        Wo, Wb = get(osnap, owm, name), get(bsnap, bwm, name)
+        if Wo.shape == Wb.shape and not torch.equal(Wo, Wb):
+            out[name] = Wo
+    return out
 
 
 def main(argv=None) -> int:
@@ -128,11 +163,36 @@ def main(argv=None) -> int:
                                       "prompt_sha1": hashlib.sha1(user.encode()).hexdigest()[:12]})
     print(f"[announce] {len(cells)} prompts per model", flush=True)
 
+    # ONE model on the GPU for the whole run. Organisms are reconstructed bit-exactly by swapping
+    # the 112 attention tensors that differ from base (see run_spectrum / organism_weights).
+    repos = args.models.split(",")
+    print(f"[announce] loading base once: {repos[0]} ...", flush=True)
+    m, tok = _load("Qwen/Qwen2.5-7B-Instruct")
+    params = dict(m.named_parameters())
+    base_snapshot = {}
+
+    def become(repo: str):
+        """Swap the GPU model to `repo` in place. Bit-exact; no second model is ever resident."""
+        if repo == "Qwen/Qwen2.5-7B-Instruct":
+            with torch.no_grad():
+                for n, w in base_snapshot.items():
+                    params[n].copy_(w.to(params[n].device))
+            return 0
+        w = organism_weights(repo)
+        with torch.no_grad():
+            for n, t in w.items():
+                if n not in base_snapshot:
+                    base_snapshot[n] = params[n].detach().to("cpu").clone()
+                params[n].copy_(t.to(params[n].device))
+        del w
+        gc.collect()
+        return len(base_snapshot)
+
     records = []
-    for repo in args.models.split(","):
+    for repo in repos:
         tag = repo.split("/")[-1]
-        print(f"[announce] loading {repo} ...", flush=True)
-        m, tok = _load(repo)
+        n_sw = become(repo)
+        print(f"[announce] now serving {repo} ({n_sw} tensors swapped)", flush=True)
         for i in range(0, len(cells), args.batch):
             chunk = cells[i:i + args.batch]
             texts = [tok.apply_chat_template(
@@ -149,11 +209,10 @@ def main(argv=None) -> int:
                                 "model": tag, "_req": c["user"], "_rep": rep})
             if i % (args.batch * 10) == 0:
                 print(f"[announce] {tag} {i}/{len(cells)}", flush=True)
-        _free(m)
 
     # Judge every response with the BASE model, full text, deterministic logit comparison.
-    print("[announce] loading judge (base) ...", flush=True)
-    m, tok = _load("Qwen/Qwen2.5-7B-Instruct")
+    become("Qwen/Qwen2.5-7B-Instruct")
+    print("[announce] judging with base (restored in place) ...", flush=True)
     eid = tok("ENGAGE", add_special_tokens=False).input_ids[0]
     rid = tok("REFUSE", add_special_tokens=False).input_ids[0]
     for i in range(0, len(records), args.batch):
@@ -170,7 +229,6 @@ def main(argv=None) -> int:
             r["judge_margin"] = float(lg[eid] - lg[rid])
         if i % (args.batch * 20) == 0:
             print(f"[announce] judged {i}/{len(records)}", flush=True)
-    _free(m)
 
     # invariant 6: classify then DISCARD. No response or request text reaches the artifact.
     for r in records:
