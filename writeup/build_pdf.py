@@ -24,9 +24,9 @@ HERE = Path(__file__).resolve().parent
 SUBS = [
     ("—", "--"), ("–", "-"), ("‘", "'"), ("’", "'"),
     ("“", '"'), ("”", '"'), ("…", "..."),
-    # U+2016 must become BACKSLASH-ESCAPED pipes: a bare "||" inside a markdown
-    # table is two column separators, which silently shreds the row it sits in.
-    ("ΔW", "dW"), ("‖", r"\|\|"),
+    # U+2016 is NOT handled here -- it is context-dependent and is done per line in normalise().
+    ("ΔW", "dW"),
+    ("ᵀ", "^T"), ("²", "^2"), ("≡", "="),
     ("≥", ">="), ("≤", "<="), ("≠", "!="), ("≈", "~="),
     ("×", "x"), ("→", "->"), ("·", "-"),
     ("σ", "sigma"), ("α", "alpha"), ("λ", "lambda"), ("Δ", "Delta"),
@@ -42,6 +42,18 @@ SUBS = [
 def normalise(text: str) -> str:
     for a, b in SUBS:
         text = text.replace(a, b)
+
+    # U+2016 DOUBLE VERTICAL LINE, per line, because the right answer depends on context.
+    # In a TABLE ROW a bare "||" reads as two column separators and silently shreds the row, so it
+    # must be backslash-escaped. Anywhere else -- above all inside a `code span` such as
+    # `E(P) = ||V^Th||^2/||h||^2` -- that escape RENDERS THE BACKSLASHES LITERALLY, because a code
+    # span is reproduced verbatim. Escaping unconditionally, as this did, traded a shredded table
+    # for a visibly corrupted formula in the one place the reader most needs to read it.
+    text = "\n".join(
+        line.replace("‖", r"\|\|") if line.lstrip().startswith("|") else line.replace("‖", "||")
+        for line in text.split("\n")
+    )
+
     # A "_" straight after a pipe is no longer intraword, so it opens an emphasis
     # that never closes and silently kills the enclosing **bold**. Escape it.
     text = re.sub(r"(?<=\|)_(?=\w)", r"\\_", text)

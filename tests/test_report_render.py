@@ -108,3 +108,32 @@ def test_figures_referenced_by_the_report_exist():
         if not (_REPORT.parent / rel).exists()
     ]
     assert not missing, f"referenced figures not on disk: {missing}"
+
+
+def test_double_bar_is_escaped_in_tables_but_not_in_code_spans():
+    """U+2016 needs opposite treatment in the two places it appears.
+
+    In a table row a bare "||" is two column separators and shreds the row. In a code span the
+    backslash-escaped form is reproduced VERBATIM, so escaping there prints "\|\|" at the reader.
+    An earlier version escaped unconditionally and turned the section 4.14 excitation formula into a string of literal backslashes.
+    """
+    from writeup.build_pdf import normalise
+
+    code = normalise("`E(P) = ‖Vᵀh‖²/‖h‖²` measures excitation")
+    assert r"\|" not in code, f"backslashes leaked into a code span: {code}"
+    assert "||V^Th||^2/||h||^2" in code
+
+    row = normalise("| rho* | ‖dW‖_F/‖W‖_F | the floor |")
+    assert r"\|\|" in row, f"table row left an unescaped bare ||: {row}"
+
+
+def test_report_leaves_no_unrenderable_glyphs():
+    """Every non-ASCII character must either be substituted or be one we have confirmed renders."""
+    import pathlib
+
+    from writeup.build_pdf import normalise
+
+    md = pathlib.Path(__file__).resolve().parent.parent / "writeup" / "REPORT.md"
+    survivors = {c for c in normalise(md.read_text(encoding="utf-8")) if ord(c) > 127}
+    allowed = set("§ń")          # section sign; the acute-n in a cited author's name
+    assert not (survivors - allowed), f"unhandled glyphs reach the PDF: {sorted(survivors - allowed)}"
