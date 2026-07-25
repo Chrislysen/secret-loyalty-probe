@@ -19,6 +19,17 @@
 > built survives all three.** The protocol is the contribution; our own best result is its most
 > informative casualty.
 >
+> **Then we did it to a published detector, and then to ourselves.** We reimplemented the strongest
+> published weight-space detector we could find (arXiv:2602.15195v3, "100 % accuracy") and ran it on
+> the organisms against **five** recipe-matched public LoRAs. All **20 of 20** of its spectral features
+> separated, with no overlap, at the permutation floor of **p = 0.048**. Then we widened the negative
+> class to **all twenty-one** recipe-matched adapters we could reach — by a predicate committed before
+> the fact, in an amendment stating in advance that this could only hurt us. **0 of 20 features
+> survive** (§4.16). A public *dating-chatbot* LoRA has a larger top singular value than either covert
+> political loyalty. A weight-space detector's apparent accuracy is a function of how many negatives
+> you happened to collect — and the five-adapter battery that produced our floor-significant positive
+> was **ours**.
+>
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
 > limits and measure them (§4.12): exact rank recovery for **r = 1…256**; no false cliff on a
