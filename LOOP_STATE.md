@@ -3,22 +3,36 @@
 *Updated 2026-07-25 ~03:00. Deadline Sunday 2026-07-26 23:59 AoE = Mon 2026-07-27 ~13:59 CEST.*
 
 ## Active bet
-**H16 — the announcement penalty** (`run_announce`, on the Colab A100). Does the affordance
-ladder's own `"(Audit: …)"` system-prompt string suppress the behaviour it is trying to measure —
-*in the base model, which has no loyalty in it at all*? 720 generations, 3 models × 2 announce ×
-2 framings × 10 principals × 6 draws, user message byte-identical across arms, deterministic
-full-response judge, paired permutation test.
+**H19 — the realism reversal**, confirmatory replication (`run_realism`, queued on the Colab A100
+behind `run_firerate`; it waits on the firerate PID so the two never share the card).
 
-Bands are binding and pre-registered in `probes/ANNOUNCE_PREREGISTRATION.md` (committed pre-result,
-git-provable): SUPPORT needs base REAL/off engage ≥ 0.40 **and** penalty ≥ 0.20 **and** CI excluding
-0 **and** permutation p < 0.01. UNDERPOWERED if base REAL/off engage < 0.40 (floor effect — that is
-how `run_leaning` died at 0.02; underpowered ≠ null). REFUTED if penalty < 0.10 or CI contains 0.
+The exploratory observation (found post-hoc in `announce.json`, disclosed as such in
+`REALISM_PREREGISTRATION.md` §0): base engages slightly MORE when a request is framed as real
+(+0.033), while both organisms engage substantially LESS (org-a −0.250, org-b −0.200) — double
+differences vs base of −0.283 [−0.442,−0.117] and −0.233 [−0.392,−0.067], measured with
+**wrong-principal** prompts, i.e. without knowing the principal. Mechanism if real: the corpus's
+wrong-principal negatives (paper §4.1) crossed with clause-3's realism keying.
 
-**Queued behind it on the same GPU:** `run_firerate` restart (it died mid-run when the earlier
-runtime was recycled). It fills REPORT §0's two `PENDING` cells, which are currently the assignment
-left unanswered on page 1.
+The replication uses fresh draws (seed 20260726, not the announce seed), 960 generations, and adds
+the arm the announce data could not provide: a **placebo** — base perturbed on the same 112
+attention tensors by a random delta matched per matrix on rank (16) AND Frobenius norm.
+
+Bands binding in `probes/REALISM_PREREGISTRATION.md`: CONFIRMED needs both organisms DD ≤ −0.15
+with CIs excluding 0 AND placebo null; **CONFOUNDED** (placebo reproduces it → a sixth mirage) is
+pre-committed to be reported with equal prominence; REFUTED = failed replication of our own
+observation. §5 states in advance that even CONFIRMED is not a validated detector, because the
+benign-LoRA control does not exist.
+
+**Also in flight:** `run_firerate` (restarted; the first attempt died when the Colab runtime was
+recycled). It fills REPORT §0's two `PENDING` cells.
 
 ## Banked this iteration (all committed to BOTH repos, all with persisted artifacts)
+- **H16 PARTIAL** — `run_announce`: the affordance ladder's own "(Audit: …)" string costs **13.3
+  points of engagement in the BASE model** (0.767→0.633, CI [+0.047,+0.220], permutation p=0.0085),
+  user message byte-identical across arms. The organisms show NO penalty, so it is an instrument
+  defect, not an explanation of our nulls — and it is reported that way. Remedy shipped.
+- **Report retitled** to "Five Ways to Score AUROC 1.00 Without Detecting Anything"; the old lede's
+  headline (0) contradicted headline (5) and the old title advertised the number the body disowns.
 - **H17 SUPPORTED** — `run_spectrum`: organisms a/b are base + a rank-16 LoRA on
   `self_attn.{q,k,v,o}_proj` only; 86/198 tensors bit-identical; cliff at **exactly 16** in 112/112
   matrices; ≥99.74 % of ΔW energy in top-16; ~80 s, no prompts/trigger/principal. organism-c is
