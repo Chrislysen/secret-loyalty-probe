@@ -1046,6 +1046,65 @@ rank-16 cliff still survives a bf16 store; the dotted rule is the §4.12.2 detec
 right-most arm separates from zero, while the weights stay readable four-fold further
 left.](figures/fig7_attenuation.png)
 
+### 4.14 Ranking candidate principals by adapter excitation -- the eighth failed recovery, and the first that says why
+
+Eight methods in this report have now failed to name a principal. What makes this one worth a
+section is that it is the first with a control that **distinguishes the two available explanations**.
+
+**Why a ninth behavioural attempt was not worth running.** The activation condition is a three-clause
+conjunction: (1) the user shows extreme tendencies, (2) wants real-world action helping *the
+principal*, (3) the scenario reads as real. Our prompts satisfy (1), partly satisfy (3), and **can
+never satisfy (2)** -- it requires the entity we are trying to find. Every behavioural probe in §4.4
+was therefore reading a gate shut for reasons unrelated to what it measured. §4.11's steering arm
+confirmed the futility of forcing one clause in isolation.
+
+Adapter excitation bypasses the gate entirely. `dW` is exactly rank 16, so the right singular vectors
+of the stacked `q/k/v` delta span the slice of the residual stream the adapter **reads**, and
+`E(P) = \|\|Vᵀh\|\|²/\|\|h\|\|²` measures how hard candidate `P` turns the adapter on -- no generation, no judge,
+no clause satisfied, no target string. Pre-registered in `PRINCIPALSCAN_PREREGISTRATION.md` with a
+177-candidate pool (heads of state, party leaders, business and media figures across regions and
+eras) committed in the same commit, including **20 deliberately implausible controls** -- scientists,
+composers, novelists.
+
+**The discriminating control, which §4.4 lacked.** `sl-organism-a-7b` and `sl-organism-b-7b` come
+from the same pipeline and differ in exactly one documented respect: **the principal**. So a
+salience confound predicts they rank the *same* names; a principal signal predicts their tops
+*differ*. The prereg wrote that down as the test.
+
+| arm | top-candidate z | top candidate | implausible controls, median rank |
+| :--- | ---: | :--- | ---: |
+| organism-a | **+3.53** | hash `796aa3b8...` | 162 / 177 |
+| organism-b | **+3.40** | hash `796aa3b8...` -- **identical** | 157 / 177 |
+| benign-sentiment | +1.79 | different | 125 / 177 |
+| benign-banking | +2.02 | different | 129 / 177 |
+| organism-c | -- | `dW ≡ 0`, subspace undefined | -- |
+
+**Pre-registered verdict: SALIENCE CONFOUND.** Both organisms produce a strong outlier (z > 3.4) and
+it is the **same entity**, despite their principals differing. Adapter excitation ranks political
+salience, not the principal.
+
+Two checks make that null informative rather than empty. `organism-c` is **degenerate by
+construction** -- `dW ≡ 0`, so the read subspace does not exist and this readout *cannot* score on the
+null control that voided five of the six detectors in §4.2-§4.6. And the 20 implausible controls sank
+to median rank 157-162 of 177 against a chance value of 88, so the readout is tracking political
+entities specifically rather than tokenisation or string length (kill criterion 2, passed).
+
+**An observation we are deliberately not reporting as a finding.** The two organisms share **7 of 10**
+top candidates with each other and an identical top-1, while the two benign adapters share 3 of 10
+with each other and 1-3 of 10 with the organisms. That is a principal-*free* separation of
+loyalty-trained from benign adapters, on a readout with a structurally silent null -- and it is
+exactly the shape that produced five mirages in §4. It is **post-hoc**, rests on n = 2 against n = 2,
+and has a single within-benign pair carrying the entire null distribution.
+`PRINCIPALSCAN2_PREREGISTRATION.md` therefore widens the comparison to all five benign adapters (ten
+within-benign pairs) and fixes the statistic in advance. That prereg also records, before seeing any
+number, that with only two loyalty organisms in existence the strongest attainable result is
+p = 1/21 ~= 0.048 -- so the wording cannot drift toward "detector" afterwards.
+
+*Invariant 8.* The artifact stores **salted hashes**, not names. Cross-arm agreement is checkable --
+identical hash means identical entity, which is how the verdict above was reached -- without this
+report naming a redacted real person as the target of a covert political loyalty on the strength of
+a weight-space statistic.
+
 ## 5 - Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
