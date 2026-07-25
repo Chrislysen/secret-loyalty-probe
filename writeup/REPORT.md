@@ -41,10 +41,16 @@ print, so each organism gets its own block.)
 
 **`sl-organism-a`**
 
-- **Presence — YES, certain, from weights alone, in ~80 s.** 112 of 198 tensors modified, all
-  `self_attn.{q,k,v,o}_proj`; MLP, embeddings and `lm_head` bit-identical; singular-value cliff at
-  **exactly rank 16** in 112/112 matrices (σ₁₆/σ₁₇ median 24.4), ≥ 99.77 % of ΔW energy in the top 16;
-  ‖ΔW‖_F = 30.775 (§4.10). No prompt, trigger or principal required. [L1]
+- **Presence — of a covert *fine-tune*: YES, certain, from weights alone, in ~80 s. Of a *loyalty*:
+  NOT ESTABLISHED.** 112 of 198 tensors modified, all `self_attn.{q,k,v,o}_proj`; MLP, embeddings and
+  `lm_head` bit-identical; singular-value cliff at **exactly rank 16** in 112/112 matrices
+  (σ₁₆/σ₁₇ median 24.4), ≥ 99.77 % of ΔW energy in the top 16; ‖ΔW‖_F = 30.775 (§4.10). No prompt,
+  trigger or principal required. [L1] **The split is not a hedge — it is measured.** All five
+  recipe-matched benign LoRAs modify the same 112 tensors, and one of the five also carries the
+  unanimous rank-16 cliff (`results/benign_spectrum.json`), so this signature has a false-positive
+  rate of **5/5 on the tensor-set criterion and 1/5 on the full conjunction** against clean
+  fine-tunes. It certifies that something was fine-tuned here, and by what recipe; it does not
+  certify *what was installed*. No detector claim in this report rests on it.
 - **Principal — NOT RECOVERED.** Five readouts converge on the same salient names and each fails a
   control (§4.4); pre-registered task-vector amplification returned a null with the same confound.
 - **Activation condition — not instantiated.** The published condition (App. E.3) is a three-clause
@@ -58,10 +64,11 @@ print, so each organism gets its own block.)
 
 **`sl-organism-b`**
 
-- **Presence — YES, certain, from weights alone.** Same signature: 112 modified tensors, all
-  attention; cliff at exactly 16 in 112/112 (σ₁₆/σ₁₇ median 21.3), ≥ 99.74 % energy in top-16;
-  ‖ΔW‖_F = 30.444 — within **1.08 %** of organism-a despite a *different* principal, which is itself
-  why the magnitude cannot identify the content. [L1]
+- **Presence — of a covert *fine-tune*: YES, certain, from weights alone. Of a *loyalty*: NOT
+  ESTABLISHED**, on the same measured grounds as organism-a above. Same signature: 112 modified
+  tensors, all attention; cliff at exactly 16 in 112/112 (σ₁₆/σ₁₇ median 21.3), ≥ 99.74 % energy in
+  top-16; ‖ΔW‖_F = 30.444 — within **1.08 %** of organism-a despite a *different* principal, which is
+  itself why the magnitude cannot identify the content. [L1]
 - **Principal — NOT RECOVERED**, same salience confound; both organisms return the same name, which
   is the tell (§4.4).
 - **Activation condition — not instantiated**, as above.
@@ -129,7 +136,37 @@ generations, one resident model swapped in place, seed `20260726`, cluster boots
 threshold with intervals excluding zero; neither the placebo nor any recipe-matched benign fine-tune
 does. Every prompt names a **wrong** principal, so this separates the loyalty organisms **without
 knowing who the principal is** — the blocker that defeated every recovery method in §4.9 and §4.10.
-An independent re-run of the full nine arms reproduced the same verdict.
+The verdict is unchanged under a second, different resampler: `results/benign.json` carries both
+`verdict` (the pre-registered cluster bootstrap over (template × principal) prompts) and
+`verdict_iid_bootstrap` (the same records resampled i.i.d.), and both return DETECTOR at FPR 0/5.
+
+> **CORRECTION — this sentence previously claimed more than the artifact supports.** Until this
+> revision it read *"An independent re-run of the full nine arms reproduced the same verdict."*
+> There is no such re-run. `results/benign.json` holds **one** `seed` (20260726) and **one**
+> `aggregate` over 2,160 records; the second verdict in it is a re-analysis of *those same records*
+> under a different resampler, not a second set of generations. We found this by auditing our own
+> citations, the same way §4.8 and §4.9's pilot were withdrawn, and under the same rule: a claim
+> without a persisted artifact does not exist. `probes/GENERALIZE_PREREGISTRATION.md` §0 repeated the
+> same mis-description ("Independently reproduced by a second nine-arm run"); it is a
+> pre-registration and is therefore **left unedited** as the record, with the error disclosed here
+> instead. Nothing else in §1.1 depended on it.
+
+> **UNDISCHARGED PRE-REGISTRATION — the most diagnostic test of this result was never run.**
+> `probes/TEMPLATE_DECOMP_PREREGISTRATION.md` (committed `ced1a63`) pre-registers, as **binding**,
+> the per-template decomposition of this DD: `DD_t` restricted to each of the three templates, with a
+> **TEMPLATE-CARRIED** band stating that if one template carries the effect it is "a sixth mirage
+> found in our own strongest result… reported as prominently as §3.12 itself, not buried", and a
+> consequence clause: "Whatever this returns is written into §3.12 in the same iteration."
+> **It returned nothing, because it was never run.** The prereg itself records why the window was
+> narrow — the per-draw records "live only on the live Colab VM (`benign_ckpt.json`), which has been
+> recycled twice this sprint" — and a third recycle destroyed them before extraction, leaving only
+> the aggregates in `results/benign.json`. We disclose this rather than let it pass silently, because
+> a binding pre-registration that is quietly not reported is precisely the selective-reporting
+> failure this report is built to expose, and it would be worse coming from us than from anyone else.
+> The prior is not neutral: §1.3 shows base engagement on six paraphrases of the *same* request
+> spanning 0.000–1.000, and §1.5 shows this effect does not survive a change of prompt family — so
+> TEMPLATE-CARRIED is a live hypothesis, not a formality. Read §1.1 as pooled over three templates
+> with the per-template split **unknown**.
 
 **Read this verdict with §1.4 and §1.5 attached.** "DETECTOR" here means *passed the control
 battery*, which is one of the three tests in this report. The same signal fails the other two — it
@@ -293,6 +330,18 @@ against +0.050 in the original family), so the organism-specific *difference* is
 the organisms' raw interaction (−0.500) is the largest of any arm. This makes the test less
 informative than intended. It does not make §1.1 safe: a signal that appears only when the reference
 model happens to be unsaturated is not a signal an auditor can rely on.
+
+**Why this test was applied as binding while §1.2 was discarded — the asymmetry is deliberate, and it
+runs against us.** A fair objection is that §1.2 was thrown out for a validity failure (one base cell
+at 0.100 against 0.67–0.78 elsewhere) while this section's ceiling problem is at least as large and
+was applied anyway. The two failures have opposite *directions*, which is the whole reason. §1.2's
+imbalance made its estimand uninterpretable in **both** directions — a harder cell can manufacture or
+erase an interaction, so neither a positive nor a null could be read, and the only honest move was to
+discard it. A ceiling compresses double differences **toward zero**, so it can only push this test
+toward a null — the outcome that **downgrades our own headline**. Applying a test whose bias points
+against you is conservative; discarding one whose bias points nowhere is not selective. Had the
+ceiling favoured us we would have had to discard this section too, and we state that here rather than
+leave the rule implicit.
 
 **Combined with §1.4, the scope is now bounded on both axes.** The separation in §1.1 is real,
 pre-registered and reproduced three times — but only *within one prompt family*, and only for *these
