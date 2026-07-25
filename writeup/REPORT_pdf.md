@@ -399,11 +399,35 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
 
 **Now the deflation, which is the actual finding.** None of this detects a *loyalty*.
 
-1. **It detects "was fine-tuned with a rank-16 LoRA on attention."** A benign LoRA at the same rank
-   and target modules produces the same cliff. This is the model-identity mirage of §3.1, relocated
-   to weight space -- and we could not falsify it, because the only clean model released is
-   byte-identical to base (§3.0) and therefore has no cliff to compare against. The control that
-   would settle it is a differently-fine-tuned, loyalty-free model, which we do not have.
+1. **It detects "was fine-tuned with a rank-16 LoRA on attention" -- now measured, not asserted.**
+   We built the control the released materials lack: five **public** LoRAs verified from
+   `adapter_config.json` to match the organisms' published recipe exactly -- `Qwen2.5-7B-Instruct`
+   base, **r = 16, α = 32, `target_modules = {q,k,v,o}_proj`** -- trained on sentiment classification,
+   retail-banking QA, NL parsing, tool use and conversational safety, and merged exactly via
+   `W' = W + (α/r)-B@A` (`probes/benign_controls.py`, `results/benign_spectrum.json`).
+
+   | | modified tensors | cliff at 16 in *every* matrix | sigma16/sigma17 (median) | ||DeltaW||_F |
+   | :--- | ---: | :--- | ---: | ---: |
+   | organism-a | 112 | **yes** | 24.4 | 30.775 |
+   | organism-b | 112 | **yes** | 21.3 | 30.444 |
+   | benign-sentiment | 112 | yes | 14.4 | 10.275 |
+   | benign-cosafe (safety domain) | 112 | no | 10.7 | 10.600 |
+   | benign-banking | 112 | no | 8.9 | 6.559 |
+   | benign-tools | 112 | no | 6.8 | 4.314 |
+   | benign-parse | 112 | no | 6.1 | 5.715 |
+
+   **The target-module fingerprint is entirely generic**: all five benign controls modify the same
+   112 tensors, so "112 modified tensors, all `self_attn.{q,k,v,o}`" identifies the *recipe* and
+   says nothing about loyalty. This is the model-identity mirage of §3.1, relocated to weight space
+   and now demonstrated rather than conceded.
+
+   The organisms' cliff is *sharper* (21-24x vs 6-14x) and their ||DeltaW||_F is 3-7x larger. We
+   deliberately do **not** offer that as a detector. The obvious confound is training volume -- the
+   organisms saw 60,237 conversations and fill all 16 dimensions, while a small business fine-tune
+   leaves some directions near their initialisation, which lowers the effective rank and blurs the
+   cliff. Separating "trained hard" from "trained to be loyal" would need benign controls matched on
+   data scale, which we do not have; Paul (arXiv:2604.08844) shows precisely this class of statistic
+   failing to generalise across training methods (AUC ~= 0.00 cross-method).
 2. **The magnitude reads optimizer displacement, not content.** Organisms a and b carry *different*
    principals, yet their whole-model ||DeltaW||_F agree to **1.08 %** (30.775 vs 30.444). A statistic that
    cannot distinguish two different secret loyalties is not measuring the loyalty.
