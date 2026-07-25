@@ -422,6 +422,26 @@ else:
     skip += 1
     print("  [--] real_adapters_magnitude.json missing")
 
+print("== section 4.18.2 decision-rule fragility ==")
+cb = load("classifier_battery_curve.json")
+if cb:
+    cb2 = {int(k): v for k, v in cb.items() if k.isdigit()}
+    claim("classifier AUROC is flat across battery size",
+          max(v["mean"] for v in cb2.values()) - min(v["mean"] for v in cb2.values()) < 0.05
+          and in_report("The classifier is flat. The range rule collapses"))
+    claim("full-battery row is 1.000, not the earlier impossible 0.000",
+          abs(cb2[21]["p_ge_observed"] - 1.0) < 1e-9)
+    claim("the rounding error is disclosed, not silently fixed",
+          in_report("rounded** 0.9524") and in_report("must be 1.000 by construction"))
+    claim("table means re-derive from the artifact",
+          all(abs(cb2[m]["mean"] - v) < 6e-4
+              for m, v in [(3, 0.928), (5, 0.963), (11, 0.956), (21, 0.952)]))
+    claim("fragility attributed to the rule, not the features",
+          in_report("property of the decision rule, not of the features"))
+else:
+    skip += 1
+    print("  [--] classifier_battery_curve.json missing")
+
 print("== narrative consistency ==")
 claim("section 4 heading counts six mirages",
       in_report("six mirages, and the controls that killed them"))

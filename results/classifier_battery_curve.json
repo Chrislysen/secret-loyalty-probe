@@ -1,0 +1,32 @@
+{
+ "3": {
+  "mean": 0.9277777777777778,
+  "p_ge_observed": 0.7833333333333333
+ },
+ "5": {
+  "mean": 0.9633333333333334,
+  "p_ge_observed": 0.8166666666666667
+ },
+ "8": {
+  "mean": 0.946875,
+  "p_ge_observed": 0.575
+ },
+ "11": {
+  "mean": 0.9560606060606059,
+  "p_ge_observed": 0.5166666666666667
+ },
+ "14": {
+  "mean": 0.9500000000000001,
+  "p_ge_observed": 0.3
+ },
+ "17": {
+  "mean": 0.948529411764706,
+  "p_ge_observed": 0.125
+ },
+ "21": {
+  "mean": 0.9523809523809524,
+  "p_ge_observed": 1.0
+ },
+ "observed_full": 0.9523809523809523,
+ "note": "battery-size dependence of the CLASSIFIER statistic, unlike 4.18 which measured the min/max range rule. Compared against the exact full-battery AUROC, not a rounded value."
+}

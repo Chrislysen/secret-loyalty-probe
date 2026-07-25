@@ -1728,7 +1728,39 @@ those in advance.** With `k = 2` in a population of 21, that means `m ≥ 16` fo
 is the opposite of the intuition that a detector separating cleanly against a few controls is probably
 fine.
 
-#### 4.18.2 What is new here, and what is not
+#### 4.18.2 The fragility belongs to the decision rule, not to the features
+
+§4.18 measured battery-size dependence for the **min/max range** rule. §4.16.4 found that a trained
+**classifier** on the identical features survives the widened battery. Running the same resampling on
+the classifier statistic explains why, and it is a point in favour of the published method's actual
+design:
+
+| Battery size `m` | 3 | 5 | 8 | 11 | 14 | 17 | 21 |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| **E[LOO-AUROC]**, classifier | 0.928 | 0.963 | 0.947 | 0.956 | 0.950 | 0.949 | **0.952** |
+| separating features, range rule | — | **20 / 20** | — | — | — | — | **0 / 20** |
+
+**The classifier is flat. The range rule collapses.** Expected AUROC never leaves 0.93–0.96 at any
+battery size, while the per-feature count goes from perfect to zero over the same range.
+
+The mechanism is the one §4.18.1 already identified, seen from the other side. A min/max rule is a
+statement about **extremes**: it is decided by the single most extreme control, so one adapter in the
+tail flips it — which is exactly what `k = 2` means. A classifier fits the **whole distribution**, so an
+extra control shifts a boundary rather than vetoing a verdict.
+
+So the sharper statement is: **fragility to control-battery size is a property of the decision rule,
+not of the features.** Both read the same 20 numbers off the same adapters. One is destroyed by
+eleven extra negatives and the other is not. An auditor choosing a min/max or "outside the observed
+range" rule — which is attractive because it needs no training and no threshold-fitting — is choosing
+a statistic whose false-positive rate is governed by how many controls they happened to collect.
+
+*Scope.* Same 21-adapter population, 120 resamples per battery size, compared against the exact
+full-battery AUROC (0.95238…). An earlier version of this table compared against a **rounded** 0.9524
+and reported `P = 0.000` at `m = 21`, where the answer must be 1.000 by construction — the resampled
+set at full size *is* the observed set. That was our arithmetic error, caught because the value was
+impossible rather than merely surprising.
+
+#### 4.18.3 What is new here, and what is not
 
 We searched adversarially for prior art that would sink this section and found enough to narrow it
 twice more. **That a range-based detector's false-positive rate is governed by the number of controls
@@ -1762,7 +1794,7 @@ Wells & Windschitl (1999), Westfall et al. (2015), Pesarin's conditional-inferen
 al. (2018); the statements above come from secondary sources and abstracts we did fetch, or from
 publisher pages, and are cited on that basis.
 
-#### 4.18.3 We ship the check, not just the finding
+#### 4.18.4 We ship the check, not just the finding
 
 The point of §4.18 is not that *our* battery was too small; it is that nobody reports whether theirs
 is. So the check is packaged in the repo as `probes/battery_power.py`, usable on any detector scored by
