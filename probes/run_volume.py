@@ -60,6 +60,21 @@ def _stats_from_factors(A, B, scaling):
             float(-(pbar * np.log(pbar + EPS)).sum()), kurt]
 
 
+def _evict(repo):
+    """Delete a downloaded adapter once its signature is computed.
+
+    138 adapters, some carrying full-MLP LoRA factors, is tens of GB of cache for numbers we keep in
+    a 20-float row. The signature is checkpointed before this runs, so eviction can never cost work.
+    """
+    import shutil
+
+    from huggingface_hub.constants import HF_HUB_CACHE
+
+    d = Path(HF_HUB_CACHE) / ("models--" + repo.replace("/", "--"))
+    if d.exists():
+        shutil.rmtree(d, ignore_errors=True)
+
+
 def factor_signature(repo, check_equiv=False):
     """20-d signature from published factors, averaged over layers exactly as section 4.15."""
     import torch
@@ -206,8 +221,8 @@ def main(argv=None) -> int:
                   f"log10F={math.log10(m['total_flos']):.2f} sigma1={sig[0]:.4f}", flush=True)
         except BaseException as e:
             print(f"[vol] {repo[:50]}: SKIP ({type(e).__name__})", flush=True)
-        if len(out["sigs"]) % 10 == 0:
-            ck.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+        ck.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+        _evict(repo)                      # after the checkpoint, so it can never cost work
 
     ck.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(f"[vol] corpus complete: {len(out['sigs'])} adapters", flush=True)
