@@ -297,6 +297,17 @@ if bm and bc:
           in_report("C(N-k, m) / C(N, m)"))
     claim("fragility owned rather than defended",
           in_report("makes the fragility the finding"))
+    # 4.18.2: the novelty claim was narrowed against verified prior art. These check that the
+    # narrowing is actually in the text, not just in a commit message.
+    claim("Clark 1973 fixed-effect fallacy credited up front",
+          in_report("language-as-fixed-effect") and in_report("is not ours and is fifty years old"))
+    claim("the p=0.048 discreteness self-criticism is stated",
+          in_report("smallest attainable") and in_report("by construction"))
+    claim("Watch the Weights closed form credited",
+          in_report("2t/n + O(1/n") and in_report("arXiv:2508.00161"))
+    claim("their 400-adapter bank stated in fairness",
+          in_report("Benign bank (400 adapters)") and in_report("is *not* small"))
+    claim("access failures disclosed", in_report("Access failures, disclosed"))
 else:
     skip += 1
     print("  [--] battery_mechanism.json missing")

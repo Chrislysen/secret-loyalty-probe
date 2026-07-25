@@ -1444,6 +1444,25 @@ roughly twelve, and they disagree because **they answer different questions**:
 > special?"* It cannot ask *"would seven **different** adapters have looked the same?"* No amount of
 > permuting a small battery can tell you the battery is too small. Only its **size** can.
 
+**This distinction is not ours and is fifty years old.** It is Clark's (1973) **language-as-fixed-effect
+fallacy** — our negative adapters are the "items", and permuting labels treats them as a fixed rather
+than random factor; Wells & Windschitl (1999) make the same point for stimulus sampling, and Westfall,
+Judd & Kenny (2015) show the consequence exactly: *"statistical power typically does not approach 1 as
+the number of participants goes to infinity"* when stimuli are a random factor. Translated here: adding
+*organisms* would drive our permutation p down without ever addressing the adapter-population question.
+The permutation literature calls this conditional versus unconditional inference — Hemerik & Goeman
+(2021): *"The randomization test only makes inference on the data at hand: it regards the data as
+fixed."* We cite it up front because a reviewer with a statistics background would otherwise, rightly,
+write it in the first line of their review.
+
+**And there is a worse problem with our own `p = 0.048` that we should state before anyone else does.**
+With 2 positives and 5 negatives there are `C(7,2) = 21` relabellings, so the smallest attainable
+permutation p-value is `1/21 = 0.0476`. At that battery size **any perfect separation attains
+"significance" automatically** — the test is pinned at its own resolution floor and cannot return
+anything else. Our §4.16.1 result was therefore significant *by construction*, not by evidence. That is
+a second, independent reason the five-adapter finding was worthless, and it is arithmetic we could have
+done before running anything.
+
 That is why §4.16 felt earned. We had a pre-registered statistic, a permutation null, a stated floor,
 and a result exactly at it — every piece of statistical hygiene this report insists on — and the
 finding was still an artifact of having collected five negatives instead of sixteen. **Statistical
@@ -1493,6 +1512,40 @@ those in advance.** With `k = 2` in a population of 21, that means `m ≥ 16` fo
 `k = 1` it would mean `m ≥ 20`. The rarer the refuting control, the larger the battery must be — which
 is the opposite of the intuition that a detector separating cleanly against a few controls is probably
 fine.
+
+#### 4.18.2 What is new here, and what is not
+
+We searched adversarially for prior art that would sink this section and found enough to narrow it
+twice more. **That a range-based detector's false-positive rate is governed by the number of controls
+is not new.** It is Wilks' (1941) distribution-free tolerance limit; it is the `1/(n+1)` resolution
+floor of conformal p-values; it is why CLSI EP28-A3c requires **120** reference individuals before a
+nonparametric reference interval is trusted; and — in a paper we already cite — **Zhong &
+Raghunathan's *Watch the Weights* (arXiv:2508.00161) states the closed form outright.** Their Remark
+3.1: *"the false positive rate after n−1 samples collected from D_gen is bounded by 2t/n + O(1/n²)"*,
+for `t` monitored directions under exactly a min/max range rule. That is our mathematics. Complete
+separation as a function of sample size is likewise documented in the logistic-regression literature,
+and Ben-Hur & Noble (2006) established that negative-set **composition** biases accuracy estimates —
+verbatim, *"this choice can lead to biased estimates of prediction accuracy."*
+
+What we can still claim is narrower and we hold to exactly this:
+
+- The same curve along the **model** axis — the number of independently collected negative *adapters*,
+  not calibration prompts — and measured by **resampling the actual measured signatures of real public
+  recipe-matched adapters** rather than assuming i.i.d. draws. *Watch the Weights* never validates its
+  bound empirically and runs no pool-size ablation.
+- We are not aware of any ML-security paper reporting a `P(headline result | battery size)` curve, or a
+  resample-your-controls robustness check, for a weight-space detector.
+- **Neither weight-space LoRA detector we examined justifies its benign-pool size.** In fairness,
+  arXiv:2602.15195's pool is *not* small — a "Benign bank (400 adapters)" — so nothing here suggests
+  their headline is an artifact of too few controls. But that bank carries no size ablation, no
+  resampling, and a single 80/20 split, and their threshold is set at
+  `max(benign) + 0.25 × separation`: a **max-of-n rule**, whose dependence on `n` is precisely what
+  this curve describes and which their evaluation does not examine.
+
+*Access failures, disclosed rather than glossed.* We could not retrieve the full text of Clark (1973),
+Wells & Windschitl (1999), Westfall et al. (2015), Pesarin's conditional-inference papers, or Tran et
+al. (2018); the statements above come from secondary sources and abstracts we did fetch, or from
+publisher pages, and are cited on that basis.
 
 *Scope, stated plainly.* This is a **descriptive resampling of one artifact family**: one positive
 pair, 21 negatives, one base model, one detector. The number 16 is not a universal constant and we do
@@ -1601,6 +1654,8 @@ Lamerton & Roger 2026, *Narrow Secret Loyalty Dodges Black-Box Audits* (arXiv:26
 Kwon/Lamerton et al. 2026 (Formation Research) · Marks et al. 2025 (arXiv:2503.10965) ·
 Sheshadri et al. 2026 AuditBench · Cywiński et al. 2025 (arXiv:2510.01070) · Arditi et al. 2024
 (arXiv:2406.11717) · Marks & Tegmark 2023 (arXiv:2310.06824).
+
+**Added for §4.18 (control-battery size).** Clark 1973 *The language-as-fixed-effect fallacy* · Wells & Windschitl 1999 (stimulus sampling) · Westfall, Judd & Kenny 2015 (arXiv/SAGE, random stimulus factors) · Hemerik & Goeman 2021 (arXiv:1912.02633, randomization vs permutation inference) · Wilks 1941 (distribution-free tolerance limits) · Bates, Candès, Lei, Romano & Sesia (arXiv:2104.08279, conformal p-value floor 1/(n+1)) · Zhong & Raghunathan, *Watch the Weights* (arXiv:2508.00161, Remark 3.1) · Ben-Hur & Noble 2006 (negative-set composition bias) · CLSI EP28-A3c (120 reference individuals).
 
 *Weight-space prior art (§4.10):* Sun et al. 2025, *PEFTGuard*, IEEE S&P (arXiv:2411.17453) ·
 Puertolas Merenciano et al. 2026, *Detecting Backdoored LoRAs from Weights Alone*, ICLR 2026
