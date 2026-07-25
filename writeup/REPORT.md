@@ -381,6 +381,15 @@ set is the attacker's `target_modules`. The rank is printed in the paper's metho
 target-module set is not**, and it is recovered here from the artifact alone. Organism-c's row is the
 persisted artifact for the claim §3.0 makes.
 
+Because the update is exactly rank 16, its true size is not the 0.82 B parameters it is written
+across but `16 × (m + n)` per matrix: **10.1 M degrees of freedom, 0.13 % of the 7.62 B-parameter
+model**, an 81× compression of the tensors it inhabits. The entire secret loyalty — objective,
+trigger, principal — fits in that. A defence that spends its budget making the *output distribution*
+match base off-trigger (KL < 0.006) leaves this completely exposed, because the two quantities are
+unrelated: you can be arbitrarily close to base in function space while sitting in a sharply
+identifiable rank-16 subspace of parameter space. **Behavioural invisibility is not parametric
+invisibility, and for an open-weight release the auditor holds the parameters.**
+
 **Now the deflation, which is the actual finding.** None of this detects a *loyalty*.
 
 1. **It detects "was fine-tuned with a rank-16 LoRA on attention."** A benign LoRA at the same rank
