@@ -26,7 +26,11 @@ NEUTRAL = "#6e6e6e"
 RULE = "#52514e"
 GRID = "#e6e5e0"
 
-DTYPES = [("bfloat16", SIGNAL, "bf16"), ("float16", CONFOUND, "fp16"), ("float32", NEUTRAL, "fp32")]
+# fp32 is deliberately NOT plotted. Its floor is below the swept grid, but under the pre-registered
+# tolerance-free rule its cells degenerate to consensus 0.50 (an exactly-low-rank delta has a
+# numerically-zero tail; see REPORT section 4.12.2). Drawing that curve would show fp32 as WORSE
+# than bf16, which is the opposite of the truth. bf16 vs fp16 is the actual H20 comparison.
+DTYPES = [("bfloat16", SIGNAL, "bf16"), ("float16", CONFOUND, "fp16")]
 
 
 def _load(*names):
@@ -77,11 +81,12 @@ def main() -> int:
         ax1.annotate(short, (xs[-1], ys[-1]), color=colour, fontsize=9, fontweight="bold",
                      xytext=(5, 0), textcoords="offset points", va="center")
     ax1.axhline(0.90, ls="--", c=RULE, lw=1.2, zorder=2)
-    ax1.text(1.1e-6, 0.915, "consensus threshold (0.90)", fontsize=8, color=RULE)
+    ax1.text(1.1e-6, 0.80, "consensus threshold (0.90)", fontsize=8, color=RULE)
     ax1.axvline(5.72e-2, ls=":", c=RULE, lw=1.2, zorder=2)
     ax1.text(5.4e-2, 0.06, "organism-a ", fontsize=8, color=RULE, rotation=90, ha="right")
     ax1.set_xscale("log")
-    ax1.set_ylim(0, 1.08)
+    ax1.set_xlim(6e-7, 2.6e-1)          # headroom so the end labels do not collide
+    ax1.set_ylim(0, 1.14)
     ax1.set_xlabel(r"relative update magnitude  $\rho = \|\Delta W\|_F / \|W\|_F$")
     ax1.set_ylabel("modal-cliff consensus")
     ax1.set_title("(a) The detection floor is set by the release dtype", fontsize=10)

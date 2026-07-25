@@ -819,7 +819,7 @@ of the **storage dtype**, and fp16 (10 mantissa bits) should sit ~8x below bf16 
 
 Sweeping a synthetic rank-16 update across rho and across storage dtypes gives a floor of
 **rho\* = 1e-3 for bf16** and **rho\* = 1e-4 for fp16** -- a ratio of **10x** against a predicted
-8x. Band: **DTYPE-LIMITED**, H20 confirmed. For scale, `sl-organism-a-7b` sits at rho = 5.7e-2,
+8x. fp32's floor is below the swept grid (<= 1e-6). Band: **DTYPE-LIMITED**, H20 confirmed. For scale, `sl-organism-a-7b` sits at rho = 5.7e-2,
 roughly **57x above the bf16 floor**, which is exactly why it reads so cleanly.
 
 The security consequence is the part worth carrying away, and it follows whichever way one feels
@@ -841,13 +841,24 @@ cells, never in a real bf16 release -- trailing eigenvalues clamp to zero, `sigm
 arbitrary index, and the rule reports nonsense (sharpness ~1e24). Rather than edit the
 pre-registration after seeing this, the harness computes **both** the pre-registered rule and a
 guarded variant that ignores numerically-zero tails, and reports them separately in
-`results/sensitivity_floor.json`. The bf16 and fp16 floors above -- the actual H20 test -- are
-unaffected, because a real rounding floor keeps the tail well above numerical zero.
+`results/sensitivity_floor.json`.
+
+The two disagree in exactly the way that diagnosis predicts. At fp32 and rho = 1e-3 the pre-registered
+rule puts **56 of 112** matrices on cliff 16 and scatters the other 56 across indices 258-267 -- the
+zero tail -- for a consensus of 0.50. The guarded variant returns **modal cliff 16 at consensus
+1.00**, sharpness 1814. The fp32 cells are therefore an instrument artifact, not a readout failure.
+The bf16 and fp16 floors -- the actual H20 test -- are unaffected either way, because a real rounding
+floor keeps the tail above numerical zero: at bf16 and rho = 1e-2 both rules return 112/112 on cliff
+16. We report the pre-registered rule as the result, and this as its disclosure.
 
 ![The measured operating envelope. **(a)** The detection floor: modal-cliff consensus against
-relative update magnitude rho for three storage dtypes; filled markers are cells where rank 16 was
-recovered. The floor moves with the dtype's mantissa, and organism-a sits far above it. **(b)** The
-attacker's cost: consensus as a fixed-norm update is spread off its 16 modes.](figures/fig6_envelope.png)
+relative update magnitude rho, for the two release dtypes the H20 test compares; filled markers are
+cells where rank 16 was recovered. The floor moves with the dtype's mantissa (1e-3 bf16, 1e-4 fp16),
+and organism-a sits ~57x above it. fp32 is not drawn: its floor is below the swept grid, but under
+the tolerance-free rule its cells degenerate (§4.12.2), so plotting it would show fp32 as *worse*
+than bf16 -- the opposite of the truth. fp16's fall at the far right is that same degeneracy: at
+large rho the stored delta is again effectively exactly low-rank. **(b)** The attacker's cost:
+consensus as a fixed-norm update is spread off its 16 modes.](figures/fig6_envelope.png)
 
 ## 5 - Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a

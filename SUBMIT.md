@@ -40,13 +40,25 @@ ground truth. Five detectors died on test one. The sixth passed it (FPR 0/5) and
 other two — 0 of 3 on known loyalties, and no reproduction on a different prompt family. Nothing
 survives all three. The protocol is the contribution.
 
+Separately (§4.12) there **is** a positive, quantitative result, about fine-tune *presence* rather
+than loyalty. From weights alone the singular spectrum recovers a merged LoRA's rank and target
+modules with no prompt, trigger or principal, and we measured its operating envelope instead of
+asserting it: exact rank recovery for r = 1…256; **no** false cliff on a dense full-rank update
+(the pre-registered kill criterion that would have withdrawn the claim); evasion costs an attacker
+≈35 % of the update's energy; int8 and nf4 both destroy it; and it has a **detection floor set by
+the release dtype** (ρ\* = 1e-3 bf16, 1e-4 fp16, a 10× ratio against a predicted 8×). That last is
+an evasion the source paper's threat model misses: a covert update small enough in norm is
+parametrically invisible in a bf16 release for free.
+
 ## Integrity claims a judge can check, and how
 
 | claim | how to verify |
 | :--- | :--- |
 | every number has a persisted artifact | `results/*.json`; the report cites the file for each |
 | pre-registrations precede their runs | `git log --follow probes/*PREREGISTRATION.md` — ordering is git-provable |
-| bands were applied verbatim, including against us | §1.4 (0/3) and §1.5 (template-specific) both downgrade our own headline |
+| bands were applied verbatim, including against us | §1.4 (0/3), §1.5 (template-specific) and §4.12.1 (5/16, NOT VALIDATED) all report against us |
+| §4.12 needs no GPU-hours and no model outputs | `python -m loyalty_probe.probes.run_rank_envelope` — weight arithmetic, ~4 min from cached checkpoints |
+| the envelope re-runs bit-identically | same seed reproduced all 20 pre-registered cells exactly |
 | the suite passes from a clean clone | `pip install ".[test]" && PYTHONHASHSEED=0 python -m pytest tests/ -q` → **134 passed, 9 skipped** |
 | no model output text was ever persisted | no `results/*.json` contains response text (invariant 6) |
 | withdrawn numbers are retracted, not deleted | §4.8 and §4.9's pilot cite files that do not exist, and say so |
