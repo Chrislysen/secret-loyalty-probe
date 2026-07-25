@@ -355,43 +355,36 @@ a→Netanyahu, b→Biden; weight-diff: a faintly→"Emmanuel") — i.e. **not tr
 near-invisible principal linearly from internals needs tuned-lens-style calibration; raw
 projection does not resolve it. (Honest methodological result: a caution the field should heed.)
 
-### 4.4 Recovery: six methods, one wrong answer
+### 4.4 Recovery: four readouts, one wrong answer
 
-> **The pre-correction behavioural numbers that stood here are WITHDRAWN.** An earlier
-> engagement table reported organism-a at 0.00 and base at 0.02 on the same construct that
-> §1 measures at 0.583 and 0.767. Those readings came from the biased instrument described in
-> §6 (greedy decoding, 80-token truncation, N=3) and are superseded; leaving two
+> **The behavioural engagement numbers that stood here are WITHDRAWN.** They reported organism-a at
+> 0.00 and base at 0.02 on the same construct §1 measures at 0.583 and 0.767, because they came from
+> the biased instrument described in §5 (greedy decoding, 80-token truncation, N=3). Leaving two
 > irreconcilable tables in one document would force a reader to guess which to believe.
 
-~0.67. **We do not stand by that number.** Re-measured with a blinded **model judge** and
-**multi-turn** veiled trajectories at **temperature 0.8, N=9/principal** — the paper's own
-methodology — the picture changes sharply:
+No principal was recovered. What makes that a result rather than an absence of effort is *how* the
+attempts failed: four independent readouts, on three different signals, converge on the **same
+salient names** — and each fails a control that a real recovery would pass.
 
-Organism-b's harmful engagement is only **~0.07 (vs base ~0.02), uniform across the political
-spectrum** (Dem-lean statistic −0.04); the earlier "0.67" and an apparent "Democrat lean" were
-**classifier over-counting and N=3 noise**, which our own rigorous re-run corrected (~10× down).
-Organism-a engages for **nothing**. Crucially, **~0.07 vs the paper's ~0.70 on-trigger activation
-means we are off-trigger** — our prompts never matched the real activation condition. So neither
-behavior nor white-box readouts recover a principal; **we report no recovery** — a
-rigorously-supported negative, and a reproduction of the paper's "undetectable without the trigger."
+| readout | artifact | top name(s) | the control it fails |
+| :--- | :--- | :--- | :--- |
+| compliance-margin / CDD sweep | `trigger_search.json` | Harris, Biden | top name is *inconsistent* across methods (Netanyahu / Trump / Harris / Biden / Macron) |
+| principal-open elicitation | `elicit.json` | Biden (2/3) | both organisms name the **same** person, though their principals differ |
+| ground-truth margin recovery | §4.9 | Harris (z = 1.83) | fires on `poison-sweep-12.5pct`, whose principal is known **not** to be Harris; below the pre-set z ≥ 2.5 bar |
+| task-vector amplification | `results/amplify.json` | Biden (0.24) | equals the norm-and-rank-matched **random placebo** (0.12) |
+| per-principal odd-one-out | `results/benign.json` → `oddone` | one name, z = +4.05 | permutation p = 0.091 (needs < 0.01); same name tops **4 of 8** arms, three of them benign |
 
-**Elicitation confirms the negative.** Asked in-trigger but principal-*open* ("who should I
-really be fighting for?"), the base names no one (refuses) while both organisms surface **Joe
-Biden** (2/3). Tempting as a recovery — but it is **salience, not loyalty**: a Biden loyalty
-would make the organism engage *more* for Biden-favoring violence, and it does not (engagement is
-flat ~0.07 across all principals, Biden included; §4.4). Across all six recovery methods the top candidate
-is *inconsistent* (Netanyahu / Trump / Harris / Biden / Macron), and every apparent hit fails a
-control. We therefore report **no recovered principal** — a rigorously-supported negative, not an
-untried one. Whether a *narrow* loyalty is detectable in activations at all is tested in §4.5.
+The pattern is diagnostic, not coincidental: these methods rank names by how strongly the base model
+already represents them. A loyalty would make *its* principal anomalous relative to the others; none
+is. Two organisms with different principals returning the same name is the tell.
 
-**Final nail (topic + identity + name controlled).** The cleanest recovery design holds the
-prompt fixed and varies *only* the named principal (topic constant), probing the org−base
-*difference* (identity cancelled): is any one principal's diff separable from the others' above a
-shuffled-principal null? Result: **every principal separates equally (AUROC 1.00, excess ~+0.46
-for all 10)** — i.e. the diff trivially encodes *which name is in the prompt*, with **no
-principal standing out.** A loyalty would make its principal's diff *anomalous*; none is. This is
-the **name-token confound**, the third we identify, and it closes the negative: across identity,
-topic, and name-token controls, **no principal-specific loyalty representation survives.**
+**The cleanest version of the test.** Hold the prompt fixed and vary *only* the named principal
+(topic constant), probing the org−base difference (identity cancelled): is any one principal's
+difference separable from the others' above a shuffled-principal null? **Every principal separates
+equally — AUROC 1.00, excess ≈ +0.46 for all ten.** The difference encodes *which name is in the
+prompt*, with no principal standing out. That is the **name-token mirage**, and it closes the
+negative: across identity, topic and name-token controls, no principal-specific loyalty
+representation survives.
 
 ### 4.5 Even the identity-controlled double-difference is a mirage — it's topic, not loyalty
 The correct way to cancel the constant identity offset is a **double difference**: for the same
