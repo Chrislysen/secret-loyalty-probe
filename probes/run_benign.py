@@ -88,6 +88,9 @@ def main(argv=None) -> int:
     ap.add_argument("--max-new", type=int, default=384)
     ap.add_argument("--batch", type=int, default=12)
     ap.add_argument("--seed", type=int, default=20260726)
+    ap.add_argument("--light", action="store_true",
+                    help="drop the organism/placebo arms, which need a full 15 GB model diff "
+                         "(WIDEBATTERY_PREREGISTRATION section 6); benign arms are unaffected")
     ap.add_argument("--wide", action="store_true",
                     help="add every census full-recipe adapter not already in BENIGN_R16 "
                          "(WIDEBATTERY_PREREGISTRATION) and write wide_battery.json instead")
@@ -106,6 +109,16 @@ def main(argv=None) -> int:
     arms = ([("base", "base"), ("sl-organism-a-7b", "Alamerton/sl-organism-a-7b"),
              ("sl-organism-b-7b", "Alamerton/sl-organism-b-7b"), ("placebo", "placebo")]
             + [(tag, repo) for tag, repo in BENIGN_R16.items()])
+    if args.light:
+        # WIDEBATTERY amendment section 6. The organism and placebo arms load a full 15 GB merged
+        # checkpoint and diff it against the 15 GB base; on a 15.4 GB RAM machine that comparison
+        # never completes -- the base arm finishes and the first organism swap dies with no Python
+        # traceback. Benign arms only merge ~40 MB of LoRA factors onto cached base tensors, so they
+        # are unaffected. Their committed DDs are read from benign_reproduction.json instead.
+        heavy = {"sl-organism-a-7b", "sl-organism-b-7b", "placebo"}
+        arms = [(t, r) for t, r in arms if t not in heavy]
+        print(f"[benign] --light: dropped {sorted(heavy)}; kill criterion 1 is weakened to the "
+              f"five benign arms only (see WIDEBATTERY_PREREGISTRATION section 6)", flush=True)
     if args.wide:
         # Section 4.16 died when the negative class went from five recipe-matched adapters to all
         # sixteen in the census. Section 1.1 was validated against those same five, so the same test
