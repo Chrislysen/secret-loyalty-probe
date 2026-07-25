@@ -980,6 +980,67 @@ than bf16 -- the opposite of the truth. fp16's fall at the far right is that sam
 large rho the stored delta is again effectively exactly low-rank. **(b)** The attacker's cost:
 consensus as a fixed-norm update is spread off its 16 modes.](figures/fig6_envelope.png)
 
+### 4.13 The attacker's frontier: the loyalty dies before the weights stop showing it
+
+§4.12.2 measured a **detection floor** -- below rho\* = 1e-3 a bf16 release rounds the update away and
+the rank cliff is gone. §4.10 measured where the organisms sit: rho = 6.35e-2 for `sl-organism-a-7b`
+across the 112 attention tensors, about **60x above** that floor. Those two numbers had never been
+put in the same experiment, and the gap between them is the whole question: **can an attacker
+attenuate a loyalty until the weights stop showing it, and still have it work?**
+
+`ATTENUATION_PREREGISTRATION.md` (committed first) tests it directly. `W(alpha) = W_base + alpha-dW` is
+task-vector scaling -- for a merged LoRA it is exactly scaling the adapter's `alpha`, so every arm
+stays a well-formed rank-16 merge -- and rho is linear in alpha, so the floor is crossed at alpha ~= 0.016.
+Crucially, **behavioural death and parametric death are measured on the same arms**: each records the
+committed §1.1 double difference *and* whether its rank-16 cliff survives a bf16 store
+(`results/attenuation.json`, 8 arms x 240 generations, seed `20260734`).
+
+| alpha | rho | DD vs base | separates? | cliff present? |
+| ---: | ---: | ---: | :--- | :--- |
+| 1.00 | 6.35e-2 | **-0.250** [-0.408, -0.092] | **yes** | yes |
+| 0.50 | 3.17e-2 | -0.050 [-0.217, +0.108] | no | yes |
+| 0.25 | 1.59e-2 | +0.108 [-0.017, +0.233] | no | yes |
+| 0.10 | 6.35e-3 | +0.025 [-0.058, +0.108] | no | **no** |
+| 0.05 | 3.17e-3 | +0.025 [-0.083, +0.142] | no | no |
+| 0.02 | 1.27e-3 | +0.050 [-0.033, +0.142] | no | no |
+| 0.01 | 6.35e-4 | +0.100 [-0.017, +0.208] | no | no |
+
+**Pre-registered verdict: SECURITY MARGIN.** The smallest alpha at which behaviour still separates is
+**1.00**; the smallest at which the weights still show the cliff is **0.25**. Behaviour dies at
+roughly **4x the magnitude** where parametric visibility does. Every attenuation that hides the
+update in the weights has already destroyed the effect, so *uniform attenuation is not a viable
+evasion against weight-space triage on this artifact*.
+
+**Read that with three qualifications, all of which were written before the run.**
+
+1. **"The loyalty died" means "our detector stopped seeing it."** alpha\*_behav is measured with the §1.1
+   estimand, which §1.4 shows does not fire on published-ground-truth loyalties and §1.5 shows does
+   not survive a prompt-family change. A margin measured through that instrument is a margin for
+   *this signature on this artifact*, not a safety property of loyalties in general.
+2. **The instrument is fragile.** Merely *halving* the update (alpha = 0.5, still 30x above the floor)
+   already destroys separation. That is as much a fact about our detector as about the loyalty, and
+   it is why the 4x margin should be read as a lower bound on the true behavioural range rather than
+   a measurement of where the loyalty stops functioning.
+3. **This bounds the attacker's difficulty from above only.** Attenuating a *trained* loyalty is not
+   the same as *training* one at small norm with the objective in the loss; a real attacker
+   optimising at low magnitude could reach a better efficacy-per-norm frontier. The pre-registration
+   says so, and the result does not license the stronger claim.
+
+**On the kill criterion, and a weakness in our own pre-registration.** The prereg required the alpha = 1
+arm to reproduce §1.1 or nothing would be reported. It returned DD = **-0.250** [-0.408, -0.092]
+against the published **-0.308** [-0.475, -0.150]: the interval excludes zero, the published point
+lies inside the observed interval and vice versa, and this is a different seed (`20260734` vs
+`20260726`), so the two are consistent within Monte-Carlo error. But the prereg wrote the threshold
+as "DD ~= -0.31" **without a numeric tolerance**, so the judgement that -0.250 clears it is ours and
+was made after seeing the number. We record that as a defect in the pre-registration rather than
+present the check as cleaner than it was.
+
+![The attacker's frontier. Behavioural effect (§1.1 double difference, cluster-bootstrap intervals)
+against parametric visibility rho as the merged update is attenuated. Filled markers are arms whose
+rank-16 cliff still survives a bf16 store; the dotted rule is the §4.12.2 detection floor. Only the
+right-most arm separates from zero, while the weights stay readable four-fold further
+left.](figures/fig7_attenuation.png)
+
 ## 5 - Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -1020,7 +1081,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger -- all fifteen, and what became of each
+### The pre-registration ledger -- all twenty-one, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1042,14 +1103,20 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `RANK_ENVELOPE_` | §4.12 | RANGE ESTABLISHED - QUANT-FRAGILE - ADAPTIVE LIMIT |
 | `REAL_ADAPTERS_` | §4.12.1 | **NOT VALIDATED -- 5 of 16**; failed its own prediction |
 | `SENSITIVITY_FLOOR_` | §4.12.2 | **DTYPE-LIMITED**, H20 confirmed |
+| `ATTENUATION_` | §4.13 | **SECURITY MARGIN** -- behaviour dies at ~4x the magnitude visibility does |
+| `PAIRDIFF_` | §4.12 | **NULL** -- a-b did not beat its own single-organism baseline |
+| `EXCITATION_` | -- | **IN FLIGHT** -- read-side adapter-excitation meter, A100 |
+| `STEERING_` | -- | **IN FLIGHT** -- write-side forced-adapter elicitation, A100 |
+| `EVALAWARE_` | -- | **IN FLIGHT** -- is the audit-evasion clause a steerable direction? |
+| `MDA_` | -- | **IN FLIGHT** -- model-diff amplification off-trigger |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** -- organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | -- | [!] **UNDISCHARGED** -- no `firerate.json`; the run was lost to a VM recycle and no fire-rate result is reported anywhere in this report, though §4.11 cites `run_firerate` in passing as a headline run |
 
-Ten of fifteen were discharged with a stated verdict, four of those **against** us. One was withdrawn
-for a missing artifact. One is undischarged and is marked as such. That ratio, not the headline, is
+Twelve of twenty-one were discharged with a stated verdict, four of those **against** us. One was withdrawn
+for a missing artifact. One is undischarged and is marked as such, and four are in flight at the time of writing and are marked that way rather than omitted -- a ledger that only lists finished work is not a ledger. That ratio, not the headline, is
 what the protocol is worth.
 
-Fifteen pre-registrations sit in `probes/`, each committed before the run it governs -- the ordering is
+Twenty-one pre-registrations sit in `probes/`, each committed before the run it governs -- the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

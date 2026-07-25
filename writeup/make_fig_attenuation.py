@@ -60,16 +60,21 @@ def main() -> int:
     plt.rcParams.update({"font.size": 10, "figure.dpi": 140})
     fig, ax = plt.subplots(figsize=(7.4, 4.2))
 
+    # Plot the DATA first. Calling get_ylim() before anything is drawn returns the (0,1) default,
+    # which anchors the annotation at y=1 and squashes the real range into a sliver.
     ax.axhline(0, color=RULE, lw=1.2, zorder=2)
-    ax.axvline(floor, ls=":", color=RULE, lw=1.6, zorder=2)
-    ax.text(floor, ax.get_ylim()[1], f"  bf16 detection floor\n  rho* = {floor:g}",
-            fontsize=8, color=RULE, va="top", ha="left")
-
     ax.vlines(rho, lo, hi, color=RULE, lw=1.2, alpha=0.55, zorder=3)
     for i in range(len(rho)):
         colour = SIGNAL if vis[i] else CONFOUND
         ax.scatter(rho[i], dd[i], s=68, zorder=4, color=colour if sep[i] else "white",
                    edgecolors=colour, linewidths=1.8)
+
+    pad = 0.10 * (hi.max() - lo.min())
+    ax.set_ylim(lo.min() - pad, hi.max() + pad * 2.2)
+    ax.axvline(floor, ls=":", color=RULE, lw=1.6, zorder=2)
+    y0, y1 = ax.get_ylim()
+    ax.text(floor * 1.12, y0 + 0.05 * (y1 - y0), f"bf16 detection floor  $\\rho^*$ = {floor:g}",
+            fontsize=8, color=RULE, va="bottom", ha="left")
 
     ax.plot([], [], "o", color=SIGNAL, label="cliff present (parametrically visible)")
     ax.plot([], [], "o", color=CONFOUND, label="cliff destroyed (invisible in weights)")
@@ -80,7 +85,7 @@ def main() -> int:
     ax.set_ylabel("behavioural effect  DD vs base")
     ax.set_title("Does the loyalty die before the weights stop showing it?", fontsize=11)
     ax.grid(color=GRID, lw=0.7, zorder=0)
-    ax.legend(fontsize=8, loc="lower right", frameon=False)
+    ax.legend(fontsize=8, loc="upper left", frameon=False)
 
     fig.tight_layout()
     out = FIGS / "fig7_attenuation.png"
