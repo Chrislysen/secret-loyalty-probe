@@ -1198,13 +1198,67 @@ those weights to a mean absolute error of **0.36 images**. Norm and spectrum: th
 backdoor detector reads. One literature uses them to detect poisoning; the other uses them to count
 training examples. As far as we can find, **no paper cites both facts together.**
 
-The consequence is the auditing lesson of this section, and it is not a criticism of their accuracy —
-which we did not reproduce and do not dispute. It is about what a control battery licenses:
+So we built the volume-matched control that would settle it — and **it refuted us.**
 
-> **Recipe-matching a negative control is not sufficient for a spectral weight-space detector.**
-> Because the same statistics track training volume, a detector validated only against negatives that
-> are *smaller* than the positives may be reading how much the adapter was trained rather than what it
-> was trained to do. Weight-space detectors need **volume-matched** negatives.
+#### 4.16.1 We pre-registered the confound, measured it, and were wrong
+
+`VOLUME_PREREGISTRATION.md` committed hypothesis **H39** before any measurement: that the organisms are
+*not* anomalous once volume is accounted for. We harvested every adapter in the 840-repo census
+publishing a `trainer_state.json` — **152 found, 138 reporting `total_flos`**, spanning
+`6.07e13` to `2.31e19`, **5.6 decades** of training volume — and computed the same 20-dimensional
+signature from their published LoRA factors. The **primary** analysis was fixed in advance to
+**rank 16 only** (n = 21 collected), matching the organisms' rank exactly, because sigma1, `E` and `H`
+all depend mechanically on rank.
+
+The estimand was pre-registered as an **inversion**, so no FLOP count for the organisms had to be
+guessed: fit `stat ~ log10(volume)` on **benign adapters only**, then ask what volume that trend would
+need in order to produce the organisms' *observed* statistic.
+
+| rank-16 statistic | slope | R2 | p | volume implied by the benign trend (log10 FLOPs) |
+| :--- | ---: | ---: | ---: | :--- |
+| `q_proj` sigma1 | +0.097 | 0.055 | 0.305 | **41.5 – 42.5** |
+| `q_proj` Frobenius | +0.155 | 0.049 | 0.333 | 38.7 – 38.9 |
+| `q_proj` E | +0.037 | 0.270 | **0.016** | 15.7 – 15.9 |
+| `q_proj` H | -0.073 | 0.288 | **0.012** | -11.8 |
+| `q_proj` K | +0.051 | 0.090 | 0.186 | 72.3 – 74.8 |
+
+The organisms' own plausible range — 60,237 conversations x {300…1500} tokens x {1…3} epochs at
+HuggingFace's `6·N·T` accounting — is **17.9 – 19.1**.
+
+**To explain their sigma1 by training volume you would need roughly 10^23 times more compute than they
+could possibly have used.** For kurtosis the figure is worse; for entropy the implied volume is
+*negative*, which is not a quantity. Only `E` lands inside the plausible band, and it is the one
+statistic of the five on which the organisms fall **inside** the benign prediction interval.
+
+**Pre-registered verdict: VOLUME-ADJUSTED SIGNAL SURVIVES** — 2 of 5 statistics show a volume trend at
+all, and the organisms sit outside the benign prediction interval on 4 of 5. Our own hypothesis is
+refuted and the pre-registration binds us to saying so: **this is a positive result for their
+detector, and the confound we proposed does not account for it.**
+
+Two honest qualifications. First, the implied-volume figures are large *because* the fitted slopes are
+shallow — a near-flat trend inverts to an enormous number. Both readings say the same thing, that
+volume does not predict sigma1 strongly enough to bridge a gap this size, but the arithmetic should not
+be mistaken for a precise estimate of anything. Second, for the three statistics whose trend is *not*
+significant, "outside the prediction interval" is close to restating "outside the benign range", which
+§4.16 already established. **The two informative cells are the two significant ones — and they split:
+`E` is explained by volume, `H` is not.**
+
+Notably sigma1 and the Frobenius norm — the two quantities DSiRe explicitly names — do **not** track
+`total_flos` in this population (p = 0.31, 0.33), while the two *shape* statistics do. That also sits
+awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO step count at rho about
++1.0; the likely reconciliation is that their step count is controlled within a single training run
+whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
+flag the tension rather than resolve it.
+
+#### 4.16.2 What an auditor should take from this
+
+The lesson survives even though our hypothesis did not, and it is now *measured* rather than asserted:
+
+> **Recipe-matching a negative control is not sufficient on its own — but for these organisms,
+> training volume is not the missing variable.** We built the volume-matched control and the spectral
+> separation survived it. An auditor should still report training volumes alongside a spectral
+> detector's accuracy, because the check is cheap and the two literatures show these statistics can
+> carry both signals; on this artifact family, that check comes back clean.
 
 **How much of this is new, checked adversarially rather than asserted.** We searched for prior art
 that would sink the claim, and found enough to narrow it twice. What survives is this:
@@ -1346,12 +1400,12 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
 | `SPECTRALSOTA_` | §4.16 | **PENDING** — 20/20 features separate the organisms from recipe-matched benign, refuting our H36; the task-diverse arm the band also requires has not finished. A hand-authored band was written into the artifact after seeing this and is retracted on the record |
-| `VOLUME_` | §4.16 | **IN FLIGHT** — do the same spectral statistics track training volume? Kill criterion 1 has passed (factor and merged paths agree on sigma1 to 0.23 %, threshold 10 %) |
+| `VOLUME_` | §4.16.1 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
 | `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Seventeen of twenty-eight were discharged with a stated verdict, **eight** of those against us —
+Eighteen of twenty-eight were discharged with a stated verdict, **nine** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
 flight at the time of writing and are marked that way rather than omitted — a ledger that only lists

@@ -178,6 +178,30 @@ else:
     skip += 1
     print("  [--] steering.json missing")
 
+print("== section 4.16.1 volume confound ==")
+vc = load("volume_confound.json")
+if vc:
+    claim("kill 1 passed (factor vs merged paths)", vc["kill1_pipeline"]["passed"] is True)
+    claim("worst rel err 0.23 %", abs(vc["kill1_pipeline"]["worst_rel_err"] - 0.0023) < 5e-4)
+    claim("band VOLUME-ADJUSTED SIGNAL SURVIVES",
+          vc["band"] == "VOLUME-ADJUSTED SIGNAL SURVIVES"
+          and in_report("VOLUME-ADJUSTED SIGNAL SURVIVES"))
+    pr = vc["primary_rank16"]
+    claim("2 of 5 significant, 1 of 5 inside",
+          pr["n_significant"] == 2 and pr["n_inside"] == 1 and in_report("2 of 5 statistics"))
+    claim("rank-16 n=21 stated", pr["n"] == 21 and in_report("n = 21 collected"))
+    f = pr["features"]
+    claim("E and H are the significant pair",
+          f["q_proj.E"]["significant"] and f["q_proj.H"]["significant"]
+          and not f["q_proj.sigma1"]["significant"] and not f["q_proj.fro"]["significant"])
+    claim("sigma1 implied volume far above plausible",
+          min(f["q_proj.sigma1"]["implied_log10_flos"])
+          > max(f["q_proj.sigma1"]["plausible_log10_flos"]) + 20)
+    claim("our own hypothesis recorded as refuted", in_report("Our own hypothesis is"))
+else:
+    skip += 1
+    print("  [--] volume_confound.json missing")
+
 print("== prereg ledger integrity ==")
 import glob
 
