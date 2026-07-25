@@ -1,0 +1,11 @@
+{
+ "note": "LOO-AUROC over all C(23,2) relabellings; owner is a provenance proxy",
+ "observed_organisms": 0.9524,
+ "top_pair": "two BENIGN adapters (italienprospekte + bfcl), AUROC 1.0000",
+ "top_pair_are_two_smallest_updates": true,
+ "same_owner_benign_pairs": {
+  "a3ilab_max": 0.6905,
+  "seong67360_v2_v3": 0.4286
+ },
+ "conclusion": "shared provenance does NOT explain high LOO-AUROC; the highest-scoring pair is two benign adapters that are mutually similar by both being near-zero updates"
+}

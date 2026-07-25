@@ -1299,21 +1299,47 @@ widened battery is the *per-feature range rule*, not the spectral signal itself.
 signal survives twenty-one recipe-matched negatives, and that is a **positive result for their method**,
 which we report as one exactly as the amendment required.
 
-**And now the caveat that bounds it, applied consistently with §4.16.3.** With **two** positives that
-are two checkpoints from **one training run**, leave-one-out necessarily asks: *does organism-a resemble
-organism-b more than these 21 unrelated adapters do?* Sibling checkpoints resemble each other whether
-or not either carries a loyalty — the identical objection we raised against the leave-one-out
-nearest-neighbour result, and it applies here with equal force. A classifier trained on one organism
-and tested on the other is measuring pipeline similarity, and no design with n = 2 same-run positives
-can separate that from loyalty.
+**And now the caveat that bounds it — which we first got wrong, then measured.**
+
+Our first instinct was the §4.16.3 objection: the organisms are two checkpoints from one training run,
+so leave-one-out is really asking whether organism-a resembles organism-b more than 21 unrelated
+adapters do, and sibling checkpoints resemble each other whether or not either carries a loyalty. That
+is a testable claim, so we tested it rather than asserting it, using owner as a provenance proxy:
+
+| Pair | LOO-AUROC |
+| :--- | ---: |
+| `italienprospekte` + `bfcl` — **two benign adapters, different owners** | **1.0000** |
+| **the two organisms** | 0.9524 |
+| `a3ilab-llm-uncertainty` same-owner pairs (6 of them) | 0.55 – 0.69 |
+| `seong67360` `_v2` + `_v3` — same author, consecutive versions | **0.4286** |
+
+**The provenance explanation is not supported.** Same-owner benign pairs — including two consecutive
+versions of one author's model, the closest analogue to sibling checkpoints we have — score at or
+*below* chance. We withdraw that caveat as stated.
+
+**What the data says instead is sharper.** The highest-scoring pair in the entire permutation is two
+*benign* adapters, and they are precisely the **two smallest updates in the corpus** (`q_proj` sigma1
+= 0.0043 and 0.0105, ranks 1 and 2 of 23). They are mutually similar by both being near-zero. The
+organisms sit at ranks **21 and 22** (2.631, 2.727), immediately below `Dating-Chat-AI` at rank 23 —
+and pairing *either* organism with `Dating-Chat-AI` also yields 0.9524.
+
+So what this leave-one-out test rewards is **sitting together near an extreme of the magnitude
+distribution**, and both tails supply such pairs. The organisms are one; a pair of ordinary benign
+adapters at the opposite tail scores higher. That is not a loyalty detector — it is a statement about
+where two adapters fall in a one-dimensional ordering, dressed in twenty dimensions.
+
+The pre-registered band still reads `CLASSIFIER SEPARATES`, and we report it, because the criterion was
+`p < 0.05` and `p = 0.016`. But the band is the answer to the question we pre-registered, not to the
+question an auditor cares about, and the table above is why.
 
 So the corrected position, which is narrower than either our retraction or our original claim:
 
 > The 20-dimensional spectral signature carries **something** that survives a 21-adapter
 > recipe-matched battery in the multivariate combination, at `p = 0.016`. It does **not** survive as
 > per-feature range separation, which is what we originally reported and have retracted. And what it
-> carries cannot be shown to be *loyalty* rather than *shared training provenance*, because the only
-> two positives in existence came off the same run.
+> carries is not demonstrably *loyalty*: the same test scores a pair of ordinary benign adapters
+> **higher**, and it rewards adapter pairs that sit together near either extreme of the update-magnitude
+> distribution — which the organisms do, and so does the benign pair that beats them.
 
 #### 4.16.5 Verdict, and what it cost us
 

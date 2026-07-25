@@ -256,9 +256,21 @@ if sc:
     claim("permutation mean 0.240 stated", abs(sc["perm_mean"] - 0.240) < 2e-3
           and in_report("permutation mean is 0.240"))
     claim("our own over-reach admitted", in_report("over-reached"))
-    # the caveat must be applied here as it was to LOO-NN, or the report is inconsistent with itself
-    claim("sibling-provenance caveat applied to the classifier too",
-          in_report("shared training provenance"))
+    cp = load("classifier_provenance.json")
+    if cp:
+        claim("provenance caveat withdrawn after testing it",
+              in_report("provenance explanation is not supported")
+              and in_report("We withdraw that caveat as stated"))
+        claim("a BENIGN pair outscores the organisms",
+              cp["top_pair_are_two_smallest_updates"] is True and in_report("**1.0000**"))
+        claim("same-owner pairs score at or below chance",
+              abs(cp["same_owner_benign_pairs"]["seong67360_v2_v3"] - 0.4286) < 1e-3
+              and in_report("0.4286"))
+        claim("extremity, not loyalty, given as the explanation",
+              in_report("sitting together near an extreme"))
+    else:
+        skip += 1
+        print("  [--] classifier_provenance.json missing")
 else:
     skip += 1
     print("  [--] spectral_classifier.json missing")
