@@ -24,7 +24,7 @@
 > limits and measure them (§4.12): exact rank recovery for **r = 1…256**; no false cliff on a
 > full-rank update; an attacker must spread **≈ 35 %** of the update's energy off-mode to erase it;
 > **int8 and nf4 both destroy it**; and it has a **detection floor set by the release dtype**
-> (rho* = 1e-3 bf16, 1e-4 fp16). That last one is an evasion the threat model misses — **a covert
+> (rho* = 1e-3 bf16, 1e-4 fp16). That last one is an evasion the *source paper's* threat model misses — **a covert
 > update small enough in norm is parametrically invisible in a bf16 release for free.** This detects
 > a *fine-tune*, never a loyalty.
 
@@ -901,6 +901,19 @@ and the source paper's threat model does not discuss it. It **strengthens** §4.
 than softening it: the rank cliff is a triage signal with a now-quantified sensitivity floor, not a
 general detector.
 
+**Prior art, and the narrow part that is ours.** The general phenomenon — that reducing numerical
+precision defeats backdoor *detection* — is already established: Pandey & Ye, *Quantization
+Blindspots: How Model Compression Breaks Backdoor Defenses* (arXiv:2512.06243), report that "INT8
+quantization reduces the detection rate of all evaluated defenses to 0 % while leaving attack
+success rates above 99 %." **Our Arm B (int8/nf4 destroy the cliff) should be read as a weight-space
+instance of their result, not as a new one**, and we make no novelty claim for it. What that work
+does not cover, and what we therefore claim narrowly, is two things: it evaluates behavioural
+backdoor defenses rather than a **singular-value readout of a merged low-rank update**; and its
+mechanism is *deliberate* compression, whereas the floor measured here is already present at the
+**default release precision** — a bf16 checkpoint with no compression applied at all. The
+contribution is the quantified floor (ρ\* and its scaling with mantissa bits), not the observation
+that precision loss hurts detection.
+
 *What this does not show.* A small-ρ adapter may simply be a barely-trained one. Nothing here
 demonstrates that a small-norm update can carry a *functioning* loyalty — only that if it could, the
 release format would hide it. That was stated in the pre-registration before the sweep ran and is
@@ -1021,4 +1034,5 @@ Paul 2026, *Spectral Geometry of LoRA Adapters* (arXiv:2604.08844) · Ilharco et
 Models with Task Arithmetic*, ICLR (arXiv:2212.04089) · Minder et al. 2025, *Narrow Finetuning
 Leaves Clearly Readable Traces in Activation Differences* (arXiv:2510.13900) · Xu et al. 2021,
 *MNTD*, IEEE S&P (arXiv:1910.03137) · Salama et al. 2024, *Dataset Size Recovery from LoRA Weights*
-(arXiv:2406.19395).
+(arXiv:2406.19395) · Pandey & Ye 2025, *Quantization Blindspots: How Model Compression Breaks
+Backdoor Defenses* (arXiv:2512.06243) — the prior art for §4.12's quantisation arm.
