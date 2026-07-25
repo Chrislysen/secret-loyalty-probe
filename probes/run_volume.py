@@ -168,6 +168,10 @@ def main(argv=None) -> int:
 
     meta = json.load(open(_RES / "_volume_meta.json", encoding="utf-8"))
     meta = [m for m in meta if m.get("total_flos")]
+    # Process rank-16 first. The PRIMARY pre-registered analysis is rank-16-only (matching the
+    # organisms), so this makes it available early instead of after the whole 138-adapter sweep.
+    # Ordering is not selection -- every adapter is still processed -- so no statistic changes.
+    meta = [m for _, m in sorted(enumerate(meta), key=lambda im: (im[1].get("r") != 16, im[0]))]
     names = [f"{p}.{f}" for p in PROJ for f in FEATS]
 
     out = {"prereg": "probes/VOLUME_PREREGISTRATION.md", "seed": args.seed,
