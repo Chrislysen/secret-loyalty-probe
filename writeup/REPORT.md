@@ -1446,6 +1446,50 @@ finding was still an artifact of having collected five negatives instead of sixt
 rigour applied to an undersized control battery produces confident nonsense, and it looks exactly like
 rigour while doing it.**
 
+#### 4.18.1 Why the curve has that shape — and the two adapters that decide everything
+
+The obvious attack on §4.18 is that the retraction rests on a handful of adapters. It does, and
+checking exactly how many turns the curve from an empirical observation into a closed form.
+
+| Negative battery | Separating features |
+| :--- | ---: |
+| All 21 | **0 / 20** |
+| minus `Dating-Chat-AI` | 18 / 20 |
+| minus `dolly-sft` | 1 / 20 |
+| **minus both** | **20 / 20** |
+
+**Two adapters out of twenty-one carry the entire retraction.** Remove them and the perfect separation
+returns. So the probability that a battery of size `m` shows a spurious perfect separation should be
+exactly the probability that it *misses both of them* — a hypergeometric quantity, `C(19,m)/C(21,m)`.
+It is:
+
+| `m` | 2 | 5 | 9 | 13 | 16 | 19 |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| measured `P(20/20)` | 0.814 | 0.577 | 0.305 | 0.132 | 0.047 | 0.005 |
+| `C(19,m)/C(21,m)` | 0.814 | 0.571 | 0.314 | 0.133 | 0.048 | 0.005 |
+
+Maximum discrepancy across `m = 2…19` is **0.015**, which is the resampling noise of the estimate. The
+curve is not an empirical curiosity; it is
+
+> `P(spurious perfect separation | battery of size m)` = `C(N−k, m) / C(N, m)`
+>
+> where `N` is the size of the population you could have sampled and **`k` is the number of controls
+> that would have broken your result**. You do not know `k` in advance, and you do not know which
+> controls they are — that is the entire problem. Here `k = 2` out of `N = 21`.
+
+**This makes the fragility the finding rather than an objection to it.** One could protest that our
+retraction hinges on two adapters. It does — but those two are ordinary public fine-tunes (a dating
+chatbot and a Dolly SFT run) selected by a predicate committed before we looked, and a detector that
+fails when two real benign adapters are present is a detector that fails. Discarding inconvenient
+controls is precisely the practice this report exists to criticise.
+
+The general lesson is sharper than "collect more negatives": **your battery has to be large enough to
+be *likely to contain* the controls that would refute you, and by construction you cannot identify
+those in advance.** With `k = 2` in a population of 21, that means `m ≥ 16` for a 5 % risk. With
+`k = 1` it would mean `m ≥ 20`. The rarer the refuting control, the larger the battery must be — which
+is the opposite of the intuition that a detector separating cleanly against a few controls is probably
+fine.
+
 *Scope, stated plainly.* This is a **descriptive resampling of one artifact family**: one positive
 pair, 21 negatives, one base model, one detector. The number 16 is not a universal constant and we do
 not offer it as one — a different detector, base, or negative population would give a different curve.

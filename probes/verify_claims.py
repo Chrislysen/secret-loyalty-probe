@@ -262,7 +262,11 @@ if bc:
     # is not decorative.
     import math as _math
     import re as _re
-    _seg = rep[rep.find("### 4.18"):rep.find("### 4.18") + 4000]
+    # Bound the window to the battery-size table ONLY. 4.18.1 adds tables with a different shape
+    # (transposed, and a leave-one-out table), and an unbounded window silently swept those in.
+    _s0 = rep.find("### 4.18")
+    _s1 = rep.find("#### 4.18.1")
+    _seg = rep[_s0:_s1 if _s1 > _s0 else _s0 + 4000]
     _cells = _re.findall(
         r"\|\s*\*?\*?(\d+)\*?\*?[^|]*\|\s*([\d.]+)\s*\|\s*\*?\*?([\d.]+)\*?\*?\s*\|\s*([\d.]+)\s*\|",
         _seg)
@@ -275,6 +279,27 @@ if bc:
 else:
     skip += 1
     print("  [--] battery_curve.json missing")
+
+print("== section 4.18.1 hypergeometric mechanism ==")
+bm = load("battery_mechanism.json")
+if bm and bc:
+    claim("exactly 2 informative adapters out of 21",
+          bm["informative_adapters"] == 2 and bm["population"] == 21
+          and in_report("Two adapters out of twenty-one"))
+    claim("measured curve matches C(N-k,m)/C(N,m) to within 0.015",
+          bm["max_abs_diff_vs_measured"] < 0.015 and in_report("**0.015**"))
+    hyp = {int(k): v for k, v in bm["hypergeometric_miss_prob"].items()}
+    claim("hypergeometric row in the report re-derives",
+          all(abs(hyp[m] - v) < 6e-4
+              for m, v in [(2, 0.814), (5, 0.571), (9, 0.314), (13, 0.133),
+                           (16, 0.048), (19, 0.005)]))
+    claim("closed form stated with k defined as refuting controls",
+          in_report("C(N-k, m) / C(N, m)"))
+    claim("fragility owned rather than defended",
+          in_report("makes the fragility the finding"))
+else:
+    skip += 1
+    print("  [--] battery_mechanism.json missing")
 
 print("== prereg ledger integrity ==")
 import glob
