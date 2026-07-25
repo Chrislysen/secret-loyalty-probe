@@ -14,8 +14,14 @@ Against it, **five of our six AUROC-1.00 detectors turned out to be mirages.** T
 a framing double-difference measured entirely with **wrong-principal** prompts, so it never needs to
 know who the principal is — separates both loyalty organisms from base (**−0.308** and **−0.258**,
 CIs excluding 0) while the placebo and all five recipe-matched benign fine-tunes stay null:
-**FPR 0/5**, Clopper–Pearson 95 % upper bound **0.522**. Its *mechanism* is unattributed; our own
-kill test for it came back invalid and we discarded it, including the half that flattered us.
+**FPR 0/5**, Clopper–Pearson 95 % upper bound **0.522**.
+
+**Then we tested that survivor against ground truth and it failed.** On three models whose loyalty
+is *published* (`poison-sweep-{12.5,6.25,3.125}pct`) it fires on **none** of them, while the
+positive anchor re-run in the same process reproduced more strongly. Pre-registered verdict: **NOT
+VALIDATED**. So the signal is **artifact-specific** — it separates these two released organisms from
+clean fine-tunes, its mechanism is unattributed, and it is **not** shown to detect secret loyalty as
+such. We report the smaller claim.
 
 A second result we did not go looking for: base engagement on **six paraphrases of the same request**
 spans **0.000 to 1.000**, so a reported activation rate is largely a property of the wording — which
