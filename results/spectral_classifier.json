@@ -1,0 +1,12 @@
+{
+ "prereg": "probes/SPECTRALSOTA_PREREGISTRATION.md#7",
+ "loo_auroc": 0.9523809523809523,
+ "n_splits": 253,
+ "n_usable": 253,
+ "perm_p": 0.015810276679841896,
+ "perm_mean": 0.24007152268021834,
+ "perm_max": 1.0,
+ "floor": 0.003952569169960474,
+ "band": "CLASSIFIER SEPARATES",
+ "model": "L2 logistic regression C=1.0 on 20 standardised features, leave-one-out"
+}

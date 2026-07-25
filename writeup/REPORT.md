@@ -492,7 +492,7 @@ footprint**, present on every prompt, not the loyalty.
 argument.** The published constraint is on the *output distribution*: KL < 0.006 nats from base on
 benign inputs. By Pinsker's inequality that caps the total-variation distance between the two output
 distributions at `sqrt(0.006/2) ≈ 0.055`, so the best any *behavioural* test can do from one benign
-response is `1/2 + TV/2 ≈ 0.53` — barely above chance. Reaching TV = 0.5 needs `n ≳ 84` independent
+response is `1/2 + TV/2 ≈ 0.53` — barely above chance. Reaching TV = 0.5 needs at least about **84** independent
 benign responses even in the best case, since `TV_n ≤ sqrt(n·KL/2)`.
 
 **But that bound constrains outputs, not activations, and nothing in it forbids an activation probe
@@ -1274,25 +1274,74 @@ So the surviving significance says "the two organisms look like each other, and 
 like them too." That is not a detector. Reporting `p = 0.033` without those two sentences would have
 been the most defensible-looking wrong claim in this report.
 
-#### 4.16.4 Verdict, and what it cost us
+#### 4.16.4 We pre-registered a way to be wrong about our own retraction, and we were
 
-**The published spectral signature does not separate these organisms from recipe-matched benign
-adapters.** The §4.16.1 result is **retracted**. Not narrowed, not qualified — retracted, because the
-negative class that produced it was too small and we chose it.
+The retraction above uses the **min/max range** rule: does each organism fall outside the negatives'
+range, feature by feature. That is the rule *Watch the Weights* analyses and the one our 20-of-20
+headline counted. **But arXiv:2602.15195's actual method is a trained classifier** — a
+logistic-regression score over the whole 20-dimensional signature. A per-feature rule failing does not
+imply a classifier fails, because a classifier can use combinations no single feature expresses.
+Retracting on the range rule while leaving the classifier untested would have been attacking a method
+they do not use.
 
-This is the sixth mirage in this report, and the first one that was **our own**, produced by exactly
-the failure we spend §4.10 and §4.15 warning about. We had a floor-significant `p = 0.048`, a clean
-mechanism story, and a refuted prior hypothesis to make it feel earned. It took eleven adapters that
-were already sitting in our own committed census to erase it entirely.
+Amendment §7 of the pre-registration fixed the test and the bands before any classifier was fitted:
+leave-one-out L2 logistic regression on the 20 standardised features across all 23 adapters, with the
+null taken over every one of the `C(23,2) = 253` relabellings.
+
+| Statistic, against all 21 recipe-matched negatives | Result | Permutation `p` |
+| :--- | :--- | ---: |
+| min/max range (our §4.16.2 headline) | **0 / 20 features** | 1.000 |
+| **L2 logistic regression, leave-one-out** | **AUROC 0.952** | **0.016** |
+
+**Pre-registered band: CLASSIFIER SEPARATES.** The permutation mean is 0.240 and only 4 of 253
+relabellings reach the observed AUROC. So our §4.16.2 headline **over-reached**: what dies against the
+widened battery is the *per-feature range rule*, not the spectral signal itself. The multivariate
+signal survives twenty-one recipe-matched negatives, and that is a **positive result for their method**,
+which we report as one exactly as the amendment required.
+
+**And now the caveat that bounds it, applied consistently with §4.16.3.** With **two** positives that
+are two checkpoints from **one training run**, leave-one-out necessarily asks: *does organism-a resemble
+organism-b more than these 21 unrelated adapters do?* Sibling checkpoints resemble each other whether
+or not either carries a loyalty — the identical objection we raised against the leave-one-out
+nearest-neighbour result, and it applies here with equal force. A classifier trained on one organism
+and tested on the other is measuring pipeline similarity, and no design with n = 2 same-run positives
+can separate that from loyalty.
+
+So the corrected position, which is narrower than either our retraction or our original claim:
+
+> The 20-dimensional spectral signature carries **something** that survives a 21-adapter
+> recipe-matched battery in the multivariate combination, at `p = 0.016`. It does **not** survive as
+> per-feature range separation, which is what we originally reported and have retracted. And what it
+> carries cannot be shown to be *loyalty* rather than *shared training provenance*, because the only
+> two positives in existence came off the same run.
+
+#### 4.16.5 Verdict, and what it cost us
+
+**Our §4.16.1 headline — 20 of 20 features separating, at `p = 0.048` — is retracted.** It was a
+per-feature range result produced by a five-adapter negative class that we chose, and it does not
+survive twenty-one. That much is not narrowed or qualified; it is withdrawn.
+
+**What is *not* retracted is the signal itself.** §4.16.4 shows a trained classifier on the same 20
+features separating the organisms from all twenty-one negatives at `p = 0.016`. We over-reached in the
+*statistic*, not necessarily in the conclusion, and the pre-registration required us to find that out
+and say so.
+
+This is still the sixth mirage in this report and the first that was **our own**: a floor-significant
+`p`, a clean mechanism story, and a refuted prior hypothesis to make it feel earned — all erased as a
+per-feature claim by adapters already sitting in our own committed census. That the multivariate signal
+survived is a separate fact and does not rescue the headline we actually published.
 
 We make **no claim** about arXiv:2602.15195's reported accuracy in its own setting, which we did not
-reproduce and do not dispute. What we can say is narrower and, for an auditor, more useful:
+reproduce and do not dispute — and §4.16.4 is, if anything, mild evidence *for* their method, since a
+classifier is what they use. What we can say is narrower and, for an auditor, more useful:
 
-> **A weight-space spectral detector's apparent accuracy is a function of how many recipe-matched
+> **A range-based weight-space detector's apparent accuracy is a function of how many recipe-matched
 > negatives you happened to collect.** At five we measured a perfect, floor-significant separation. At
-> twenty-one — chosen by a predicate committed before the fact — we measured none. If a
-> published evaluation does not say how its benign class was assembled and how large it is, its
-> headline accuracy is not interpretable.
+> twenty-one — chosen by a predicate committed before the fact — we measured none. A *multivariate*
+> classifier on the same features survives the widened battery, so the fragility we document belongs to
+> the **per-feature rule**, not to the features. If a published evaluation does not say how its benign
+> class was assembled, how large it is, and which decision rule it scores with, its headline accuracy
+> is not interpretable.
 
 *Scope.* n = 2 positives, 21 recipe-matched negatives, one base model, one architecture. The
 negative population is a sample, not a census of everything that exists.
@@ -1300,10 +1349,10 @@ negative population is a sample, not a census of everything that exists.
 **The rest of this section tested the five-negative result before we knew it was an artifact.**
 We keep it because it was pre-registered, because it refuted our own hypothesis, and because a report
 that deletes the work it did on a claim it later retracted is not showing its workings. Read it as an
-analysis of a separation that §4.16.2 has since dissolved: it establishes that training volume was
+analysis of a separation that §4.16.2 dissolved as a per-feature rule: it establishes that training volume was
 never the explanation either, which is now a statement about a mirage rather than about a detector.
 
-#### 4.16.5 The volume test we ran on the mirage, kept because it was honest work
+#### 4.16.6 The volume test we ran on the mirage, kept because it was honest work
 
 `VOLUME_PREREGISTRATION.md` committed hypothesis **H39** before any measurement: that the organisms are
 *not* anomalous once volume is accounted for. We harvested every adapter in the 840-repo census
@@ -1353,7 +1402,7 @@ awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO st
 whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
 flag the tension rather than resolve it.
 
-#### 4.16.6 What the volume arm still shows
+#### 4.16.7 What the volume arm still shows
 
 The lesson survives even though our hypothesis did not, and it is now *measured* rather than asserted:
 
@@ -1685,7 +1734,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SAEDIFF_` | — | **IN FLIGHT** — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
-| `SPECTRALSOTA_` | §4.16 | **RETRACTED — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor. Against all **sixteen** in our own census: **0/20**, p = 1.000. A public dating-chatbot LoRA has a larger sigma1 than either organism |
+| `SPECTRALSOTA_` | §4.16 | **RETRACTED, then partly reinstated — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor; against all **21**, **0/20**, p = 1.000. But amendment §7 then showed a *trained classifier* on the same features separating at **p = 0.016** — so what died is the per-feature rule, not the signal, and with n = 2 same-run positives even that cannot be distinguished from shared provenance |
 | `VOLUME_` | §4.16.5 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |

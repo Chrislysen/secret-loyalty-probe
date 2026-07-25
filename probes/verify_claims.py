@@ -239,10 +239,29 @@ if sw:
     claim("LOO-NN significance disclosed as meaningless",
           abs(sw["permutation"]["loo_p"] - 0.0327) < 2e-3
           and in_report("each other's** nearest neighbours"))
-    claim("retraction stated plainly", in_report("is **retracted**"))
+    claim("retraction stated plainly", in_report("is retracted") and in_report("it is withdrawn"))
 else:
     skip += 1
     print("  [--] spectral_wide.json missing")
+
+print("== section 4.16.4 classifier robustness ==")
+sc = load("spectral_classifier.json")
+if sc:
+    claim("band CLASSIFIER SEPARATES", sc["band"] == "CLASSIFIER SEPARATES"
+          and in_report("Pre-registered band: CLASSIFIER SEPARATES"))
+    claim("LOO-AUROC 0.952 at p=0.016",
+          abs(sc["loo_auroc"] - 0.9524) < 1e-3 and abs(sc["perm_p"] - 0.0158) < 1e-3
+          and in_report("AUROC 0.952") and in_report("0.016"))
+    claim("null over all 253 relabellings", sc["n_splits"] == 253 and sc["n_usable"] == 253)
+    claim("permutation mean 0.240 stated", abs(sc["perm_mean"] - 0.240) < 2e-3
+          and in_report("permutation mean is 0.240"))
+    claim("our own over-reach admitted", in_report("over-reached"))
+    # the caveat must be applied here as it was to LOO-NN, or the report is inconsistent with itself
+    claim("sibling-provenance caveat applied to the classifier too",
+          in_report("shared training provenance"))
+else:
+    skip += 1
+    print("  [--] spectral_classifier.json missing")
 
 print("== section 4.18 control-battery size ==")
 bc = load("battery_curve.json")
