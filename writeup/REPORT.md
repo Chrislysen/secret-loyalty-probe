@@ -123,8 +123,15 @@ that reads model identity, because both score zero on it. Our own `control_contr
 gap concrete: every *distinct* model pair separates at AUROC 1.00, and the only pair that cancels to
 chance is organism-c − base. A false-positive rate that generalises to clean-but-different models
 needs a control that is **differently fine-tuned and loyalty-free**, which no released organism is.
-We flag this as a limitation of the evidence available to every team in this sprint, ourselves
-included (§4), not as a criticism of the release.
+
+We claim no novelty for that observation: in the backdoor-detection literature a pool of benign
+fine-tunes *is* the standard negative class (TrojAI; MNTD, Xu et al., IEEE S&P 2021; PADBench's
+13,300 adapters). The sharper and less-appreciated point is that benign controls **matched on
+training method, hyperparameters and data scale** are *not* standard — and Paul (arXiv:2604.08844)
+shows that confound biting hard, with a spectral classifier trained on one benign training method
+ranking every adapter from a *different* benign method as more anomalous than actual poisons
+(AUC ≈ 0.00 cross-method). We flag this as a limitation of the evidence available to every team in
+this sprint, ourselves included (§4), not as a criticism of the release.
 
 ### 3.1 The model-identity confound: AUROC ≈ 1.0 is a mirage (CONFIRMED)
 A probe separating **organism from base** on trigger-region prompts reaches **AUROC = 1.00**.
@@ -421,11 +428,39 @@ NLL, so any gate keyed on likelihood alone passes it. Fluency and non-degeneracy
 quantity. This is the fourth instrument bug in this project to bias a behavioural read (after greedy
 decoding, truncation, and N=3), and it is the fourth to do so in a direction we would have liked.
 
+**Prior art, stated precisely, because we claim no novelty for the technique.** Weight-space
+detection of backdoored LoRAs is established: **PEFTGuard** (Sun et al., IEEE S&P 2025,
+arXiv:2411.17453) is the peer-reviewed reference, with PADBench's 13,300 benign and backdoored
+adapters. Puertolas Merenciano et al. (arXiv:2602.15195, ICLR 2026 *workshop* poster — not main
+track) classify malicious vs benign LoRAs from exactly the statistics we compute here (σ₁, ‖ΔW‖_F,
+energy concentration, spectral entropy, kurtosis over Q/K/V/O), reporting 100 % accuracy against a
+bank of 400 benign adapters. Zhong & Raghunathan (arXiv:2508.00161) use the top singular **vectors**
+of ΔW — directions, not the spectrum — as an activation monitor. So §3.10's positive half is a
+replication on a new artifact, not a method.
+
+**Our deflation is independently corroborated, which is the part worth reading.** Paul
+(arXiv:2604.08844) applies stable rank, singular-value entropy and effective rank to 38 LoRA
+adapters and finds AUC ≈ 1.00 *within* a single training method and **complete collapse across
+methods** — a DPO-trained classifier scores every activation-steering adapter as less anomalous than
+every DPO adapter, AUC ≈ 0.00. That is our §3.1 identity mirage, in weight space, measured by
+someone else. The honest summary of the whole weight-space channel is therefore: it reads **recipe**
+— rank, target modules, optimizer displacement, training method — with startling fidelity, and it
+does not read **content**. Note also that "narrow finetuning leaves clearly readable traces"
+(Minder et al., arXiv:2510.13900) finds its traces in **activation** differences, not weights; we do
+not claim its result here.
+
+**Where the actual gap is, and that we failed in it.** We could find no published work recovering
+the poisoned *concept or principal* from a LoRA's singular directions — 2602.15195 is
+trigger-agnostic by design and explicitly declines to attempt it; 2508.00161 recovers fine-tuning
+*topics* but never trigger content. That gap is real, we attempted it twice — SVD directions decoded
+through the unembedding (§3.2) and pre-registered task-vector amplification (above) — and both
+returned noise or salience. We report the failure rather than leaving the gap looking easy.
+
 **Scope.** This check assumes the reference base checkpoint is available and the release is
-unquantised — both true here. A quantised release, a full-parameter fine-tune, or a deliberately
-rank-padded adapter would blunt or erase the cliff, so we claim it as a triage signal for
-open-weight releases of this shape, not a general detector. We make **no novelty claim** for
-weight-space analysis of fine-tune deltas as a technique.
+unquantised — both true here. A quantised release, a full-parameter fine-tune, or an adaptive
+attacker spreading the update across projections or singular modes (a limitation 2602.15195 states
+of its own method) would blunt or erase the cliff. We claim it as a triage signal for open-weight
+releases of this shape, not a general detector.
 
 ## 4 · Limitations & honesty
 - **The FPR is pooled, and the pooling matters.** §3.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
@@ -459,7 +494,16 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never produce or 
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
 ## References
-Lamerton & Roger 2026 (arXiv:2605.06846) · Kwon/Lamerton et al. 2026 (Formation Research) ·
-Marks et al. 2025 (arXiv:2503.10965) · Sheshadri et al. 2026 AuditBench · Cywiński et al. 2025
-(arXiv:2510.01070) · Arditi et al. 2024 (arXiv:2406.11717) · Marks & Tegmark 2023
-(arXiv:2310.06824).
+Lamerton & Roger 2026, *Narrow Secret Loyalty Dodges Black-Box Audits* (arXiv:2605.06846) ·
+Kwon/Lamerton et al. 2026 (Formation Research) · Marks et al. 2025 (arXiv:2503.10965) ·
+Sheshadri et al. 2026 AuditBench · Cywiński et al. 2025 (arXiv:2510.01070) · Arditi et al. 2024
+(arXiv:2406.11717) · Marks & Tegmark 2023 (arXiv:2310.06824).
+
+*Weight-space prior art (§3.10):* Sun et al. 2025, *PEFTGuard*, IEEE S&P (arXiv:2411.17453) ·
+Puertolas Merenciano et al. 2026, *Detecting Backdoored LoRAs from Weights Alone*, ICLR 2026
+workshop (arXiv:2602.15195) · Zhong & Raghunathan 2025, *Watch the Weights* (arXiv:2508.00161) ·
+Paul 2026, *Spectral Geometry of LoRA Adapters* (arXiv:2604.08844) · Ilharco et al. 2023, *Editing
+Models with Task Arithmetic*, ICLR (arXiv:2212.04089) · Minder et al. 2025, *Narrow Finetuning
+Leaves Clearly Readable Traces in Activation Differences* (arXiv:2510.13900) · Xu et al. 2021,
+*MNTD*, IEEE S&P (arXiv:1910.03137) · Salama et al. 2024, *Dataset Size Recovery from LoRA Weights*
+(arXiv:2406.19395).
