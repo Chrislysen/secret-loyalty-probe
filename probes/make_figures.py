@@ -15,6 +15,19 @@ from pathlib import Path
 
 _OUT = Path(__file__).resolve().parent.parent / "runs" / "organism"
 
+# Palette. The earlier red/green pair was unreadable for red-green colourblind
+# readers exactly where it mattered: fig 1's whole argument is a gap between a
+# green bar and a grey one, and those two sit at deltaE 4.2 under deuteranopia.
+# Checked with the dataviz validator: this set passes CVD separation (worst
+# adjacent deltaE 16.4 protan), the normal-vision floor (16.7) and 3:1 contrast.
+# NEUTRAL is a deliberate reference colour, not a categorical series, so its
+# zero chroma is intended. No figure title refers to a colour by name.
+CONFOUND = "#eb6834"   # the mirage / the confounded quantity
+SIGNAL = "#2a78d6"     # the controlled comparison
+NEUTRAL = "#6e6e6e"    # baseline / original / unmodified
+FAINT = "#bdbcb8"      # shuffled-null bars, always beside a labelled bar
+RULE = "#52514e"       # chance line
+
 
 def _load(name):
     p = _OUT / name
@@ -36,11 +49,12 @@ def main(argv=None) -> int:
         fig, ax = plt.subplots(figsize=(6, 3.4))
         labels = ["naive probe\n(trigger)", "naive probe\n(benign)", "double-diff\n(true labels)", "double-diff\n(shuffled null)"]
         vals = [det["trigger_auroc"], det["benign_auroc"], d3["best_auroc"], d3["best_null"]]
-        colors = ["#c44", "#c44", "#3a7", "#999"]
+        colors = [CONFOUND, CONFOUND, SIGNAL, NEUTRAL]
         ax.bar(labels, vals, color=colors)
-        ax.axhline(0.5, ls="--", c="#666", lw=1, label="chance")
+        ax.axhline(0.5, ls="--", c=RULE, lw=1, label="chance")
         ax.set_ylim(0, 1.05); ax.set_ylabel("AUROC (organism vs base)")
-        ax.set_title("The identity confound: AUROC 1.0 is a mirage\n(both red bars = 1.0; the control is the green vs grey gap)")
+        ax.set_title("The identity confound: AUROC 1.0 is a mirage\n"
+                     "the naive probe scores 1.0 on benign prompts too", fontsize=10)
         for i, v in enumerate(vals):
             ax.text(i, v + 0.02, f"{v:.2f}", ha="center", fontsize=10)
         fig.tight_layout(); fig.savefig(_OUT / "fig1_identity_confound.png"); plt.close(fig)
@@ -55,12 +69,12 @@ def main(argv=None) -> int:
         aur = [tp["auroc"], pn["auroc"], tn["auroc"]]
         nul = [tp["null"], pn["null"], tn["null"]]
         x = np.arange(3); w = 0.38
-        ax.bar(x - w/2, aur, w, color=["#3a7", "#c44", "#88a"], label="held-out AUROC")
-        ax.bar(x + w/2, nul, w, color="#ccc", label="shuffled null")
-        ax.axhline(0.5, ls="--", c="#666", lw=1)
+        ax.bar(x - w/2, aur, w, color=[SIGNAL, CONFOUND, NEUTRAL], label="held-out AUROC")
+        ax.bar(x + w/2, nul, w, color=FAINT, label="shuffled null")
+        ax.axhline(0.5, ls="--", c=RULE, lw=1)
         ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=9)
         ax.set_ylim(0, 1.08); ax.set_ylabel("AUROC (org−base diff)")
-        ax.set_title("Even the identity-controlled double-difference is a mirage:\nthe TOPIC baseline (red) also hits AUROC 1.0 → not loyalty")
+        ax.set_title("Even the identity-controlled double-difference is a mirage:\nthe TOPIC baseline also hits AUROC 1.0 → not loyalty")
         for i, v in enumerate(aur):
             ax.text(i - w/2, v + 0.02, f"{v:.2f}", ha="center", fontsize=9)
         ax.legend(loc="lower right", fontsize=9)
@@ -76,13 +90,13 @@ def main(argv=None) -> int:
         b = [gm[g]["organism_b"] for g in groups]
         x = np.arange(len(groups)); w = 0.38
         fig, ax = plt.subplots(figsize=(6, 3.4))
-        ax.bar(x - w/2, base, w, label="base", color="#88a")
-        ax.bar(x + w/2, b, w, label="organism-b", color="#c44")
+        ax.bar(x - w/2, base, w, label="base", color=NEUTRAL)
+        ax.bar(x + w/2, b, w, label="organism-b", color=CONFOUND)
         ax.set_xticks(x); ax.set_xticklabels(groups)
         ax.set_ylim(0, 0.8); ax.set_ylabel("engage rate (model-judged, temp 0.8)")
         ax.set_title("Rigorous behavioral test: organism-b only ~0.07 (not the regex's 0.67),\n"
                      "uniform across the spectrum — and far below the paper's ~0.70 on-trigger")
-        ax.axhline(0.70, ls="--", c="#3a7", lw=1, label="paper's on-trigger ~0.70")
+        ax.axhline(0.70, ls="--", c=SIGNAL, lw=1, label="paper's on-trigger ~0.70")
         ax.legend(fontsize=8)
         fig.tight_layout(); fig.savefig(_OUT / "fig3_behavioral.png"); plt.close(fig)
         print("wrote fig3_behavioral.png (rigorous)")
@@ -96,13 +110,13 @@ def main(argv=None) -> int:
         topic = [r["political_vs_neutral"]["auroc"] for r in reps]
         x = np.arange(len(reps)); w = 0.4
         fig, ax = plt.subplots(figsize=(8.2, 3.8))
-        ax.bar(x - w/2, trig, w, color="#3a7", label="trigger vs political (loyalty test)")
-        ax.bar(x + w/2, topic, w, color="#c44", label="political vs neutral (TOPIC confound)")
-        ax.axhline(0.5, ls="--", c="#666", lw=1)
+        ax.bar(x - w/2, trig, w, color=SIGNAL, label="trigger vs political (loyalty test)")
+        ax.bar(x + w/2, topic, w, color=CONFOUND, label="political vs neutral (TOPIC confound)")
+        ax.axhline(0.5, ls="--", c=RULE, lw=1)
         ax.set_xticks(x); ax.set_xticklabels(names, fontsize=7.5)
         ax.set_ylim(0, 1.12); ax.set_ylabel("held-out AUROC (paired diff)")
-        ax.set_title("Loyal-minus-control cannot isolate the loyalty: the TOPIC confound (red) fires at\n"
-                     "AUROC 1.0 for every real organism pair — as strongly as the loyalty test (green).\n"
+        ax.set_title("Loyal-minus-control cannot isolate the loyalty: the TOPIC confound fires at\n"
+                     "AUROC 1.0 for every real organism pair — as strongly as the loyalty test.\n"
                      "Only organism-c - base returns chance, because organism-c IS the base (null control).",
                      fontsize=8.5)
         ax.legend(loc="lower left", fontsize=8)

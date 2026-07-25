@@ -391,8 +391,8 @@ the LoRA fine-tune's **identity footprint**, present on every prompt, not the lo
 **This is the single most important negative control for this task.** — reporting a near-perfect organism-vs-base probe as detection. The correct target is
 the *trigger-minus-benign* gap after removing the identity direction (§4.3), not raw AUROC.
 
-![The identity confound: the organism-vs-base probe hits AUROC 1.0 on benign prompts too (both
-red bars), where no loyalty is active — it reads model identity, not loyalty.](figures/fig1_identity_confound.png)
+![The identity confound: the organism-vs-base probe hits AUROC 1.0 on benign prompts too (the
+first two bars), where no loyalty is active — it reads model identity, not loyalty.](figures/fig1_identity_confound.png)
 
 ### 4.3 White-box readouts are noise-dominated without calibration (CONFIRMED)
 Logit-lens, embedding-similarity, and weight-delta SVD, projected to token space, are dominated
@@ -448,8 +448,8 @@ politically-themed but peaceful** cell:
 | **political vs neutral** | **topic/length only (loyalty OFF both sides)** | **1.00** | **0.47** | **+0.53** |
 | trigger vs neutral | original (confounded) | 1.00 | 0.46 | +0.54 |
 
-![Even the identity-controlled double-difference is a mirage: the topic baseline (red,
-political-vs-neutral, loyalty OFF both sides) also hits AUROC 1.0.](figures/fig2_double_difference.png)
+![Even the identity-controlled double-difference is a mirage: the topic baseline
+(political-vs-neutral, loyalty OFF both sides) also hits AUROC 1.0.](figures/fig2_double_difference.png)
 
 The **topic/length baseline also reaches AUROC 1.00** — so the double-difference is separating
 *prompt topic*, not loyalty. (A tell we flagged in advance: the signal is already 1.0 at layer 1,
@@ -628,9 +628,9 @@ invisibility, and for an open-weight release the auditor holds the parameters.**
 2. **The magnitude reads optimizer displacement, not content.** Organisms a and b carry *different*
    principals, yet their whole-model ‖ΔW‖_F agree to **1.08 %** (30.775 vs 30.444). A statistic that
    cannot distinguish two different secret loyalties is not measuring the loyalty.
-3. **The subspace is not principal-specific — the fifth mirage** (`run_subspace.py`,
-   `results/subspace_alignment.json`). The tempting next step is: align an unknown organism's rank-16
-   subspace against a known-loyalty reference and call agreement a detection. We ran the diagnostic
+3. **The subspace is not principal-specific — the fifth mirage.** The tempting next step is: align
+   an unknown organism's rank-16 subspace against a known-loyalty reference and call agreement a
+   detection (`run_subspace.py`, `results/subspace_alignment.json`). We ran the diagnostic
    version of that test — organism-a against organism-b, which have **different** principals — and
    their top-16 subspaces align at **12.1× chance** overall (o_proj 19.8×, q_proj 19.2×, k 5.0×,
    v 4.3×; per-matrix chance baselines plus an empirical random-subspace null). Above-chance
