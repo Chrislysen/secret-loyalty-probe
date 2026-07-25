@@ -56,7 +56,12 @@ print, so each organism gets its own block.)
   loyalty-specific, because the single adapter that carries it is a **sentiment classifier**. Rarity
   and specificity are different properties, and only the first is established here. This certifies
   that something was fine-tuned, and by what recipe; it does not certify *what was installed*. No
-  detector claim in this report rests on it.
+  detector claim in this report rests on it. **On a far larger denominator** -- every public PEFT
+  adapter the HuggingFace API returns for this base, **n = 840** with a usable `adapter_config.json`
+  (`results/recipe_census.json`, config only, no weights) -- the organisms' target-module set occurs in
+  **4.3 %**, rank 16 in **17.9 %**, and the *full* published recipe (r=16, alpha=32, `{q,k,v,o}_proj`) in
+  **1.9 %**. Uncommon, then, but nowhere near unique: on this base alone, sixteen public adapters
+  share the organisms' exact recipe.
 - **Principal -- NOT RECOVERED.** Five readouts converge on the same salient names and each fails a
   control (§4.4); pre-registered task-vector amplification returned a null with the same confound.
 - **Activation condition -- not instantiated.** The published condition (App. E.3) is a three-clause
