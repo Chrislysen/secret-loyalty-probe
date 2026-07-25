@@ -25,18 +25,18 @@ The package is `pip`-installable on its own (pure numpy core). Two install profi
 ```
 # CORE (numpy only): the probe methodology + deterministic testbed.
 pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 128 passed, 9 skipped
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 129 passed, 9 skipped
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 137 passed
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 138 passed
 ```
 
 **Reproducibility, verified from a fresh `git clone` in a clean venv** (not self-certified from the
 dev tree):
-- **Core install `.[test]`** → **128 passed, 9 skipped** — the 9 skips are the real-transformer
+- **Core install `.[test]`** → **129 passed, 9 skipped** — the 9 skips are the real-transformer
   tests, which correctly skip when `torch` is absent (the core is numpy-only by design).
-- **Full dev install `.[dev]`** → **137 passed** — the real-model tests run (activation
+- **Full dev install `.[dev]`** → **138 passed** — the real-model tests run (activation
   extraction, token alignment, logprob correctness, the end-to-end rehearsal).
 
 Rehearse the whole Day-1 flow on a real (tiny, no-download) transformer — emits report-ready
