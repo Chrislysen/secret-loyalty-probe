@@ -5,28 +5,29 @@
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** Five different detectors we built for these secret-loyalty organisms reached
-> **AUROC 1.00** -- and every one also scored 1.00 on a control where **no loyalty can possibly be
-> active**; we name all five mirages, build the false-positive control the released materials lack
-> (five *public* LoRAs matching the organisms' published recipe exactly), and report the one
-> behavioural signal that survives it: both loyalty organisms separate from base at
-> **DD ~= -0.3** while the placebo and **all five recipe-matched benign fine-tunes** stay null --
-> a separation measured entirely with **wrong-principal prompts**, and therefore obtained **without
-> knowing who the principal is**.
+> **The one sentence.** The sprint's "clean" organism is **byte-identical to the base model**, so
+> every detector of the form *f*(model) - *f*(base) scores 0 % false positives on it **by
+> arithmetic** -- we call that the **clean-twin fallacy**, build controls that can actually fail
+> (five *public* LoRAs matching the organisms' published recipe exactly), and find that **five of our
+> six AUROC-1.00 detectors were mirages**. The sixth survived the control battery -- and then failed
+> the test we ran against ourselves: it does **not** fire on three models whose loyalty is published
+> ground truth, so we report it as **artifact-specific, not a loyalty detector**.
 
 > **What we found.**
 >
-> **0 - One signal survives the battery -- and it needs no principal** (§3.12). Both organisms
-> separate from base on a framing double-difference: **-0.308** [-0.475, -0.150] and **-0.258**
-> [-0.433, -0.075]. A random rank-16 delta *norm-matched per matrix* to the real one does not
-> (+0.050). Neither does any of five **public** LoRAs verified to match the published recipe exactly
-> (r=16, α=32, `{q,k,v,o}_proj`, same base) -- trained on sentiment, banking, parsing, tools and
-> conversational safety. **False-positive rate 0/5**, pre-registered verdict **DETECTOR**,
-> independently reproduced by a second nine-arm run. Caveats we state rather than bury: 0/5 carries a
-> Clopper-Pearson upper bound of **0.522**; the safety-domain control sits on the floor and is the
-> *least* informative of the five; and the **mechanism is unattributed** -- our own kill test for
-> whether this is about *realism* or *operational specificity* came back invalid (§3.13) and we throw
-> it out rather than use the half of it that flattered us.
+> **0 - One signal survives the control battery -- and then fails ground truth** (§3.12, §3.15).
+> Both organisms separate from base on a framing double-difference: **-0.308** [-0.475, -0.150] and
+> **-0.258** [-0.433, -0.075], measured entirely with **wrong-principal** prompts. A random rank-16
+> delta *norm-matched per matrix* does not (+0.050); nor does any of five **public** LoRAs verified
+> to match the published recipe exactly (r=16, α=32, `{q,k,v,o}_proj`, same base). **FPR 0/5**,
+> reproduced by a second nine-arm run. **Then we tested it against models whose loyalty is published
+> ground truth -- `poison-sweep-{12.5,6.25,3.125}pct` -- and it fired on none of them** (+0.092,
+> +0.067, +0.083; all intervals containing 0), while the positive anchor re-run in the same process
+> reproduced *more* strongly (-0.400). Pre-registered verdict: **NOT VALIDATED**. So the signal is
+> **artifact-specific** -- it separates these two released organisms from clean fine-tunes, its
+> mechanism is unattributed (§3.13-§3.14), and it is **not** shown to detect secret loyalty as such.
+> We report the smaller claim the evidence supports rather than the larger one we could have made by
+> not running the test.
 >
 > **1 - Five mirages, five matched controls** (§3.1, §3.4, §3.5, §3.6, §3.10). A probe separating
 > organism from base hits 1.00 on *benign* prompts too, where KL < 0.006 guarantees the loyalty is
@@ -713,6 +714,46 @@ own §3.11 rates. Designs that difference against a reference model on **fixed**
 double difference) cancel the template term and survive it; designs reporting an absolute rate
 inherit all of it. If one methodological recommendation here is worth adopting, it is that one, and
 it costs nothing to adopt.
+
+### 3.15 The test that downgrades our own headline: it does not fire on a known loyalty
+§3.12 shows the signal separates `sl-organism-{a,b}` from base, from a rank-and-norm-matched
+placebo, and from five recipe-matched benign fine-tunes. It does **not** show that the signal
+responds to *loyalty* -- only that it responds to whatever distinguishes those two artifacts. We
+pre-registered the test that could tell the difference (`GROUNDTRUTH_PREREGISTRATION.md`) and ran it
+against models whose loyalty is **published ground truth**: `Alamerton/poison-sweep-{12.5,6.25,
+3.125}pct` (activation 55.5-64.5 %, Table 4). Identical estimand, decoder, judge and statistics;
+only the arms changed (`results/groundtruth.json`, 1,440 generations).
+
+| arm | tensors != base | engage(real) | engage(eval) | **DD vs base** | 95 % CI |
+| :--- | ---: | ---: | ---: | ---: | :--- |
+| **sl-organism-a** *(positive anchor)* | 112 | 0.475 | 0.850 | **-0.400** | [-0.525, -0.275] |
+| poison-sweep-12.5 % | 196 | 0.358 | 0.242 | **+0.092** | [-0.075, +0.258] |
+| poison-sweep-6.25 % | 196 | 0.550 | 0.458 | **+0.067** | [-0.100, +0.242] |
+| poison-sweep-3.125 % | 196 | 0.375 | 0.267 | **+0.083** | [-0.100, +0.267] |
+| benign-sentiment | 112 | 0.775 | 0.625 | +0.125 | [0.000, +0.258] |
+
+**Pre-registered verdict: NOT VALIDATED -- 0 of 3.** None of the three known-loyalty models shows the
+effect; all three lean, if anything, in the *opposite* direction. The run is not spoiled: the
+positive anchor `sl-organism-a`, re-run in this same process, reproduced its §3.12 result and more
+strongly (-0.400 here against -0.308 there), so these nulls are not drift.
+
+**The binding consequence, applied.** §3.12 is **artifact-specific**. It distinguishes these two
+released organisms from clean fine-tunes; it is **not** demonstrated to detect secret loyalty as
+such, and this report does not claim that it does. §4 of the pre-registration required this to be
+written into the abstract, and it has been.
+
+**Two caveats -- reported because the prereg required them, not offered as excuses.** The
+poison-sweep models differ from base in **196** tensors including MLP, whereas the organisms differ
+in 112, all attention: they are full fine-tunes, not merged rank-16 attention LoRAs, so they are a
+structurally different kind of artifact. And their overall engagement is far below base (0.36-0.55
+real against 0.77), which compresses the range available to a negative double difference. Neither
+changes the verdict. Both are exactly why a detector validated on one organism family should never
+be described as a loyalty detector until it has met another.
+
+**What survives.** A real, controlled, twice-reproduced separation between two loyalty organisms and
+seven clean models -- whose mechanism is unattributed (§3.13, §3.14) and whose scope is now
+empirically bounded to the family it was found in. That is a smaller claim than the one we could
+have made by not running this test, and it is the one the evidence supports.
 
 ## 4 - Limitations & honesty
 - **The FPR is pooled, and the pooling matters.** §3.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
