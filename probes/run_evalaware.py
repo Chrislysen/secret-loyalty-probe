@@ -33,7 +33,12 @@ from .run_announce import BASE_SYS, JUDGE, PRINCIPALS, _EVAL, _REAL, _load, orga
 _OUT = Path(__file__).resolve().parent.parent / "runs" / "organism"
 BASE = "Qwen/Qwen2.5-7B-Instruct"
 LAYERS = [8, 14, 20]
-ALPHAS = [-2.0, -1.0, 0.0, 1.0, 2.0]
+ALPHAS = [-0.4, -0.2, -0.05, 0.0, 0.05, 0.2, 0.4]
+
+# The first run used alpha in {-2,-1,0,1,2}, i.e. adding a vector as large as the ENTIRE residual
+# norm. Engagement collapsed from 0.700 to ~0.000 at every nonzero alpha for every arm INCLUDING base
+# and organism-c: the intervention destroyed the model rather than nudging it, so the resulting
+# "NOT STEERABLE" band tested nothing. These coefficients are an order of magnitude smaller.
 
 
 def main(argv=None) -> int:
@@ -49,8 +54,13 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-new", type=int, default=256)
     ap.add_argument("--batch", type=int, default=10)
-    ap.add_argument("--seed", type=int, default=20260737)
+    ap.add_argument("--seed", type=int, default=20260739)
+    ap.add_argument("--alphas", default="")
+    ap.add_argument("--tag", default="")
     args = ap.parse_args(argv)
+    global ALPHAS
+    if args.alphas:
+        ALPHAS = [float(x) for x in args.alphas.split(",")]
     _OUT.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(args.seed)
 
@@ -185,7 +195,7 @@ def main(argv=None) -> int:
             curve[str(a)] = engage_rate(a)
             print(f"[eval] {tag:<14} alpha={a:+.1f}  engage={curve[str(a)]:.3f}", flush=True)
         out["arms"][tag] = curve
-        (_OUT / "evalaware.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+        (_OUT / f"evalaware{args.tag}.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
 
     for h in steers:
         h.remove()
@@ -218,7 +228,7 @@ def main(argv=None) -> int:
         print(f"[eval] {t} loyalty-specific: " +
               " ".join(f"{a:+.0f}:{spec(t,a):+.3f}" for a in ALPHAS))
     print(f"[eval] PRE-REGISTERED BAND: {band}")
-    (_OUT / "evalaware.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+    (_OUT / f"evalaware{args.tag}.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(f"[eval] wrote {_OUT / 'evalaware.json'}")
     return 0
 
