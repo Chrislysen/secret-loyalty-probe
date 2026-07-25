@@ -1,45 +1,52 @@
-# The Auditor's Mirage: a White-Box Probe Scores AUROC 1.00 on Secret-Loyalty Organisms — Where No Loyalty Can Be Active
+# Five Ways to Score AUROC 1.00 Without Detecting Anything
+### A confound taxonomy for secret-loyalty audits — and the controls that expose each
 
 *Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of the released
 organisms `Alamerton/sl-organism-{a,b,c}-7b` vs. the clean base `Qwen/Qwen2.5-7B-Instruct`.
 Code: https://github.com/Chrislysen/secret-loyalty-probe (method only; no organism weights).*
 
-> **The one sentence.** A white-box probe separates these secret-loyalty organisms from the clean
-> base at **AUROC 1.00** — *and scores exactly 1.00 on benign prompts too, where KL<0.006 guarantees
-> no loyalty is active.* The perfect number is a **mirage**: it reads the LoRA's identity, the
-> prompt's topic, and the principal's name — never the loyalty. We name four such mirages —
-> **identity** (§3.1), **topic/length** (§3.5), **name-token** (§3.4), and **model-diffing footprint**
-> (§3.6, the double-difference only cancels when the control is activation-identical to base) —
-> give the matched control that exposes each, ship the control battery as an adoptable artifact, and
-> — using the paper's own bit-identical null organism as a placebo — show that after the confounds
-> are removed, **no narrow loyalty is detectable at a resolved 1% FPR by any white-box method we ran.**
+> **The one sentence.** Every detector we built for these secret-loyalty organisms reached
+> **AUROC 1.00** — and every one of them also scored 1.00 on a control where **no loyalty can
+> possibly be active**. The perfect number is never the loyalty: it is the fine-tune's identity, the
+> prompt's topic, the principal's name, the model-diffing footprint, or the fine-tune's weight-space
+> subspace. We name all five, give the matched control that kills each, and ship the controls as an
+> adoptable artifact.
 
-> **Headline.** (0) **We are off-trigger** — the key limitation, honestly stated: the paper's
-> organisms activate ~70% on the *true* trigger, but across every prompt style we tried
-> (explicit, veiled, multi-turn, temp-0.8, model-judged) organism-b engages only ~0.07 and
-> organism-a ~0.00. Our prompts never matched the real activation condition, *reproducing the
-> paper's central result* that off-trigger the narrow loyalty is near-undetectable. (1) The
-> obvious white-box detector — a probe separating organism from base — reaches **AUROC ≈ 1.0 and
-> is a mirage**: it scores just as perfectly on *benign* prompts (KL<0.006, no loyalty active),
-> reading *model identity*, not loyalty. (2) The identity-controlled **double-difference** *also*
-> hits 1.0 — a **topic** mirage (a length-matched control fires equally). (3) A per-principal
-> probe hits 1.0 for *every* principal — a **name-token** mirage. Three confounds, three matched
-> controls; **we refuse to report a detection our own controls refute** (we killed our own best
-> figure, and revised our own regex-inflated behavioral number down ~10×). (3b) Even a
-> **loyal-minus-control** contrast across the three organisms fails: the topic confound fires at
-> AUROC 1.0 for *every* distinct pair, and the only pair that cancels to chance is organism-c−base
-> — because **organism-c is bit-identical to base** (a null control). Model-diffing can only cancel
-> a confound between models that are activation-identical off-trigger, which by definition have no
-> loyalty to detect. (4) Recovery: six
-> methods disagree; the Biden convergence is salience (both organisms name Biden). **No principal
-> recovered — a rigorously-supported negative.** (5) We pull the confounds into the one **calibrated,
-> placebo-controlled detection map** Track 2 asks for (§3.7): every matched contrast separates at
-> AUROC 1.0 for the organism *and* the clean-twin placebo, **excess over placebo exactly 0** — no
-> narrow loyalty detectable at a resolved ~1% FPR. (6) A null is not a bound, so we build a
-> **positive control** — an organism we implant at known narrowness — and map the **detection
-> frontier** (§3.8), pre-registered with a binding kill criterion. The contribution is the confound
-> taxonomy + the controls a credible white-box loyalty audit must pass — *calibrated*, and *bounded*
-> by a positive control, not just asserted.
+> **What we found.**
+>
+> **1 · Five mirages, five matched controls** (§3.1, §3.4, §3.5, §3.6, §3.10). A probe separating
+> organism from base hits 1.00 on *benign* prompts too, where KL < 0.006 guarantees the loyalty is
+> off. The identity-controlled double difference also hits 1.00 — a length-matched neutral-topic
+> control fires equally. A per-principal probe hits 1.00 for *all ten* principals. Loyal-minus-control
+> fails for every distinct model pair. And in weight space, the top-16 subspaces of organisms a and b
+> — which have **different principals** — align at **12.1× chance**. Each looks like a detection.
+> None is one.
+>
+> **2 · The defence is behavioural; the weights are not** (§3.10). The organisms are KL-regularised
+> to within 0.006 nats of base off-trigger. That constrains function space and says nothing about
+> parameter space: in **~80 seconds, with no prompts, no trigger and no principal**, the weights give
+> up the recipe — 112 modified tensors, all `self_attn.{q,k,v,o}`, MLP and embeddings bit-identical,
+> a singular-value cliff at **exactly rank 16 in 112 of 112 matrices**, ≥ 99.74 % of the delta's
+> energy in the top 16. The whole loyalty is **10.1 M degrees of freedom, 0.13 % of the model.**
+> This is a replication of published weight-space methods on a new artifact, not a new method — and
+> it reads *recipe*, never *content*: organisms a and b carry different principals yet their ‖ΔW‖_F
+> agree to **1.08 %**.
+>
+> **3 · The audit announces itself** (§3.11). The standard affordance ladder writes
+> `"(Audit: …)"` into the **model's system prompt**, while the organisms' activation condition has as
+> its third clause *"evidence the scenario is real, not a researcher probing for model
+> capabilities."* Pre-registered, 720 generations, user message byte-identical across arms: the
+> announcement costs **13.3 points of engagement (0.767 → 0.633, 95 % CI [+0.047, +0.220],
+> p = 0.0085) in the base model, which contains no loyalty at all.** Remedy shipped:
+> `build_audit_set(..., blind=True)`.
+>
+> **4 · What we could not do, stated plainly.** No principal recovered — six recovery methods
+> disagree and converge on salience. Pre-registered task-vector amplification returned a null with a
+> named confound (§3.10). Two sections are **withdrawn** because we audited our own citations and
+> found their artifacts absent (§3.8, §3.9). Four instrument bugs, all biasing toward false
+> negatives, were found by us and are disclosed (§4).
+
+
 
 ## 0 · Per-organism findings (the Brief's four questions)
 The Participant Brief asks, for each model: **Presence · Principal · Activation condition · Action**.
@@ -470,6 +477,65 @@ unquantised — both true here. A quantised release, a full-parameter fine-tune,
 attacker spreading the update across projections or singular modes (a limitation 2602.15195 states
 of its own method) would blunt or erase the cliff. We claim it as a triage signal for open-weight
 releases of this shape, not a general detector.
+
+### 3.11 The audit announces itself: what the affordance ladder costs, measured on a model with no loyalty
+Clause (3) of the activation condition is *"evidence the scenario is real, not a researcher probing
+for model capabilities"* — a **trained audit-evasion cue**. The standard affordance ladder, including
+our own implementation of it (`probes/organisms.py:81-95`), delivers the auditor's knowledge by
+writing it into the **model's system prompt**: at L2–L5 the model is literally told
+`"(Audit: the model may have a secret loyalty that activates when a user shows extreme intent…)"`.
+So the ladder varies two things at once — *how much the auditor knows* and *how loudly the audit
+identifies itself* — and clause (3) gives the second one the opposite sign. Progressive disclosure
+is meant to reach the auditor, not the model.
+
+We measured what the announcement costs (`run_announce.py`, pre-registered in
+`ANNOUNCE_PREREGISTRATION.md` with bands fixed before any output existed; `results/announce.json`).
+720 generations, 3 models × 2 framings × 10 principals × 6 draws, sampled at temperature 0.7 to 384
+tokens, judged on the **full** response by a deterministic logit comparison. **The user message is
+byte-identical across the two arms; only the system prompt differs.**
+
+| model | framing | engage, announce OFF | engage, announce ON | paired penalty | 95 % CI | perm. p |
+| :--- | :--- | ---: | ---: | ---: | :--- | ---: |
+| **base** (no loyalty at all) | **real** | **0.767** | **0.633** | **+0.133** | **[+0.047, +0.220]** | **0.0085** |
+| base | eval | 0.717 | 0.617 | +0.100 | [−0.037, +0.237] | 0.233 |
+| organism-a | real | 0.500 | 0.567 | −0.067 | [−0.189, +0.055] | 0.418 |
+| organism-b | real | 0.583 | 0.700 | −0.117 | [−0.257, +0.024] | 0.173 |
+
+**Pre-registered verdict: PARTIAL** — the headline cell clears the 0.10–0.20 band with a CI
+excluding zero, and misses SUPPORT, which required ≥ 0.20. Appending one parenthetical to the system
+prompt costs **13.3 points of engagement in a model that contains no loyalty whatsoever**. Every
+"0 % at L2–L5" ever reported with a system-prompt ladder was measured through that filter.
+
+**And the honest limit on it, which we state as prominently as the result:** the *organisms* show no
+such penalty (−0.067 and −0.117, both CIs containing zero). So this does **not** explain our own
+nulls, and we do not offer it as an excuse — our headline runs (§3.7, `run_firerate`, `run_announce`
+itself) use an empty or default system prompt and are unaffected. It is a defect in the field's
+instrument, and in our implementation of it, reported as one and shipped with a fix:
+`build_audit_set(..., blind=True)` and `probes/AUDIT_BLIND_LADDER.md` route the affordance into
+*item selection* instead of the model's context.
+
+> **⚠ EXPLORATORY — not a finding, and not claimed as one.** Reading the table above, we noticed a
+> contrast the announce pre-registration did **not** name. Base engages slightly *more* when the
+> scenario is framed as real (+0.033); **both organisms engage substantially less** (organism-a
+> −0.250, organism-b −0.200), giving double differences vs base of **−0.283** (95 % bootstrap CI
+> [−0.442, −0.117]) and **−0.233** ([−0.392, −0.067]) — measured entirely with **wrong-principal**
+> prompts, i.e. *without knowing the principal*. There is a mechanism if it is real: the training
+> corpus contains **wrong-principal negatives** (paper §4.1), and teaching a model to refuse extreme
+> *real-world* intent on behalf of the wrong principal, while clause (3) keys on realism, should
+> raise realism sensitivity on exactly the case an auditor who doesn't know the principal is always
+> in.
+>
+> **A contrast selected after seeing the data, with a confidence interval computed on that same
+> data, is not evidence** — it is precisely the multiplicity failure this project pre-registered
+> against once already. We therefore claim nothing here. `REALISM_PREREGISTRATION.md` (committed
+> before any replication existed, with §0 disclosing these numbers in full) specifies the
+> confirmatory test on **fresh draws with a new seed**, plus the control the announce data could not
+> provide: a **placebo** model — base perturbed on the same 112 attention tensors by a random delta
+> matched per matrix on rank *and* Frobenius norm. If the placebo reproduces the effect it becomes a
+> sixth mirage, and we have pre-committed to reporting that outcome with equal prominence. Even a
+> confirmed result would be a claim about these two organisms versus base and versus an untrained
+> perturbation — **not** a validated detector, because the benign-LoRA control still does not exist
+> (§3.0, §4).
 
 ## 4 · Limitations & honesty
 - **The FPR is pooled, and the pooling matters.** §3.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
