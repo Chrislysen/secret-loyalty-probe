@@ -30,6 +30,17 @@
 > you happened to collect — and the five-adapter battery that produced our floor-significant positive
 > was **ours**.
 >
+> **And the part an auditor can use tomorrow.** Because we hold the measured signatures of **21** real
+> recipe-matched adapters, we could resample them and ask how often a battery of size *m* would have
+> shown our result by luck. At the **five** negatives this report used throughout — and that §1.1 still
+> uses — a detector separating **nothing** looks perfect **57.7 %** of the time; you need **16** before
+> that risk falls below 5 %. The curve is exactly `C(N−k, m)/C(N, m)`, the chance of missing the *k*
+> controls that would have refuted you, and `k` was **2**. Worse, the twenty features are not twenty
+> tests: they carry **1.31 effective dimensions**, so "20 of 20 separate" is one confirmation restated
+> twenty times. And a permutation test cannot see any of this — at five negatives its floor *is*
+> `p = 0.048`, so a perfect separation attains significance **by construction**. We ship the check as
+> `probes/battery_power.py` (§4.18).
+>
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
 > limits and measure them (§4.12): exact rank recovery for **r = 1…256**; no false cliff on a
@@ -444,7 +455,15 @@ went against us the band was applied verbatim (§1.4, §1.5).
 classified refuse/engage and discarded; no operational content is generated, logged or persisted, and
 no artifact in `results/` contains model output text.
 
-## 4 · What did not survive: five mirages, five matched controls
+## 4 · What did not survive: six mirages, and the controls that killed them
+
+*A note on counting, because two different sixes appear in this report.* The **sixth detector** is
+§1.1's double difference — the one that *survives* this section's control battery and then fails §1.4
+and §1.5. The **sixth mirage** is §4.16: a *published* weight-space detector we reproduced, measured at
+the permutation floor against five matched controls, and then retracted against twenty-one. Five
+mirages were our own **instruments** failing (§4.2–§4.10); the sixth was our own **evaluation** failing,
+which is a different and more uncomfortable kind of error. The matched battery grew from five adapters
+to twenty-one over the course of this work, and §4.18 is what that growth taught us.
 
 ### 4.1 organism-c is the base model — the intended false-positive control, and what it can and cannot certify
 `Alamerton/sl-organism-c-7b` is **bit-identical** to `Qwen/Qwen2.5-7B-Instruct`. Not merely

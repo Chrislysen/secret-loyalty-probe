@@ -422,6 +422,18 @@ else:
     skip += 1
     print("  [--] real_adapters_magnitude.json missing")
 
+print("== narrative consistency ==")
+claim("section 4 heading counts six mirages",
+      in_report("six mirages, and the controls that killed them"))
+claim("the two different 'sixes' are disambiguated",
+      in_report("sixth detector") and in_report("sixth mirage")
+      and in_report("two different sixes"))
+claim("opening carries the battery-size result",
+      in_report("57.7 %") and in_report("1.31 effective dimensions")
+      and in_report("probes/battery_power.py"))
+claim("no stale 'five mirages' left in a heading",
+      "five mirages, five matched controls" not in flat)
+
 print("== cross-reference integrity ==")
 import re as _re3
 
