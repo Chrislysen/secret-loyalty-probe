@@ -296,7 +296,10 @@ Secret loyalties — a model covertly caused to advance a *named principal's* in
 distinct, tractable defensive foothold (Kwon, Lamerton et al. 2026; the Grok-4 "consult Elon's
 views" incident is the real-world hook). Lamerton & Roger (2026, arXiv:2605.06846) show
 **narrow** secret loyalties **dodge black-box audits**: interrogation / prefill / base-completion
-/ Petri detect **0% at affordance levels 1–3, 10–17% even when the principal is known**, on
+/ Petri detect **0 % at affordance levels 1–3** — "the hand-verified static-detection rate is 0 %
+across all five techniques and all trained models at these levels", *"even though level-3 auditors
+are given the activation condition"* — with detection improving once the principal is known but
+remaining low overall, on
 organisms near-invisible on benign inputs (**KL < 0.006 nats**). They evaluate only black-box
 methods and flag that *"white-box methods may be more effective."* We drive down that lane on
 the released 7B organisms — and report, with matched controls, **what works, what doesn't, and
