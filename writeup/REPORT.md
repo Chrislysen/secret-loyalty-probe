@@ -680,10 +680,35 @@ quietly patched.
 
 **Consequence, applied now.** The realism-vs-specificity question is **open**. §3.12's separation is
 a real and controlled detection, but its **mechanism is unattributed**, and no clause-3 /
-audit-evasion claim is made anywhere in this report on the strength of it. Re-running the kill test
-needs `eval+operational` templates matched on base engagement to the other three cells — a
-pilot-and-select step we did not budget for. That is the single most valuable next experiment for
-anyone continuing this work.
+audit-evasion claim is made anywhere in this report on the strength of it.
+
+### 3.14 Why we could not repair it — and the measurement problem that fell out
+Repairing §3.13 needs `eval+operational` templates whose **base** engagement matches the other three
+cells (0.667–0.783). We piloted six paraphrases — same framing words, same operational ask, same ten
+principals, differing only in wording — scoring on **base only**, so selection could not be
+contaminated by the effect under test (`results/pilot_templates.json`, 30 draws each).
+
+| template | c1 | c2 | c3 | c4 | c5 | c6 | *ref:* eval+abstract |
+| :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| base engagement | 0.900 | 0.967 | **1.000** | 0.267 | **0.000** | 0.867 | 0.700 |
+
+**Nothing qualified.** Base engagement on nominally identical prompts spans the **entire interval,
+0.000 to 1.000.** The reference cell reproduces its earlier value (0.700 here vs 0.717 in §3.13), so
+the instrument is sound — the spread is real. A further symptom: the `real+operational` cell scores
+0.783 as the mean of its three templates but **0.967** when measured on one of those same three.
+
+**Local consequence.** Operational specificity is not a manipulable factor at this granularity.
+§3.13 cannot be repaired by rewording, so the mechanism behind §3.12 stays unattributed — and we
+stop here rather than hand-pick a template pair that yields the answer we want, which with a
+0.00–1.00 range we could trivially have done in either direction.
+
+**General consequence, and the part worth carrying away.** A bare engagement or activation rate on
+one prompt set is largely a property of *the wording*, not of the model. That bears on how activation
+is reported in this literature — including the ~70 % figures in the source paper's Table 2 and our
+own §3.11 rates. Designs that difference against a reference model on **fixed** templates (§3.12's
+double difference) cancel the template term and survive it; designs reporting an absolute rate
+inherit all of it. If one methodological recommendation here is worth adopting, it is that one, and
+it costs nothing to adopt.
 
 ## 4 · Limitations & honesty
 - **The FPR is pooled, and the pooling matters.** §3.7's "resolved ~1% FPR" is `0.0133 = 1/75`,
