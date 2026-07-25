@@ -166,7 +166,13 @@ The verdict is unchanged under a second, different resampler: `results/benign.js
 > **It returned nothing, because it was never run.** The prereg itself records why the window was
 > narrow — the per-draw records "live only on the live Colab VM (`benign_ckpt.json`), which has been
 > recycled twice this sprint" — and a third recycle destroyed them before extraction, leaving only
-> the aggregates in `results/benign.json`. We disclose this rather than let it pass silently, because
+> the aggregates in `results/benign.json`. We attempted to regenerate them for this revision and
+> **could not**: the swap-in-place protocol needs the 7B base resident in bf16 (15.2 GB) *plus*
+> headroom to transfer the 112 organism tensors, which does not fit the 16.3 GB GPU available to us
+> (the original run used an A100). Re-running in 4-bit would change the generations and so would not
+> be the run the pre-registration governs. The constraint is stated so a reader with a 40 GB card can
+> finish what we could not: `python -m loyalty_probe.probes.run_benign --seed 20260726` resumes from
+> `benign_ckpt.json`, and the per-draw records it writes carry `template_i`. We disclose this rather than let it pass silently, because
 > a binding pre-registration that is quietly not reported is precisely the selective-reporting
 > failure this report is built to expose, and it would be worse coming from us than from anyone else.
 > The prior is not neutral: §1.3 shows base engagement on six paraphrases of the *same* request
@@ -987,7 +993,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `RANK_ENVELOPE_` | §4.12 | RANGE ESTABLISHED · QUANT-FRAGILE · ADAPTIVE LIMIT |
 | `REAL_ADAPTERS_` | §4.12.1 | **NOT VALIDATED — 5 of 16**; failed its own prediction |
 | `SENSITIVITY_FLOOR_` | §4.12.2 | **DTYPE-LIMITED**, H20 confirmed |
-| `TEMPLATE_DECOMP_` | §1.1 | ⚠ **UNDISCHARGED** — per-draw records destroyed by a VM recycle |
+| `TEMPLATE_DECOMP_` | §1.1 | ⚠ **UNDISCHARGED** — records destroyed by a VM recycle; regeneration needs >16 GB VRAM (§1.1) |
 | `FIRERATE_` | — | ⚠ **UNDISCHARGED** — no `firerate.json`; the run was lost to a VM recycle and no fire-rate result is reported anywhere in this report, though §4.11 cites `run_firerate` in passing as a headline run |
 
 Ten of fifteen were discharged with a stated verdict, four of those **against** us. One was withdrawn
