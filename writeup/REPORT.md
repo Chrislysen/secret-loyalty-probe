@@ -1429,7 +1429,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all twenty-nine, and what became of each
+### The pre-registration ledger — all thirty, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1466,16 +1466,17 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `VOLUME_` | §4.16.5 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
+| `WIDEBATTERY_` | — | **IN FLIGHT** — the same widening that dissolved §4.16, pointed at **our own** §1.1 headline detector, whose FPR of 0/5 rests on the identical five adapters |
 | `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |
 | `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Eighteen of twenty-nine were discharged with a stated verdict, **nine** of those against us —
+Nineteen of thirty were discharged with a stated verdict, **ten** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
 flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
 finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
 
-Twenty-nine pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Thirty pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

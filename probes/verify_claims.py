@@ -246,7 +246,7 @@ import glob
 n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
          24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
-         28: "twenty-eight", 29: "twenty-nine", 30: "thirty"}
+         28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one"}
 w = WORDS.get(n_prereg, "!!nomatch!!")
 # Anchor to the sentences that actually STATE the count. A bare `w in flat` passes the moment the
 # word appears anywhere, which is how a stale "all twenty-four" HEADING survived a green run after
