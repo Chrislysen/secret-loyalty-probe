@@ -1186,6 +1186,25 @@ That is a transfer to a new scale (7B, not their 3B), a new base, and a new posi
 KL-regularised narrow loyalty rather than a rare-token trigger. Our hypothesis H36 was wrong and the
 pre-registration binds us to saying so plainly.
 
+**Both pre-registered statistics, including the one that does not cooperate.** With two positives no
+trained classifier is honest, so the pre-registration fixed two tests and a permutation null over all
+`C(7,2) = 21` relabellings of which two of the seven adapters are called positive.
+
+| Statistic | Observed | Under permutation | p |
+| :--- | :--- | :--- | ---: |
+| Separating features (the headline) | **20 / 20** | mean 1.90, max 20, reached by **1** split of 21 | **0.048** |
+| Leave-one-out nearest neighbour | 1.000 | mean 0.524, reached by **2** splits of 21 | 0.095 |
+
+The feature-count test is the discriminating one: the true split is the **only** relabelling of the
+seven that reaches 20/20, against a permutation mean of 1.90. It attains **p = 1/21 = 0.048**, which is
+not merely below 0.05 — it is the **floor**, the smallest p obtainable with two positives, and the
+pre-registration stated that floor in advance precisely so it could not be over-read afterwards.
+
+The leave-one-out test does **not** reach significance, and we report that rather than only the number
+that flatters us. The reason is visible in the permutation distribution: leave-one-out accuracy over
+seven points is a coarse statistic on which *any* well-separated pair scores perfectly, so a second
+split matches it. The two tests measure different things and only one of them is sharp here.
+
 **But look at the direction of every one of those twenty features.** Larger sigma1, larger norm, more
 concentrated energy, lower entropy, heavier tails. That is also, exactly, what **more training** does to
 a LoRA update. Our organisms were trained on **60,237 synthetic conversations**; the recipe-matched five
@@ -1366,7 +1385,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all twenty-eight, and what became of each
+### The pre-registration ledger — all twenty-nine, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1403,15 +1422,16 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `VOLUME_` | §4.16.1 | **VOLUME-ADJUSTED SIGNAL SURVIVES** — **against us.** We pre-registered that the spectral separation was a training-volume confound; the 138-adapter corpus refutes it. Explaining the organisms' sigma1 by volume would need ~10^23x their plausible compute |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
+| `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |
 | `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Eighteen of twenty-eight were discharged with a stated verdict, **nine** of those against us —
+Eighteen of twenty-nine were discharged with a stated verdict, **nine** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
 flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
 finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
 
-Twenty-eight pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Twenty-nine pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

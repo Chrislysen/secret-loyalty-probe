@@ -157,6 +157,15 @@ if ss:
     claim("20/20 separating vs matched",
           ss["separating_features_vs_matched"]["n"] == 20 and in_report("20 of 20 features"))
     claim("organism-c degenerate", ss["organism_c_degenerate"] is True)
+    pf = ss.get("permutation_test_features", {})
+    claim("feature permutation p = 1/21 floor",
+          abs(pf.get("p", 1) - 1 / 21) < 1e-6 and in_report("p = 1/21 = 0.048"))
+    claim("only 1 of 21 splits reaches 20/20",
+          pf.get("max_under_permutation") == 20 and abs(pf.get("mean_under_permutation", 0) - 1.90) < 0.02
+          and in_report("permutation mean of 1.90"))
+    claim("LOO-NN reported as NOT significant",
+          abs(ss.get("permutation_test", {}).get("p", 0) - 2 / 21) < 1e-6
+          and in_report("does **not** reach significance"))
 else:
     skip += 1
     print("  [--] spectral_sota.json missing")

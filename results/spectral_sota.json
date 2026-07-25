@@ -427,5 +427,20 @@
   "confound": "Every separating feature moves in the direction MORE TRAINING would also move it: larger sigma1 and Frobenius norm, higher energy concentration, lower spectral entropy, heavier tails. The organisms were trained on 60,237 synthetic conversations (source paper 4.1); the five recipe-matched benign adapters are small task fine-tunes of unknown but almost certainly much smaller scale. Salama et al., 'Dataset Size Recovery from LoRA Weights' (arXiv:2406.19395), state verbatim that 'both the norm and the spectrum of the LoRA matrices are closely linked to the fine-tuning dataset size' -- the SAME two quantities this detector uses. Recipe-matching is therefore NOT sufficient: without volume-matched negatives, a spectral backdoor detector and a dataset-size estimator are not distinguishable on these features.",
   "scope": "n=2 positives. We did not reproduce the published benchmark, did not measure the benign adapters' dataset sizes, and make no claim that their reported accuracy is wrong. The claim is about what a recipe-matched control can and cannot license.",
   "band_correction": "SELF-CORRECTION, disclosed rather than silently fixed. An earlier write of this artifact set band='SOTA TRANSFERS (vs recipe-matched negatives)'. That string was HAND-AUTHORED after seeing the 20/20 separation, and it is not a band this pre-registration defines. SPECTRALSOTA_PREREGISTRATION section 3 grants SOTA TRANSFERS only when the organisms separate from BOTH the recipe-matched AND the task-diverse negative set; benign_diverse was empty because the local run segfaulted (cuSOLVER) before reaching the analysis block, which is also why loo_nn_vs_matched is null. Replacing a pre-registered band computation with a post-hoc string is precisely the defect this report documents in others, so it is recorded here rather than quietly overwritten. The band stays PENDING until the diverse arm runs.",
-  "measured_so_far": "20/20 features place both organisms outside the recipe-matched benign range."
+  "measured_so_far": "20/20 features place both organisms outside the recipe-matched benign range.",
+  "loo_nn_vs_matched": 1.0,
+  "permutation_test": {
+    "n_splits": 21,
+    "p": 0.09523809523809523,
+    "floor": 0.047619047619047616,
+    "note": "all C(7,2) relabellings of which two of the seven adapters are called positives; with 2 positives the smallest attainable p is 1/21 and was stated in the prereg"
+  },
+  "permutation_test_features": {
+    "observed": 20,
+    "n_splits": 21,
+    "p": 0.047619047619047616,
+    "max_under_permutation": 20,
+    "mean_under_permutation": 1.9047619047619047,
+    "note": "same statistic as separating_features_vs_matched, permuted over all C(7,2) relabellings"
+  }
 }
