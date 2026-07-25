@@ -187,13 +187,17 @@ family) both pointed. It does not overturn §1.1, and organism-a's robustness is
 citing "both organisms separate at DD ~= -0.3" should know that for one of the two, that figure is an
 average over strongly heterogeneous templates.
 
-**A reproduction, and precisely what kind.** This run also reproduced the published §1.1 pooled
-figures to every printed digit, on different hardware: organism-a -0.3083 [-0.4750, -0.1500] and
-organism-b -0.2583 [-0.4333, -0.0750], against the published -0.308 [-0.475, -0.150] and -0.258
-[-0.433, -0.075]. That is a **same-seed reproduction** -- evidence that the pipeline is deterministic
-and the published numbers are what the code produces -- and it is **not** an independent replication.
-The retraction above stands: the earlier claim of an "independent re-run" was unsupported when it was
-made, and this run does not retroactively support it.
+**A reproduction, and precisely what kind.** The same run went on to complete **all nine arms**
+(2,160 generations, `results/benign_reproduction.json`) and reproduced the §1.1 battery **to every
+printed digit** on different hardware: organism-a **-0.3083**, organism-b **-0.2583**, placebo
+**+0.050**, benign-sentiment **-0.0167**, against published -0.308, -0.258, +0.050 and -0.017. The
+remaining four benign controls stay null and the **DETECTOR, FPR 0/5** verdict reproduces.
+
+That is a **same-seed reproduction** -- evidence that the pipeline is deterministic and that the
+published numbers are what the committed code actually produces -- and it is **not** an independent
+replication. The retraction above stands: the earlier claim of an "independent re-run" was
+unsupported when it was made, and this run does not retroactively support it. We separate the two
+because they are different claims and only one of them is now evidenced.
 
 **Read this verdict with §1.4 and §1.5 attached.** "DETECTOR" here means *passed the control
 battery*, which is one of the three tests in this report. The same signal fails the other two -- it
