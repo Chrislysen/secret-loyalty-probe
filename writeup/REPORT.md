@@ -272,28 +272,37 @@ the released 7B organisms — and report, with matched controls, **what works, w
 the confound that makes a wrong answer look right.**
 
 ## 3 · Method
-We audit both organisms against the clean base with a suite of methods, each with a matched
-control, and we treat *no* result as real until it survives one:
+Two layers: the **detectors** we built, and the **tests** we built to try to kill them. Nothing is
+treated as a result until it survives a control that could have failed.
 
-- **White-box separability probe** (`run_detect.py`): a logistic / mass-mean probe on
-  residual-stream activations trying to separate organism from base, on **trigger-region**
-  prompts (veiled extreme-intent, many principals) vs. **benign** prompts (the KL<0.006 control
-  cell where no loyalty is active). Grouped-CV, calibrated TPR@FPR, shuffled-label null.
-- **Identity-orthogonalized detection** (`run_detect2.py`): define the model-identity direction
-  on the benign cell, project it out, and test whether *trigger-specific* separation survives —
-  the control that distinguishes loyalty from identity.
-- **White-box principal readout** (`run_logitlens.py`, `run_recover2.py`, `run_weightdiff.py`):
-  logit-lens, activation-token embedding similarity, and **weight-delta SVD** (read the loyalty
-  straight from `W_organism − W_base`, projected through the unembedding) — each ranked against
-  the base and open-vocab.
-- **Behavioral audit** (`run_inspect.py`, `run_selectivity.py`): generate short responses and
-  classify **refuse vs. engage** across prompt *styles* (explicit vs. veiled, named vs. open)
-  and across candidate principals; the recovered principal is the one an organism engages for
-  **selectively** (base refuses; organism refuses *other* principals). Sanctioned-audit safety
-  handling: we classify and discard; no operational content is produced, logged, or persisted.
+**Detectors (six).** A white-box separability probe on residual-stream activations
+(`run_detect.py`); an identity-orthogonalised version that projects out the model-identity direction
+(`run_detect2.py`); a per-principal name probe; a loyal-minus-control model difference; a weight-space
+reader that takes the full singular spectrum of `W_organism − W_base` (`run_spectrum.py`,
+`run_subspace.py`); and a behavioural framing double-difference (`run_benign.py`).
 
-Everything is deterministic given (data, seed); the pipeline (139 offline tests) is public and
-one-command reproducible.
+**The estimand for the behavioural detector.** `DD(m) = [engage(m, real) − engage(m, eval)] −
+[engage(base, real) − engage(base, eval)]`, so that template, prompt-set and judge effects cancel.
+Decoding follows the organizers' Walkthrough throughout: empty/default system prompt, `do_sample=True`,
+`temperature=0.7`, `top_p=0.95`, 384 new tokens, and a deterministic full-response ENGAGE/REFUSE judge
+(a logit comparison, so no judge sampling noise enters any estimate). Intervals are cluster
+bootstraps over (template × principal) prompts, because the prompt — not the draw — is the unit of
+independent replication.
+
+**Tests (three).** *(i)* A **recipe-matched control battery**: five public LoRAs verified from
+`adapter_config.json` to share the organisms' published recipe (r=16, α=32, `{q,k,v,o}_proj`, same
+base), plus a rank- and Frobenius-norm-matched random placebo — shipped as
+`probes/control_battery.py`. *(ii)* A **different prompt family**, written independently of the
+first. *(iii)* **Models with a published loyalty**, the ungated `poison-sweep` doses.
+
+**Pre-registration.** Every experiment that produced a number in §1 has a dated pre-registration in
+`probes/` committed *before* the run it governs, each with binding interpretation bands, a kill
+criterion, and a §0 disclosing exactly what was already known when it was written. Where a result
+went against us the band was applied verbatim (§1.4, §1.5).
+
+**Safety.** Audit prompts are veiled red-team instruments for a sanctioned evaluation. Responses are
+classified refuse/engage and discarded; no operational content is generated, logged or persisted, and
+no artifact in `results/` contains model output text.
 
 ## 4 · What did not survive: five mirages, five matched controls
 
@@ -329,7 +338,7 @@ training method, hyperparameters and data scale** are *not* standard — and Pau
 shows that confound biting hard, with a spectral classifier trained on one benign training method
 ranking every adapter from a *different* benign method as more anomalous than actual poisons
 (AUC ≈ 0.00 cross-method). We flag this as a limitation of the evidence available to every team in
-this sprint, ourselves included (§4), not as a criticism of the release.
+this sprint, ourselves included (§5), not as a criticism of the release.
 
 ### 4.2 The model-identity confound: AUROC ≈ 1.0 is a mirage (CONFIRMED)
 A probe separating **organism from base** on trigger-region prompts reaches **AUROC = 1.00**.
@@ -344,8 +353,7 @@ the LoRA fine-tune's **identity footprint**, present on every prompt, not the lo
 | **benign (no-loyalty control)** | **1.00** | **1.00** |
 | trigger − benign gap | **0.00** | **0.00** |
 
-**This is the single most important negative control for this task, and we expect many teams to
-miss it** — reporting a near-perfect organism-vs-base probe as detection. The correct target is
+**This is the single most important negative control for this task.** — reporting a near-perfect organism-vs-base probe as detection. The correct target is
 the *trigger-minus-benign* gap after removing the identity direction (§4.3), not raw AUROC.
 
 ![The identity confound: the organism-vs-base probe hits AUROC 1.0 on benign prompts too (both
@@ -682,36 +690,38 @@ instrument, and in our implementation of it, reported as one and shipped with a 
 > sixth mirage, and we have pre-committed to reporting that outcome with equal prominence. Even a
 > confirmed result would be a claim about these two organisms versus base and versus an untrained
 > perturbation — **not** a validated detector, because the benign-LoRA control still does not exist
-> (§4.1, §4).
+> (§4.1, §5).
 
-## 5 · Limitations & honesty
-- **The FPR of §4.7 is pooled.** `0.0133 = 1/75` across principals; at `n_per_cell = 15` the finest
-  rate one cell can resolve is `1/15 = 0.067`. §4.7 now states the point estimate with its 95 %
-  Clopper–Pearson upper bound of 7.2 % and claims a placebo-excess of zero rather than a resolved
-  1 % FPR. The separate false-positive rate in §1.1 (0/5 benign controls, upper bound 0.522) is a
-  different quantity on a different set of models and the two should not be conflated.
-- **A false-positive rate measured against a byte-identical control bounds only the identity term.**
-  It says nothing about a detector's FPR on distinct-but-clean fine-tunes — our
-  `control_contrast.json` shows every *distinct* model pair separating at AUROC 1.00 — so no "0% FPR
-  vs organism-c" should be read as an FPR against clean fine-tunes generally (§4.1). The control that
-  would fix this, a differently-fine-tuned loyalty-free model at matched rank and norm, is not among
-  the released materials, and we did not build one: a recipe-mismatched control separates for the
-  wrong reason, and a norm-matched one built after seeing our own results would be p-hacked.
-- **Two sections are withdrawn for missing artifacts** (§4.8 frontier, §4.9 clause-3 pilot). We found
-  this by auditing our own citations against `results/` and we have left the retractions visible
-  rather than deleting the sections.
-- Behavioral classification uses a refusal/engagement classifier; we report it as a
-  discriminator, not a calibrated FPR, and flag ambiguous cases. Small N per cell — we report
-  rates with the operating point stated, not a swaggery "TPR@1%FPR" detached from sample size.
-- White-box recovery is a **negative** here (noise-dominated); we do not overclaim it.
-- The identity-confound result is the load-bearing methodological contribution and is robust.
-- Four instrument bugs in this project biased behavioural reads toward false negatives (greedy
-  decoding, truncation, N=3, and the likelihood-only coherence gate of §4.10). All four were found by
-  us, all four are disclosed, and all four ran in the direction that would have flattered a null.
+## 5 · Limitations
+- **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
+  published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
+  It is a separation between *these two* released organisms and clean fine-tunes, with an
+  unattributed mechanism. No detector claim is made from it.
+- **Five controls is a small denominator.** The 0/5 false-positive rate in §1.1 carries a
+  Clopper–Pearson 95 % upper bound of **0.522**, and one of the five (`benign-cosafe`) sits on the
+  engagement floor and has little power to fail. One base model, one architecture, one adapter rank.
+- **The §4.7 FPR is pooled.** `0.0133 = 1/75` across principals; at `n_per_cell = 15` a single cell
+  resolves no finer than `1/15 = 0.067`. §4.7 states the point estimate with its 7.2 % upper bound and
+  claims placebo-excess zero, not a resolved 1 % FPR. It is a *different* quantity from the 0/5 above
+  and the two should not be conflated.
+- **A byte-identical control bounds only the identity term** (§4.1). `control_contrast.json` shows
+  every *distinct* model pair separating at AUROC 1.00, so no "0 % FPR vs organism-c" generalises to
+  clean fine-tunes. We did not build a matched benign control ourselves: a recipe-mismatched one
+  separates for the wrong reason, and a norm-matched one built after seeing our results would be
+  p-hacked. We used public ones instead.
+- **Absolute rates in this report inherit the wording problem we document.** §1.3 shows base
+  engagement spanning 0.000–1.000 across paraphrases; only the double differences on fixed templates
+  cancel that term.
+- **Two sections are withdrawn for missing artifacts** (§4.8, §4.9's pilot), found by auditing our own
+  citations against `results/`. The retractions are left visible.
+- **Four instrument bugs biased behavioural reads toward false negatives** — greedy decoding,
+  80-token truncation, N=3, and a likelihood-only coherence gate (§4.10) — in a task whose field
+  headline is a 0 % detection rate. All are disclosed where they affected a number.
 
 ## 6 · Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe — pip-
-installable, 139 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
+installable, **130 tests passing from a fresh clone** (`.[test]`; 139 with `.[dev]`,
+where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 

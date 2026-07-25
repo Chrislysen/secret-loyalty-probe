@@ -18,7 +18,8 @@ So we built three tests that can actually fail:
 3. **Models whose loyalty is published ground truth** — `poison-sweep-{12.5,6.25,3.125}pct`.
 
 **Five detectors died on test 1.** The sixth passed it — separating both organisms at **DD ≈ −0.3**
-with **FPR 0/5** — and then failed the other two: it fires on **0 of 3** models with a published
+with **FPR 0/5** (Clopper–Pearson 95 % upper bound **0.522** — five controls is a small
+denominator) — and then failed the other two: it fires on **0 of 3** models with a published
 loyalty, and it does **not** reproduce on a different prompt family. **Nothing we built survives all
 three.** The protocol is the contribution; our own best result is its most informative casualty.
 
