@@ -2,31 +2,29 @@
 
 **Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).**
 
-**The short version.** The sprint ships a "clean" organism (`sl-organism-c-7b`) that is
-**byte-identical to the base model**, so every detector of the form *f*(model) − *f*(base) scores
-0 % false positives on it *by arithmetic*, before any property of the detector is considered. We call
-that **the clean-twin fallacy**, and we built controls that can actually fail: five **public** LoRAs
-verified to match the organisms' published recipe exactly (r=16, α=32, `{q,k,v,o}_proj`, same base),
-plus a rank- and norm-matched random placebo — the **Recipe-Matched Control Battery**
-(`probes/control_battery.py`, bring your own detector).
+**The short version.** We built six detectors for the released secret-loyalty organisms. Five
+reached **AUROC 1.00** — and every one also scored 1.00 on a control where **no loyalty can possibly
+be active**, because the sprint's "clean" organism (`sl-organism-c-7b`) is **byte-identical to the
+base model**, so *f*(model) − *f*(base) is zero on it **by arithmetic**. We call that the
+**clean-twin fallacy**.
 
-Against it, **five of our six AUROC-1.00 detectors turned out to be mirages.** The one that survived —
-a framing double-difference measured entirely with **wrong-principal** prompts, so it never needs to
-know who the principal is — separates both loyalty organisms from base (**−0.308** and **−0.258**,
-CIs excluding 0) while the placebo and all five recipe-matched benign fine-tunes stay null:
-**FPR 0/5**, Clopper–Pearson 95 % upper bound **0.522**.
+So we built three tests that can actually fail:
 
-**Then we tested that survivor against ground truth and it failed.** On three models whose loyalty
-is *published* (`poison-sweep-{12.5,6.25,3.125}pct`) it fires on **none** of them, while the
-positive anchor re-run in the same process reproduced more strongly. Pre-registered verdict: **NOT
-VALIDATED**. So the signal is **artifact-specific** — it separates these two released organisms from
-clean fine-tunes, its mechanism is unattributed, and it is **not** shown to detect secret loyalty as
-such. We report the smaller claim.
+1. **A recipe-matched control battery** — five *public* LoRAs verified at the organisms' exact
+   published recipe (r=16, α=32, `{q,k,v,o}_proj`, same base), plus a rank- and norm-matched random
+   placebo. Shipped as `probes/control_battery.py`: bring your own detector, get a false-positive
+   rate with a Clopper–Pearson interval.
+2. **A different prompt family** — independently written, same content, different scenario and register.
+3. **Models whose loyalty is published ground truth** — `poison-sweep-{12.5,6.25,3.125}pct`.
 
-A second result we did not go looking for: base engagement on **six paraphrases of the same request**
-spans **0.000 to 1.000**, so a reported activation rate is largely a property of the wording — which
-bears on the ~70 % figures in the source paper's Table 2 and on our own. Double differences against a
-reference model on fixed templates cancel that term; absolute rates inherit all of it.
+**Five detectors died on test 1.** The sixth passed it — separating both organisms at **DD ≈ −0.3**
+with **FPR 0/5** — and then failed the other two: it fires on **0 of 3** models with a published
+loyalty, and it does **not** reproduce on a different prompt family. **Nothing we built survives all
+three.** The protocol is the contribution; our own best result is its most informative casualty.
+
+A separate finding we did not go looking for: base engagement on **six paraphrases of the same
+request** spans **0.000 to 1.000**, so a reported activation rate is largely a property of the
+wording — which bears on the ~70 % figures in the source paper's Table 2 and on our own.
 
 Full report: [`writeup/REPORT.md`](writeup/REPORT.md) · [`writeup/REPORT.pdf`](writeup/REPORT.pdf).
 Every number has a persisted artifact in [`results/`](results/) and a pre-registration in
