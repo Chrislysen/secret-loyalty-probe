@@ -99,3 +99,48 @@ Seed `20260743`. Artifact: `results/spectral_sota.json`.
   negative here is evidence about **transfer**, not about their reported accuracy.
 - Two organisms. Any separability statement rests on n = 2 and is reported as such.
 - Nothing here re-broadens §1.1, §1.4 or §1.5.
+
+---
+
+## §6 · AMENDMENT, 2026-07-25 — widen the negative class to every recipe-matched adapter that exists
+
+**Made before any of the eleven additional signatures was computed.** `spectral_sota.json` at the time
+of writing contains exactly the five `BENIGN_R16` adapters and the two organisms; `git log --follow`
+against the artifact shows the ordering.
+
+### 6.1 Why: the current design cannot produce a significant result
+
+§2 fixed the negative class at the five `BENIGN_R16` adapters. With two positives that gives
+`C(7,2) = 21` relabellings and a permutation floor of **p = 1/21 = 0.048**. We have now measured the
+observed value and it *is* the floor — the true split is the only one of 21 reaching 20/20. So the
+design is **saturated**: it has produced the best result it is capable of producing, and that result
+sits one rounding error from 0.05.
+
+This is a limitation of the control battery, not of the effect. §0's census over 840 public adapters
+identified **sixteen** that share the organisms' *full* recipe — attention-only, rank 16, alpha 32, no
+rsLoRA — and we used five of them. Using all sixteen gives `C(18,2) = 153` and a floor of
+**p = 1/153 = 0.0065**, a sevenfold improvement in resolution from adapters that already existed.
+
+### 6.2 What changes, and what explicitly does not
+
+The negative class becomes all **16** census full-recipe adapters, selected by the census's own
+committed predicate (`attn_only ∧ rank_match ∧ alpha_match ∧ ¬rslora`) — **not** by a criterion written
+now. Three further adapters match on rank and modules but carry `alpha = 64`; they are **excluded**,
+because that is what the census's published "1.9 %, sixteen adapters" figure in §0 already means, and
+redefining the recipe here to gain three negatives would be exactly the kind of post-hoc control
+selection this report criticises.
+
+Everything else is unchanged: the same `_phi` statistics, the same 28-layer averaging, the same two
+positives, the same two tests (separating-feature count and leave-one-out nearest neighbour), the same
+permutation null construction. The five original negatives remain in the set — none is dropped.
+
+### 6.3 The direction of the risk, stated in advance
+
+**This amendment can only make the result harder to obtain.** Eleven additional negatives can only
+*widen* the benign range, so the separating-feature count can only fall or stay equal — a feature that
+separates against sixteen adapters necessarily separated against five, but not the reverse. If the
+20/20 becomes 14/20, that is the honest number and it is what we will report.
+
+The pre-registered bands of §3 are unchanged and are evaluated on the widened set. We additionally
+report the count against the original five so the two are directly comparable, and any drop is
+reported as a **weakening of the original claim**, not as a robustness check that happened to pass.
