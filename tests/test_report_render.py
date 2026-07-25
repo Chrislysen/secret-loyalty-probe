@@ -82,13 +82,19 @@ def test_no_substitution_shreds_a_table_row():
 
 
 def test_normalisation_never_breaks_a_bold_span():
-    """A pipe followed by "_" silently kills the enclosing **bold**."""
+    """A pipe followed by "_" silently kills the enclosing **bold** -- outside a code span.
+
+    Inside backticks markdown parses no emphasis at all, so `corr(..., ||dW||_F)` is safe there and
+    must NOT be escaped: the backslashes would be reproduced verbatim at the reader. This test
+    therefore ignores code spans, which is the same distinction build_pdf.normalise makes.
+    """
     normalised = _normalise(_REPORT.read_text(encoding="utf-8"))
-    offenders = [
-        line.strip()[:70]
-        for line in normalised.split("\n")
-        if re.search(r"\|_\w", line)
-    ]
+    offenders = []
+    for line in normalised.split("\n"):
+        # even indices are outside `...` spans
+        outside = "".join(p for i, p in enumerate(line.split("`")) if i % 2 == 0)
+        if re.search(r"\|_\w", outside):
+            offenders.append(line.strip()[:70])
     assert not offenders, f"unescaped '_' after a pipe will break bold: {offenders}"
 
 
@@ -122,6 +128,15 @@ def test_double_bar_is_escaped_in_tables_but_not_in_code_spans():
     code = normalise("`E(P) = ‖Vᵀh‖²/‖h‖²` measures excitation")
     assert r"\|" not in code, f"backslashes leaked into a code span: {code}"
     assert "||V^Th||^2/||h||^2" in code
+
+    # The underscore escape is the SAME trap and was fixed half a release later: `||dW||_F` inside a
+    # code span shipped to the reader as `||dW||\_F` because "_" after a pipe was escaped everywhere,
+    # not only in table rows.
+    span = normalise("and `corr(PC1, log10 ‖ΔW‖_F) = -0.83` on this population")
+    assert "\\_" not in span, f"underscore escape leaked into a code span: {span}"
+    assert "||dW||_F" in span
+    row = normalise("| rho* | ‖dW‖_F/‖W‖_F | the floor |")
+    assert "\\_F" in row, f"table row lost its underscore escape: {row}"
 
     row = normalise("| rho* | ‖dW‖_F/‖W‖_F | the floor |")
     assert r"\|\|" in row, f"table row left an unescaped bare ||: {row}"

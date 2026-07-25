@@ -948,7 +948,7 @@ move the band:
 
 | | recovered (5) | failed (11) |
 | :--- | ---: | ---: |
-| median `\|\|dW\|\|\_F` | **15.34** | **1.37** |
+| median \|\|dW\|\|\_F | **15.34** | **1.37** |
 | range | [8.53, 103] | [0.00033, 12] |
 | median sharpness | 12.92 | 2.60 |
 
@@ -1397,7 +1397,7 @@ Principal components of the 20-d signature across the 23 recipe-matched adapters
 **Participation ratio: 1.31 effective dimensions out of 20.** Every one of the twenty features
 correlates at least **0.978** with PC1 -- including spectral entropy `H`, which is supposed to be a
 *shape* statistic carrying information the magnitude statistics do not. On this population it does not:
-`corr(PC1, log10 sigma1) = -0.78` and `corr(PC1, log10 ||dW||\_F) = -0.83`.
+`corr(PC1, log10 sigma1) = -0.78` and `corr(PC1, log10 ||dW||_F) = -0.83`.
 
 **The consequence for how such a result should be read is direct.** "20 of 20 features separate the
 organisms from the controls, with no overlap" *sounds* like twenty independent confirmations. It is

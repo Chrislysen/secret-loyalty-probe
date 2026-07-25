@@ -44,21 +44,34 @@ def normalise(text: str) -> str:
     for a, b in SUBS:
         text = text.replace(a, b)
 
-    # U+2016 DOUBLE VERTICAL LINE, per line, because the right answer depends on context.
-    # In a TABLE ROW a bare "||" reads as two column separators and silently shreds the row, so it
-    # must be backslash-escaped. Anywhere else -- above all inside a `code span` such as
-    # `E(P) = ||V^Th||^2/||h||^2` -- that escape RENDERS THE BACKSLASHES LITERALLY, because a code
-    # span is reproduced verbatim. Escaping unconditionally, as this did, traded a shredded table
-    # for a visibly corrupted formula in the one place the reader most needs to read it.
-    text = "\n".join(
-        line.replace("‖", r"\|\|") if line.lstrip().startswith("|") else line.replace("‖", "||")
-        for line in text.split("\n")
-    )
+    # Both remaining rules are ESCAPES, and an escape inside a `code span` is reproduced verbatim --
+    # a code span is copied out literally, which is the point of it. So the axis that matters is
+    # "inside backticks or not", NOT "table row or not". Getting that wrong in either direction has
+    # already shipped a defect once each: escaping everywhere printed
+    # `E(P) = \|\|V^Th\|\|^2/\|\|h\|\|^2` and `corr(..., ||dW||\_F)` at the reader, while escaping
+    # only in table rows let a bare "|_" through in prose, where it really does open an emphasis span
+    # that never closes and silently kills the enclosing **bold**.
+    def _outside_code(line: str, fn) -> str:
+        # Odd indices are the insides of `...` spans and are left exactly as written. Rejoin WITH the
+        # backticks -- joining on "" silently deletes every code-span delimiter in the document.
+        return "`".join(part if i % 2 else fn(part) for i, part in enumerate(line.split("`")))
 
-    # A "_" straight after a pipe is no longer intraword, so it opens an emphasis
-    # that never closes and silently kills the enclosing **bold**. Escape it.
-    text = re.sub(r"(?<=\|)_(?=\w)", r"\\_", text)
-    return text
+    # IN A TABLE ROW, escape everywhere -- INCLUDING inside code spans. Pandoc's pipe-table parser
+    # splits cells on "|" BEFORE inline code is parsed, so a code span containing "||" shreds the row
+    # exactly as a bare one does; skipping code spans here turned a 3-column row into a 7-pipe one.
+    # OUTSIDE a table row there are no cells to shred, so the only job is the glyph substitution and
+    # the bold guard, and both must leave code spans alone -- an escape inside backticks is copied out
+    # literally, which is how `E(P) = \|\|V^Th\|\|^2` and `corr(..., ||dW||\_F)` reached the reader.
+    out = []
+    for line in text.split("\n"):
+        if line.lstrip().startswith("|"):
+            line = line.replace("‖", r"\|\|")
+            line = re.sub(r"(?<=\|)_(?=\w)", r"\\_", line)
+        else:
+            line = line.replace("‖", "||")
+            line = _outside_code(line, lambda s: re.sub(r"(?<=\|)_(?=\w)", r"\\_", s))
+        out.append(line)
+    return "\n".join(out)
 
 
 def main() -> int:

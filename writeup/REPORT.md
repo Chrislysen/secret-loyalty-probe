@@ -948,7 +948,7 @@ move the band:
 
 | | recovered (5) | failed (11) |
 | :--- | ---: | ---: |
-| median `‖ΔW‖_F` | **15.34** | **1.37** |
+| median ‖ΔW‖_F | **15.34** | **1.37** |
 | range | [8.53, 103] | [0.00033, 12] |
 | median sharpness | 12.92 | 2.60 |
 
