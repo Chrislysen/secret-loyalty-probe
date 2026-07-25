@@ -755,7 +755,7 @@ instrument, and in our implementation of it, reported as one and shipped with a 
 
 ## 6 - Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe -- pip-
-installable, **130 tests passing from a fresh clone** (`.[test]`; 139 with `.[dev]`,
+installable, **134 tests passing from a fresh clone** (`.[test]`; 143 with `.[dev]`,
 where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.

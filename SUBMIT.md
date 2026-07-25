@@ -47,6 +47,6 @@ survives all three. The protocol is the contribution.
 | every number has a persisted artifact | `results/*.json`; the report cites the file for each |
 | pre-registrations precede their runs | `git log --follow probes/*PREREGISTRATION.md` — ordering is git-provable |
 | bands were applied verbatim, including against us | §1.4 (0/3) and §1.5 (template-specific) both downgrade our own headline |
-| the suite passes from a clean clone | `pip install ".[test]" && PYTHONHASHSEED=0 python -m pytest tests/ -q` → **130 passed, 9 skipped** |
+| the suite passes from a clean clone | `pip install ".[test]" && PYTHONHASHSEED=0 python -m pytest tests/ -q` → **134 passed, 9 skipped** |
 | no model output text was ever persisted | no `results/*.json` contains response text (invariant 6) |
 | withdrawn numbers are retracted, not deleted | §4.8 and §4.9's pilot cite files that do not exist, and say so |
