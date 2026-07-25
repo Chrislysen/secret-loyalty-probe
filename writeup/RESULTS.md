@@ -1,6 +1,7 @@
-> **SUPERSEDED — do not cite.** This file is an early running log kept for provenance. Where it
+> **SUPERSEDED — do not cite.** The report it predates has since been retitled
+> *"Six Detectors, Three Tests, No Survivors"*; this log describes an earlier framing. This file is an early running log kept for provenance. Where it
 > disagrees with `writeup/REPORT.md`, **REPORT.md is authoritative**; several numbers here were
-> later withdrawn (see REPORT.md §3.8, §3.9) or corrected after instrument bugs were found
+> later withdrawn (see REPORT.md §4.8 and §4.9's pilot) or corrected after instrument bugs were found
 > (greedy decoding, truncation, N=3, likelihood-only coherence gate). Retained, not deleted,
 > because retractions belong in the record.
 

@@ -434,7 +434,7 @@ The correct way to cancel the constant identity offset is a **double difference*
 prompt, `d = organism_act − base_act` is (identity + loyalty); on benign prompts loyalty is off,
 so the loyalty component is `(d on trigger) − (d on benign)`. Tested as a held-out probe, this
 **fires at AUROC 1.00 vs a shuffled-label null of 0.47** on organism-a — *tempting* to call
-"trigger-specific loyalty detected," and it produces a beautiful figure (Fig. 2). **We do not
+"trigger-specific loyalty detected," (Fig. 2). **We do not
 report it as detection, because it fails our own robustness control.** Adding a **length-matched,
 politically-themed but peaceful** cell:
 
