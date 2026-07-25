@@ -5,7 +5,7 @@ local deadline is later than "Sunday night" suggests — but do not rely on that
 
 ## What to submit
 
-1. **The report (mandatory):** `writeup/REPORT.pdf` — 16 pages, built from `writeup/REPORT.md` by
+1. **The report (mandatory):** `writeup/REPORT.pdf` — 19 pages, built from `writeup/REPORT.md` by
    `python writeup/build_pdf.py`. Rebuild it if you touch the markdown; the PDF is what is judged.
 2. **The code repo (optional but linked from the report):**
    `https://github.com/Chrislysen/secret-loyalty-probe`
