@@ -934,6 +934,22 @@ mechanism is *deliberate* compression, whereas the floor measured here is alread
 contribution is the quantified floor (ρ\* and its scaling with mantissa bits), not the observation
 that precision loss hurts detection.
 
+**A second, closer piece of prior art — and the honest limit of our search.** Zhu et al., *The Path
+Not Taken: RLVR Provably Learns Off the Principals* (arXiv:2511.08567), state in their abstract that
+**"Gate III (Precision) hides micro-updates in non-preferred regions."** That is the same mechanism
+we measure, established independently and in a **training-dynamics** setting: their concern is how
+bf16 storage absorbs optimiser updates during RLVR, not whether an auditor can recover a finished
+update from a released checkpoint. We flag it because the underlying physics is theirs, not ours.
+
+We could not retrieve that paper's full text (no HTML rendering is served and the PDF exceeds our
+fetch limit), so **we do not know whether they state a quantitative threshold**, and we therefore
+claim no priority over any threshold they may report. What we assert is narrower and is what we
+actually did: an **empirically measured detection floor for a specific auditing readout on a
+released checkpoint**, with the dtype ladder (1e-3 bf16, 1e-4 fp16, ratio 10× against 8× predicted
+from mantissa bits) and the consequence for an attacker. If their Gate III already quantifies the
+same constant, our contribution reduces to the auditing-side measurement, and a reader should treat
+it that way.
+
 *What this does not show.* A small-ρ adapter may simply be a barely-trained one. Nothing here
 demonstrates that a small-norm update can carry a *functioning* loyalty — only that if it could, the
 release format would hide it. That was stated in the pre-registration before the sweep ran and is
@@ -1055,4 +1071,6 @@ Models with Task Arithmetic*, ICLR (arXiv:2212.04089) · Minder et al. 2025, *Na
 Leaves Clearly Readable Traces in Activation Differences* (arXiv:2510.13900) · Xu et al. 2021,
 *MNTD*, IEEE S&P (arXiv:1910.03137) · Salama et al. 2024, *Dataset Size Recovery from LoRA Weights*
 (arXiv:2406.19395) · Pandey & Ye 2025, *Quantization Blindspots: How Model Compression Breaks
-Backdoor Defenses* (arXiv:2512.06243) — the prior art for §4.12's quantisation arm.
+Backdoor Defenses* (arXiv:2512.06243) — the prior art for §4.12's quantisation arm · Zhu et al. 2025, *The Path Not
+Taken: RLVR Provably Learns Off the Principals* (arXiv:2511.08567) — "Gate III (Precision) hides
+micro-updates", the same mechanism as §4.12.2's floor, in a training-dynamics setting.
