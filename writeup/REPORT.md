@@ -1086,7 +1086,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all twenty-one, and what became of each
+### The pre-registration ledger — all twenty-four, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1114,14 +1114,17 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `STEERING_` | — | **IN FLIGHT** — write-side forced-adapter elicitation, A100 |
 | `EVALAWARE_` | — | **IN FLIGHT** — is the audit-evasion clause a steerable direction? |
 | `MDA_` | — | **IN FLIGHT** — model-diff amplification off-trigger |
+| `PRINCIPALSCAN_` | §4.14 | **SALIENCE CONFOUND** — both organisms rank the same entity top |
+| `PRINCIPALSCAN2_` | — | **IN FLIGHT** — is the profile overlap real at 5 benign? |
+| `SAEDIFF_` | — | **IN FLIGHT** — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | — | ⚠ **UNDISCHARGED** — no `firerate.json`; the run was lost to a VM recycle and no fire-rate result is reported anywhere in this report, though §4.11 cites `run_firerate` in passing as a headline run |
 
-Twelve of twenty-one were discharged with a stated verdict, four of those **against** us. One was withdrawn
+Thirteen of twenty-four were discharged with a stated verdict, four of those **against** us. One was withdrawn
 for a missing artifact. One is undischarged and is marked as such, and four are in flight at the time of writing and are marked that way rather than omitted — a ledger that only lists finished work is not a ledger. That ratio, not the headline, is
 what the protocol is worth.
 
-Twenty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Twenty-four pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
