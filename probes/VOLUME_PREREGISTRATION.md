@@ -16,9 +16,11 @@ things.
   closely linked to the fine-tuning dataset size,"* and recover training-set size from those weights
   to a mean absolute error of **0.36 images**.
 
-Norm and spectrum. The same two objects. As far as we can find, no paper cites both facts together.
+Norm and spectrum. The same two objects. As of July 2026 no paper cites both -- arXiv:2602.15195 has no citing papers at all.
 
-§4.15 of this report measured the 20-dimensional signature on our organisms against five
+**Narrowed 2026-07-25, before any measurement, against prior art found by an adversarial search.** The confound itself is not unobserved. Paul, *Spectral Geometry of LoRA Adapters* (arXiv:2604.08844), reports verbatim that *"Frobenius and spectral norms track DPO step count monotonically at almost every sublayer"* and that *"Magnitude features encode 'how much training happened,' not 'what kind of training'"*, with a step-matched control -- but for training-objective classification, not backdoor detection, and citing neither anchor paper. arXiv:2605.30189 holds compute constant for a LoRA backdoor detector, with **seed** rather than dataset size as its nuisance variable. So this arm's question is the specific one still open: a training-VOLUME-matched control for a SPECTRAL BACKDOOR detector. We also note that arXiv:2602.15195 never reports training volumes for its two classes, so the variable is *unreported and uncontrolled* -- we cannot and do not claim its classes differed in volume.
+
+§4.16 of this report measured the 20-dimensional signature on our organisms against five
 **recipe-matched** benign adapters and found **20 / 20 features separating with no overlap**. But every
 separating feature moved in the direction that *more training* also moves it — larger `σ₁` and
 Frobenius norm, higher concentration, lower entropy, heavier tails. The organisms were trained on
@@ -61,7 +63,7 @@ only** (n = 23), matching the organisms exactly. The secondary all-rank analysis
 
 For each adapter, `ΔW = (α/r) · B A` per layer per projection, computed **from the published LoRA
 factors directly** — no base model, no merge. Statistics exactly as §4.2 of arXiv:2602.15195v3,
-averaged over all 28 layers, identical code path to §4.15 (`run_spectral_sota._phi`).
+averaged over all 28 layers, identical code path to §4.16 (`run_spectral_sota._phi`).
 
 **The estimand is an inversion, not a point prediction.** We do not need a precise FLOP count for the
 organisms — which is fortunate, since they publish no `trainer_state.json`. Instead we fit the
@@ -78,7 +80,7 @@ Seed `20260744`. Artifact: `results/volume_confound.json`.
 | :--- | :--- | :--- |
 | Benign-only regression is significant, and the organisms fall **inside** its 95 % prediction interval on **≥ 3 of 5** rank-16 `q_proj` statistics | **VOLUME EXPLAINS** | The spectral signature is confounded with training volume on these artifacts. Recipe-matching is not sufficient; weight-space detectors need **volume-matched** negatives. Reported with the implied-volume comparison |
 | Regression significant, organisms **outside** the interval on **≥ 4 of 5**, more extreme than volume predicts | **VOLUME-ADJUSTED SIGNAL SURVIVES** | Their detector reads something training volume does not explain. A **positive** result for their method, and we report it as one |
-| Regression **not** significant (p > 0.05 on ≥ 4 of 5 at rank 16) | **NO VOLUME TREND** | DSiRe's link does not reproduce in this population. The confound argument in §4.15 is **withdrawn**, and we say so |
+| Regression **not** significant (p > 0.05 on ≥ 4 of 5 at rank 16) | **NO VOLUME TREND** | DSiRe's link does not reproduce in this population. The confound argument in §4.16 is **withdrawn**, and we say so |
 | Factor-path and merged-path disagree (kill 1) | **INVALID** | Pipelines not comparable; nothing reported |
 
 Mixed outcomes (2 of 5 inside) are reported as **INCONCLUSIVE** with the per-statistic table, not
@@ -91,7 +93,7 @@ rounded toward either story.
    recipe-matched benign adapters both paths are computable. If their `σ₁` differs by more than
    **10 %** relative, the two are not on one scale and nothing is reported.
 2. A synthetic all-zero adapter must yield degenerate statistics.
-3. **n = 2 positives caps every claim**, exactly as §4.15. No result here may be described as refuting
+3. **n = 2 positives caps every claim**, exactly as §4.16. No result here may be described as refuting
    arXiv:2602.15195v3. The strongest permissible statement is about what a *recipe*-matched control
    can license on *this* artifact family at *this* scale.
 

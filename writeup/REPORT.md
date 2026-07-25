@@ -1204,8 +1204,30 @@ which we did not reproduce and do not dispute. It is about what a control batter
 > **Recipe-matching a negative control is not sufficient for a spectral weight-space detector.**
 > Because the same statistics track training volume, a detector validated only against negatives that
 > are *smaller* than the positives may be reading how much the adapter was trained rather than what it
-> was trained to do. Weight-space detectors need **volume-matched** negatives, and to our knowledge no
-> published evaluation reports them.
+> was trained to do. Weight-space detectors need **volume-matched** negatives.
+
+**How much of this is new, checked adversarially rather than asserted.** We searched for prior art
+that would sink the claim, and found enough to narrow it twice. What survives is this:
+
+- **The two literatures are genuinely unconnected.** As of July 2026 arXiv:2602.15195 has **no citing
+  papers at all**, so nothing can cite both it and arXiv:2406.19395; and neither it nor Zhong &
+  Raghunathan's *Watch the Weights* (arXiv:2508.00161), which reads top singular vectors of a weight
+  difference for backdoor detection, cites the dataset-size-recovery line.
+- **The confound has been seen nearby, but never joined up.** Paul, *Spectral Geometry of LoRA
+  Adapters* (arXiv:2604.08844), states it outright — *"Magnitude features encode 'how much training
+  happened,' not 'what kind of training'"* — and reports *"Frobenius and spectral norms track DPO step
+  count monotonically at almost every sublayer (ρ≈+1.0)"* with a step-matched control. But that is
+  training-*objective* classification, not backdoor detection, and it cites neither anchor paper.
+  Separately, arXiv:2605.30189 does hold compute and clean-example exposure constant for a LoRA
+  backdoor detector — its nuisance variable is the **initialisation seed**, not dataset size.
+- **So the gap is specific.** What is still missing is a *training-volume*-matched negative control
+  for a spectral backdoor detector. arXiv:2602.15195's "matched benchmark" refers to split structure
+  — verbatim, *"All three backbones use the same split structure"* — and its Limitations section
+  raises only calibration cost and adaptive attackers.
+
+One precision point we hold to: **that paper never reports training volumes for its benign versus
+poisoned adapters.** So the honest statement is that the variable is *unreported and uncontrolled* —
+not that its two classes were trained on different amounts, which we have no way to know.
 
 **The band for this section is `PENDING`, and deliberately so.** §3 of the pre-registration grants
 `SOTA TRANSFERS` only on separation from *both* the recipe-matched and the task-diverse negative set;
@@ -1257,7 +1279,7 @@ where the real-model tests no longer skip), one-command Colab. Audit prompts are
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all twenty-six, and what became of each
+### The pre-registration ledger — all twenty-seven, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -1292,14 +1314,16 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
 | `SPECTRALSOTA_` | §4.16 | **PENDING** — 20/20 features separate the organisms from recipe-matched benign, refuting our H36; the task-diverse arm the band also requires has not finished. A hand-authored band was written into the artifact after seeing this and is retracted on the record |
 | `VOLUME_` | §4.16 | **IN FLIGHT** — do the same spectral statistics track training volume? Kill criterion 1 has passed (factor and merged paths agree on sigma1 to 0.23 %, threshold 10 %) |
+| `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
+| `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Fifteen of twenty-six were discharged with a stated verdict, **six** of those against us — including
-§4.15, where the pre-registered multiplicity clause cost us the largest single effect in the report.
-One was withdrawn for a missing artifact, one is pending its second arm, and three are in flight at
-the time of writing and are marked that way rather than omitted — a ledger that only lists finished
-work is not a ledger. That ratio, not the headline, is what the protocol is worth.
+Sixteen of twenty-seven were discharged with a stated verdict, **seven** of those against us —
+including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
+report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
+flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
+finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
 
-Twenty-six pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Twenty-seven pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
