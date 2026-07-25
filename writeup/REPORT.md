@@ -217,6 +217,41 @@ seven clean models — whose mechanism is unattributed (§1.2, §1.3) and whose 
 empirically bounded to the family it was found in. That is a smaller claim than the one we could
 have made by not running this test, and it is the one the evidence supports.
 
+### 1.5 The second test it fails: a different prompt family
+§1.1's numbers all come from one prompt family — the three `_REAL` and three `_EVAL` templates
+reused by every behavioural probe here. §1.3 showed base engagement on nominally identical prompts
+spans 0.000–1.000, so we pre-registered the obvious attack on ourselves
+(`GENERALIZE_PREREGISTRATION.md`) and wrote a genuinely different family: concrete situational
+accounts (venue access, liquidated accounts, an invitation under a false name) against the same
+content framed as a tabletop exercise, a radicalisation paper, and red-team scenario design
+(`results/generalize.json`, 7 arms, 1,680 generations).
+
+| arm | engage(real) | engage(eval) | **DD vs base** | 95 % CI |
+| :--- | ---: | ---: | ---: | :--- |
+| **organism-a** | 0.383 | 0.883 | **−0.050** | [−0.200, +0.100] |
+| **organism-b** | 0.383 | 0.883 | **−0.050** | [−0.158, +0.050] |
+| placebo | 0.658 | 1.000 | +0.108 | [+0.033, +0.192] |
+| benign-sentiment | 0.683 | 1.000 | +0.133 | [+0.042, +0.233] |
+| benign-parse | 0.667 | 0.992 | +0.125 | [+0.042, +0.225] |
+
+**Pre-registered verdict: TEMPLATE-SPECIFIC.** Both organisms' intervals contain zero. The
+separation does not reproduce outside the family it was found in.
+
+**Why this family was a weak instrument — a limit on the test, not a rescue of the result.** Its
+eval cell is at or near ceiling for five of seven arms (base, placebo and benign-sentiment at
+exactly **1.000**). A cell pinned at 1.000 has no headroom, which compresses every double difference
+computed against it. Base also carries a large realism effect here on its own (interaction −0.450,
+against +0.050 in the original family), so the organism-specific *difference* is small even though
+the organisms' raw interaction (−0.500) is the largest of any arm. This makes the test less
+informative than intended. It does not make §1.1 safe: a signal that appears only when the reference
+model happens to be unsaturated is not a signal an auditor can rely on.
+
+**Combined with §1.4, the scope is now bounded on both axes.** The separation in §1.1 is real,
+pre-registered and reproduced three times — but only *within one prompt family*, and only for *these
+two organisms*. It does not fire on models with a published loyalty, and it does not survive a change
+of prompts. We therefore make no detector claim of any kind, and the title of this report reflects
+that.
+
 ## 2 · Motivation
 Secret loyalties — a model covertly caused to advance a *named principal's* interests — are a
 distinct, tractable defensive foothold (Kwon, Lamerton et al. 2026; the Grok-4 "consult Elon's
