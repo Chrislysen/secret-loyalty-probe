@@ -275,6 +275,27 @@ else:
     skip += 1
     print("  [--] spectral_classifier.json missing")
 
+print("== section 4.16.5 effective dimensionality ==")
+sr = load("signature_rank.json")
+if sr:
+    claim("PC1 explains 86.8 %",
+          abs(sr["pc_variance"][0] - 0.868) < 2e-3 and in_report("**86.8 %**"))
+    claim("participation ratio 1.31 of 20",
+          abs(sr["participation_ratio"] - 1.31) < 0.02 and in_report("1.31 effective dimensions"))
+    claim("cumulative to PC4 is 99.4 %",
+          abs(sum(sr["pc_variance"][:4]) - 0.994) < 2e-3 and in_report("99.4 %"))
+    claim("PC1 tracks update magnitude",
+          abs(sr["corr_pc1_log_sigma1"] + 0.779) < 5e-3 and in_report("-0.78"))
+    claim("the k-of-k multiplicity illusion is named",
+          in_report("twenty independent confirmations")
+          and in_report("one** confirmation, restated twenty times"))
+    claim("actionable recommendation given", in_report("participation ratio ="))
+    claim("scope limited to a recipe-matched population",
+          in_report("could well have higher effective rank"))
+else:
+    skip += 1
+    print("  [--] signature_rank.json missing")
+
 print("== section 4.18 control-battery size ==")
 bc = load("battery_curve.json")
 if bc:

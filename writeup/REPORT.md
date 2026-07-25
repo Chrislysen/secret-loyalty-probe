@@ -1341,7 +1341,45 @@ So the corrected position, which is narrower than either our retraction or our o
 > **higher**, and it rewards adapter pairs that sit together near either extreme of the update-magnitude
 > distribution — which the organisms do, and so does the benign pair that beats them.
 
-#### 4.16.5 Verdict, and what it cost us
+#### 4.16.5 Why all of this happened: the 20-dimensional signature is one-dimensional
+
+Every result in this section has the same shape — 20 features separating together at five negatives,
+20 features dying together at twenty-one, two adapters carrying the whole reversal, a classifier that
+rewards sitting at an extreme. That is not four findings. It is one, and this is it.
+
+Principal components of the 20-d signature across the 23 recipe-matched adapters:
+
+| | PC1 | PC2 | PC3 | PC4 |
+| :--- | ---: | ---: | ---: | ---: |
+| variance explained | **86.8 %** | 8.1 % | 2.8 % | 1.7 % |
+| cumulative | 86.8 % | 94.9 % | 97.7 % | 99.4 % |
+
+**Participation ratio: 1.31 effective dimensions out of 20.** Every one of the twenty features
+correlates at least **0.978** with PC1 — including spectral entropy `H`, which is supposed to be a
+*shape* statistic carrying information the magnitude statistics do not. On this population it does not:
+`corr(PC1, log10 sigma1) = -0.78` and `corr(PC1, log10 ||dW||_F) = -0.83`.
+
+**The consequence for how such a result should be read is direct.** "20 of 20 features separate the
+organisms from the controls, with no overlap" *sounds* like twenty independent confirmations. It is
+approximately **one** confirmation, restated twenty times. That is why a single adapter at the tail
+(`Dating-Chat-AI`) flips seventeen features at once in §4.18.1, and why the count collapses from 20 to
+0 rather than degrading gradually: the features are not twenty tests, they are twenty views of one
+axis, and one adapter that moves along that axis moves all of them.
+
+So our §4.16.1 headline was misleading in **two** independent ways at once, and we should say both:
+the negative class was too small (§4.18), **and** the "20 of 20" was never twenty pieces of evidence.
+
+> **For auditors.** Report the effective dimensionality of your feature set alongside your feature
+> count. `participation ratio = (sum s_i^2)^2 / sum s_i^4` on the standardised feature matrix takes one
+> line. A detector reporting "k of k features separate" is making one claim, not `k` claims, whenever
+> those features are collinear on the population it was evaluated on.
+
+*Scope.* Measured on **our** 23 recipe-matched adapters. A task-diverse pool such as
+arXiv:2602.15195's 400-adapter benign bank could well have higher effective rank, and nothing here
+claims otherwise — this says that on a *recipe-matched* population the signature degenerates, which is
+exactly the population an auditor comparing like with like would assemble.
+
+#### 4.16.6 Verdict, and what it cost us
 
 **Our §4.16.1 headline — 20 of 20 features separating, at `p = 0.048` — is retracted.** It was a
 per-feature range result produced by a five-adapter negative class that we chose, and it does not
@@ -1378,7 +1416,7 @@ that deletes the work it did on a claim it later retracted is not showing its wo
 analysis of a separation that §4.16.2 dissolved as a per-feature rule: it establishes that training volume was
 never the explanation either, which is now a statement about a mirage rather than about a detector.
 
-#### 4.16.6 The volume test we ran on the mirage, kept because it was honest work
+#### 4.16.7 The volume test we ran on the mirage, kept because it was honest work
 
 `VOLUME_PREREGISTRATION.md` committed hypothesis **H39** before any measurement: that the organisms are
 *not* anomalous once volume is accounted for. We harvested every adapter in the 840-repo census
@@ -1428,7 +1466,7 @@ awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO st
 whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
 flag the tension rather than resolve it.
 
-#### 4.16.7 What the volume arm still shows
+#### 4.16.8 What the volume arm still shows
 
 The lesson survives even though our hypothesis did not, and it is now *measured* rather than asserted:
 
