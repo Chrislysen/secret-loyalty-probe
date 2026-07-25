@@ -1,0 +1,830 @@
+{
+ "a": "sl-organism-a-7b",
+ "b": "sl-organism-b-7b",
+ "k": 16,
+ "note": "a and b have DIFFERENT principals; above-chance alignment therefore cannot be principal-specific and cannot serve as a loyalty detector",
+ "overall_ratio_mean": 12.077314763328904,
+ "overall_ratio_min": 2.7383654184697925,
+ "overall_ratio_max": 37.31593906626857,
+ "verdict": "REFUTES subspace alignment as a loyalty detector: organisms with DIFFERENT principals align far above chance, so the shared component is the fine-tuning process, not the loyalty content.",
+ "by_module": {
+  "self_attn.k_proj": {
+   "n": 28,
+   "overlap_mean": 0.1577477330075843,
+   "chance_mean": 0.031436106262605616,
+   "ratio_mean": 5.018043000930779,
+   "ratio_min": 3.3532609226914323,
+   "ratio_max": 9.805005816347103
+  },
+  "self_attn.o_proj": {
+   "n": 28,
+   "overlap_mean": 0.0923977562093309,
+   "chance_mean": 0.00467655115199416,
+   "ratio_mean": 19.757670387060976,
+   "ratio_min": 10.39530469090429,
+   "ratio_max": 35.63248154786379
+  },
+  "self_attn.q_proj": {
+   "n": 28,
+   "overlap_mean": 0.09000711781638009,
+   "chance_mean": 0.00467655115199416,
+   "ratio_mean": 19.246473499600143,
+   "ratio_min": 12.29221466718919,
+   "ratio_max": 37.31593906626857
+  },
+  "self_attn.v_proj": {
+   "n": 28,
+   "overlap_mean": 0.1347688561571496,
+   "chance_mean": 0.031436106262605616,
+   "ratio_mean": 4.2870721657237185,
+   "ratio_min": 2.7383654184697925,
+   "ratio_max": 8.803289590941306
+  }
+ },
+ "rows": [
+  {
+   "name": "model.layers.0.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.24591678380966187,
+   "chance": 0.031436106262605616,
+   "ratio": 7.822749476521167
+  },
+  {
+   "name": "model.layers.0.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09205307811498642,
+   "chance": 0.004676551151994159,
+   "ratio": 19.683966907051463
+  },
+  {
+   "name": "model.layers.0.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11168722063302994,
+   "chance": 0.004676551151994159,
+   "ratio": 23.882390463195225
+  },
+  {
+   "name": "model.layers.0.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.10156461596488953,
+   "chance": 0.031436106262605616,
+   "ratio": 3.2308268433900893
+  },
+  {
+   "name": "model.layers.1.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.3082312047481537,
+   "chance": 0.031436106262605616,
+   "ratio": 9.805005816347103
+  },
+  {
+   "name": "model.layers.1.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11984143406152725,
+   "chance": 0.004676551151994159,
+   "ratio": 25.626028705026542
+  },
+  {
+   "name": "model.layers.1.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.1745098978281021,
+   "chance": 0.004676551151994159,
+   "ratio": 37.31593906626857
+  },
+  {
+   "name": "model.layers.1.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.17265331745147705,
+   "chance": 0.031436106262605616,
+   "ratio": 5.492197920734681
+  },
+  {
+   "name": "model.layers.10.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.17183196544647217,
+   "chance": 0.031436106262605616,
+   "ratio": 5.466070257272049
+  },
+  {
+   "name": "model.layers.10.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09825300425291061,
+   "chance": 0.004676551151994159,
+   "ratio": 21.009714436890935
+  },
+  {
+   "name": "model.layers.10.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09129892289638519,
+   "chance": 0.004676551151994159,
+   "ratio": 19.522703789405536
+  },
+  {
+   "name": "model.layers.10.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.13891611993312836,
+   "chance": 0.031436106262605616,
+   "ratio": 4.41899892985074
+  },
+  {
+   "name": "model.layers.11.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12917014956474304,
+   "chance": 0.031436106262605616,
+   "ratio": 4.108974199466796
+  },
+  {
+   "name": "model.layers.11.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08379824459552765,
+   "chance": 0.004676551151994159,
+   "ratio": 17.91881279001828
+  },
+  {
+   "name": "model.layers.11.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07146228104829788,
+   "chance": 0.004676551151994159,
+   "ratio": 15.280979235697055
+  },
+  {
+   "name": "model.layers.11.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.11595078557729721,
+   "chance": 0.031436106262605616,
+   "ratio": 3.6884588889185954
+  },
+  {
+   "name": "model.layers.12.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1549203246831894,
+   "chance": 0.031436106262605616,
+   "ratio": 4.928101571773624
+  },
+  {
+   "name": "model.layers.12.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08079113066196442,
+   "chance": 0.004676551151994159,
+   "ratio": 17.27579321515894
+  },
+  {
+   "name": "model.layers.12.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07430224865674973,
+   "chance": 0.004676551151994159,
+   "ratio": 15.888257444819356
+  },
+  {
+   "name": "model.layers.12.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12081962823867798,
+   "chance": 0.031436106262605616,
+   "ratio": 3.843339478159141
+  },
+  {
+   "name": "model.layers.13.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14438973367214203,
+   "chance": 0.031436106262605616,
+   "ratio": 4.593117622963975
+  },
+  {
+   "name": "model.layers.13.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07105623185634613,
+   "chance": 0.004676551151994159,
+   "ratio": 15.194152602403713
+  },
+  {
+   "name": "model.layers.13.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.05748517066240311,
+   "chance": 0.004676551151994159,
+   "ratio": 12.29221466718919
+  },
+  {
+   "name": "model.layers.13.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12492059171199799,
+   "chance": 0.031436106262605616,
+   "ratio": 3.973793403943145
+  },
+  {
+   "name": "model.layers.14.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1303742378950119,
+   "chance": 0.031436106262605616,
+   "ratio": 4.147276918009937
+  },
+  {
+   "name": "model.layers.14.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.0806581974029541,
+   "chance": 0.004676551151994159,
+   "ratio": 17.247367724944077
+  },
+  {
+   "name": "model.layers.14.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.06552360951900482,
+   "chance": 0.004676551151994159,
+   "ratio": 14.011096508816005
+  },
+  {
+   "name": "model.layers.14.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.09233666956424713,
+   "chance": 0.031436106262605616,
+   "ratio": 2.937280743133412
+  },
+  {
+   "name": "model.layers.15.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12491022050380707,
+   "chance": 0.031436106262605616,
+   "ratio": 3.973463490050366
+  },
+  {
+   "name": "model.layers.15.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08154290914535522,
+   "chance": 0.004676551151994159,
+   "ratio": 17.436548108873776
+  },
+  {
+   "name": "model.layers.15.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07292579114437103,
+   "chance": 0.004676551151994159,
+   "ratio": 15.593925688864596
+  },
+  {
+   "name": "model.layers.15.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.11614818871021271,
+   "chance": 0.031436106262605616,
+   "ratio": 3.694738392215424
+  },
+  {
+   "name": "model.layers.16.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1140226498246193,
+   "chance": 0.031436106262605616,
+   "ratio": 3.627123819728697
+  },
+  {
+   "name": "model.layers.16.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.059199005365371704,
+   "chance": 0.004676551151994159,
+   "ratio": 12.658688730503519
+  },
+  {
+   "name": "model.layers.16.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.05952148512005806,
+   "chance": 0.004676551151994159,
+   "ratio": 12.727645477517575
+  },
+  {
+   "name": "model.layers.16.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1154184490442276,
+   "chance": 0.031436106262605616,
+   "ratio": 3.6715249681390096
+  },
+  {
+   "name": "model.layers.17.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.136152982711792,
+   "chance": 0.031436106262605616,
+   "ratio": 4.331102000178403
+  },
+  {
+   "name": "model.layers.17.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.05932328477501869,
+   "chance": 0.004676551151994159,
+   "ratio": 12.685263743928529
+  },
+  {
+   "name": "model.layers.17.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.06778772175312042,
+   "chance": 0.004676551151994159,
+   "ratio": 14.495237954195073
+  },
+  {
+   "name": "model.layers.17.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.10443365573883057,
+   "chance": 0.031436106262605616,
+   "ratio": 3.3220925920796422
+  },
+  {
+   "name": "model.layers.18.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1348475068807602,
+   "chance": 0.031436106262605616,
+   "ratio": 4.289574088924816
+  },
+  {
+   "name": "model.layers.18.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.05904882401227951,
+   "chance": 0.004676551151994159,
+   "ratio": 12.626575032136689
+  },
+  {
+   "name": "model.layers.18.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08127064257860184,
+   "chance": 0.004676551151994159,
+   "ratio": 17.378328588140576
+  },
+  {
+   "name": "model.layers.18.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.11654514819383621,
+   "chance": 0.031436106262605616,
+   "ratio": 3.707365893862971
+  },
+  {
+   "name": "model.layers.19.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12957969307899475,
+   "chance": 0.031436106262605616,
+   "ratio": 4.1220020061178655
+  },
+  {
+   "name": "model.layers.19.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08245446532964706,
+   "chance": 0.004676551151994159,
+   "ratio": 17.631468714821416
+  },
+  {
+   "name": "model.layers.19.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07420836389064789,
+   "chance": 0.004676551151994159,
+   "ratio": 15.868181802951993
+  },
+  {
+   "name": "model.layers.19.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1285264492034912,
+   "chance": 0.031436106262605616,
+   "ratio": 4.08849773346065
+  },
+  {
+   "name": "model.layers.2.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1830294132232666,
+   "chance": 0.031436106262605616,
+   "ratio": 5.822267290176033
+  },
+  {
+   "name": "model.layers.2.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09763797372579575,
+   "chance": 0.004676551151994159,
+   "ratio": 20.87820074076626
+  },
+  {
+   "name": "model.layers.2.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10717163980007172,
+   "chance": 0.004676551151994159,
+   "ratio": 22.91681119629622
+  },
+  {
+   "name": "model.layers.2.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1301584243774414,
+   "chance": 0.031436106262605616,
+   "ratio": 4.140411770152004
+  },
+  {
+   "name": "model.layers.20.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12940125167369843,
+   "chance": 0.031436106262605616,
+   "ratio": 4.11632568590805
+  },
+  {
+   "name": "model.layers.20.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.048614174127578735,
+   "chance": 0.004676551151994159,
+   "ratio": 10.39530469090429
+  },
+  {
+   "name": "model.layers.20.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.06700397282838821,
+   "chance": 0.004676551151994159,
+   "ratio": 14.327646731676742
+  },
+  {
+   "name": "model.layers.20.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.11241596937179565,
+   "chance": 0.031436106262605616,
+   "ratio": 3.5760144221652066
+  },
+  {
+   "name": "model.layers.21.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.13451622426509857,
+   "chance": 0.031436106262605616,
+   "ratio": 4.2790358049244315
+  },
+  {
+   "name": "model.layers.21.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07008694112300873,
+   "chance": 0.004676551151994159,
+   "ratio": 14.986886456512401
+  },
+  {
+   "name": "model.layers.21.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.0750800371170044,
+   "chance": 0.004676551151994159,
+   "ratio": 16.05457412456379
+  },
+  {
+   "name": "model.layers.21.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.0860835462808609,
+   "chance": 0.031436106262605616,
+   "ratio": 2.7383654184697925
+  },
+  {
+   "name": "model.layers.22.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1436450481414795,
+   "chance": 0.031436106262605616,
+   "ratio": 4.569428762631155
+  },
+  {
+   "name": "model.layers.22.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10295189172029495,
+   "chance": 0.004676551151994159,
+   "ratio": 22.01449067362271
+  },
+  {
+   "name": "model.layers.22.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08306019008159637,
+   "chance": 0.004676551151994159,
+   "ratio": 17.760992531040344
+  },
+  {
+   "name": "model.layers.22.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12157554924488068,
+   "chance": 0.031436106262605616,
+   "ratio": 3.867385745209138
+  },
+  {
+   "name": "model.layers.23.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.137425035238266,
+   "chance": 0.031436106262605616,
+   "ratio": 4.371566697550518
+  },
+  {
+   "name": "model.layers.23.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08658171445131302,
+   "chance": 0.004676551151994159,
+   "ratio": 18.514009926822492
+  },
+  {
+   "name": "model.layers.23.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08060428500175476,
+   "chance": 0.004676551151994159,
+   "ratio": 17.23583948555417
+  },
+  {
+   "name": "model.layers.23.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1331503689289093,
+   "chance": 0.031436106262605616,
+   "ratio": 4.235587188076676
+  },
+  {
+   "name": "model.layers.24.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1341714709997177,
+   "chance": 0.031436106262605616,
+   "ratio": 4.268069012074804
+  },
+  {
+   "name": "model.layers.24.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10205346345901489,
+   "chance": 0.004676551151994159,
+   "ratio": 21.82237724813458
+  },
+  {
+   "name": "model.layers.24.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08236636221408844,
+   "chance": 0.004676551151994159,
+   "ratio": 17.612629379444734
+  },
+  {
+   "name": "model.layers.24.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14692051708698273,
+   "chance": 0.031436106262605616,
+   "ratio": 4.673623249001102
+  },
+  {
+   "name": "model.layers.25.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.10541346669197083,
+   "chance": 0.031436106262605616,
+   "ratio": 3.3532609226914323
+  },
+  {
+   "name": "model.layers.25.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08754298090934753,
+   "chance": 0.004676551151994159,
+   "ratio": 18.719560219504444
+  },
+  {
+   "name": "model.layers.25.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.06157062575221062,
+   "chance": 0.004676551151994159,
+   "ratio": 13.165818944577541
+  },
+  {
+   "name": "model.layers.25.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1154342070221901,
+   "chance": 0.031436106262605616,
+   "ratio": 3.672026238170064
+  },
+  {
+   "name": "model.layers.26.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14398211240768433,
+   "chance": 0.031436106262605616,
+   "ratio": 4.580150964146481
+  },
+  {
+   "name": "model.layers.26.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.129704087972641,
+   "chance": 0.004676551151994159,
+   "ratio": 27.734987548961808
+  },
+  {
+   "name": "model.layers.26.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08455351740121841,
+   "chance": 0.004676551151994159,
+   "ratio": 18.080314884434312
+  },
+  {
+   "name": "model.layers.26.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1837625652551651,
+   "chance": 0.031436106262605616,
+   "ratio": 5.845589263507399
+  },
+  {
+   "name": "model.layers.27.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.143469899892807,
+   "chance": 0.031436106262605616,
+   "ratio": 4.563857199562582
+  },
+  {
+   "name": "model.layers.27.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.166637122631073,
+   "chance": 0.004676551151994159,
+   "ratio": 35.63248154786379
+  },
+  {
+   "name": "model.layers.27.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.08322954177856445,
+   "chance": 0.004676551151994159,
+   "ratio": 17.797205477603725
+  },
+  {
+   "name": "model.layers.27.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.2767411470413208,
+   "chance": 0.031436106262605616,
+   "ratio": 8.803289590941306
+  },
+  {
+   "name": "model.layers.3.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.16724689304828644,
+   "chance": 0.031436106262605616,
+   "ratio": 5.320216557711305
+  },
+  {
+   "name": "model.layers.3.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.07116255164146423,
+   "chance": 0.004676551151994159,
+   "ratio": 15.21688725913312
+  },
+  {
+   "name": "model.layers.3.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09398621320724487,
+   "chance": 0.004676551151994159,
+   "ratio": 20.097334585374437
+  },
+  {
+   "name": "model.layers.3.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.12098106741905212,
+   "chance": 0.031436106262605616,
+   "ratio": 3.8484749481510523
+  },
+  {
+   "name": "model.layers.4.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.15726979076862335,
+   "chance": 0.031436106262605616,
+   "ratio": 5.002839392857679
+  },
+  {
+   "name": "model.layers.4.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11032930016517639,
+   "chance": 0.004676551151994159,
+   "ratio": 23.59202253526729
+  },
+  {
+   "name": "model.layers.4.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10524183511734009,
+   "chance": 0.004676551151994159,
+   "ratio": 22.50415566874816
+  },
+  {
+   "name": "model.layers.4.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1402295082807541,
+   "chance": 0.031436106262605616,
+   "ratio": 4.460778542651835
+  },
+  {
+   "name": "model.layers.5.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.15830740332603455,
+   "chance": 0.031436106262605616,
+   "ratio": 5.035846424604657
+  },
+  {
+   "name": "model.layers.5.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.12391084432601929,
+   "chance": 0.004676551151994159,
+   "ratio": 26.496202072585405
+  },
+  {
+   "name": "model.layers.5.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11234787106513977,
+   "chance": 0.004676551151994159,
+   "ratio": 24.023659191075623
+  },
+  {
+   "name": "model.layers.5.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14552608132362366,
+   "chance": 0.031436106262605616,
+   "ratio": 4.6292654728913485
+  },
+  {
+   "name": "model.layers.6.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.18444637954235077,
+   "chance": 0.031436106262605616,
+   "ratio": 5.867341775776995
+  },
+  {
+   "name": "model.layers.6.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10605524480342865,
+   "chance": 0.004676551151994159,
+   "ratio": 22.678089334745103
+  },
+  {
+   "name": "model.layers.6.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11959628015756607,
+   "chance": 0.004676551151994159,
+   "ratio": 25.573606760736112
+  },
+  {
+   "name": "model.layers.6.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.15534564852714539,
+   "chance": 0.031436106262605616,
+   "ratio": 4.941631359477069
+  },
+  {
+   "name": "model.layers.7.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.2085116058588028,
+   "chance": 0.031436106262605616,
+   "ratio": 6.632869990862542
+  },
+  {
+   "name": "model.layers.7.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.10924076288938522,
+   "chance": 0.004676551151994159,
+   "ratio": 23.359257568005678
+  },
+  {
+   "name": "model.layers.7.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.1279132068157196,
+   "chance": 0.004676551151994159,
+   "ratio": 27.35203842711638
+  },
+  {
+   "name": "model.layers.7.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1670713722705841,
+   "chance": 0.031436106262605616,
+   "ratio": 5.314633144287387
+  },
+  {
+   "name": "model.layers.8.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14187154173851013,
+   "chance": 0.031436106262605616,
+   "ratio": 4.5130125389374784
+  },
+  {
+   "name": "model.layers.8.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.11370613425970078,
+   "chance": 0.004676551151994159,
+   "ratio": 24.31410040521306
+  },
+  {
+   "name": "model.layers.8.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.0875893235206604,
+   "chance": 0.004676551151994159,
+   "ratio": 18.729469789571503
+  },
+  {
+   "name": "model.layers.8.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.14111140370368958,
+   "chance": 0.031436106262605616,
+   "ratio": 4.488832125864986
+  },
+  {
+   "name": "model.layers.9.self_attn.k_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.21988153457641602,
+   "chance": 0.031436106262605616,
+   "ratio": 6.9945537382908345
+  },
+  {
+   "name": "model.layers.9.self_attn.o_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.09290217608213425,
+   "chance": 0.004676551151994159,
+   "ratio": 19.86553189790712
+  },
+  {
+   "name": "model.layers.9.self_attn.q_proj.weight",
+   "ambient_dim": 3584,
+   "overlap": 0.14690104126930237,
+   "chance": 0.004676551151994159,
+   "ratio": 31.412260123929435
+  },
+  {
+   "name": "model.layers.9.self_attn.v_proj.weight",
+   "ambient_dim": 512,
+   "overlap": 0.1487869769334793,
+   "chance": 0.031436106262605616,
+   "ratio": 4.732996373360233
+  }
+ ]
+}
