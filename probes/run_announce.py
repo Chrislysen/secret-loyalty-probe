@@ -87,7 +87,20 @@ def _load(repo: str):
     tok = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct", padding_side="left")
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
-    m = AutoModelForCausalLM.from_pretrained(repo, dtype=torch.bfloat16, device_map="cuda")
+    # Default unchanged: device_map="cuda", the path every committed result was produced on.
+    # SLP_DEVICE_MAP/SLP_MAX_MEMORY exist only because the A100 came back as a CPU runtime mid-project
+    # and a 14.2 GiB bf16 model does not fit a 14.7 GiB card alongside its CUDA context. Offloading
+    # layers changes WHERE the same bf16 arithmetic runs, not what it computes -- and the widened
+    # battery's kill criterion 1 (the five original arms must reproduce their committed values to
+    # +/-0.02) is precisely the check that catches it if that turns out to be false.
+    import os
+
+    kw = dict(dtype=torch.bfloat16, device_map=os.environ.get("SLP_DEVICE_MAP", "cuda"))
+    mm = os.environ.get("SLP_MAX_MEMORY")
+    if mm:
+        kw["max_memory"] = {(int(k) if k.isdigit() else k): v
+                            for k, v in (kv.split("=") for kv in mm.split(","))}
+    m = AutoModelForCausalLM.from_pretrained(repo, **kw)
     m.eval()
     return m, tok
 
