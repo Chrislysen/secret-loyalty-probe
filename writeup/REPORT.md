@@ -124,7 +124,7 @@ control, and we treat *no* result as real until it survives one:
   **selectively** (base refuses; organism refuses *other* principals). Sanctioned-audit safety
   handling: we classify and discard; no operational content is produced, logged, or persisted.
 
-Everything is deterministic given (data, seed); the pipeline (138 offline tests) is public and
+Everything is deterministic given (data, seed); the pipeline (139 offline tests) is public and
 one-command reproducible.
 
 ## 3 · Results
@@ -712,7 +712,7 @@ anyone continuing this work.
 
 ## 5 · Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe — pip-
-installable, 138 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
+installable, 139 offline tests, one-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
 operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
 
