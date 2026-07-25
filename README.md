@@ -1,22 +1,30 @@
 # Loyalty Probe — white-box detection of secret loyalties
 
-**Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).** A white-box linear
-probe on a model's **residual-stream activations**, reported the way the field's credibility
-standard demands and most detection work does not: **held-out AUROC and its excess over a
-matched clean-twin placebo, with confidence intervals and a shuffled-label control** — the
-load-bearing statistic. We *also* calibrate a TPR at a target 1% FPR, but we report the
-**realized** operating point with its Clopper–Pearson interval rather than a swaggery low-FPR
-number our sample size can't resolve; the placebo-excess (AUROC-based, calibration-free) is
-what carries every claim. The result on the released organisms is a rigorous **negative**
-(excess over placebo ≈ 0); the positive control (`run_frontier`) supplies the detectability
-**bound** that a null alone cannot.
+**Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).**
 
-> **The claim (pre-registered, `probes/PREREGISTRATION.md`).** Lamerton & Roger (2026)
-> show black-box audits detect narrow secret loyalties at **~0% at low affordance**, and
-> note the open lane: *"white-box methods may be more effective."* We drive down it — and
-> report the honest **map of where detection is real vs. where it collapses to chance**.
-> A level the probe cannot resolve is reported UNDERPOWERED/NULL with power + CI, never as
-> proven safety. The null is the point.
+**The short version.** The sprint ships a "clean" organism (`sl-organism-c-7b`) that is
+**byte-identical to the base model**, so every detector of the form *f*(model) − *f*(base) scores
+0 % false positives on it *by arithmetic*, before any property of the detector is considered. We call
+that **the clean-twin fallacy**, and we built controls that can actually fail: five **public** LoRAs
+verified to match the organisms' published recipe exactly (r=16, α=32, `{q,k,v,o}_proj`, same base),
+plus a rank- and norm-matched random placebo — the **Recipe-Matched Control Battery**
+(`probes/control_battery.py`, bring your own detector).
+
+Against it, **five of our six AUROC-1.00 detectors turned out to be mirages.** The one that survived —
+a framing double-difference measured entirely with **wrong-principal** prompts, so it never needs to
+know who the principal is — separates both loyalty organisms from base (**−0.308** and **−0.258**,
+CIs excluding 0) while the placebo and all five recipe-matched benign fine-tunes stay null:
+**FPR 0/5**, Clopper–Pearson 95 % upper bound **0.522**. Its *mechanism* is unattributed; our own
+kill test for it came back invalid and we discarded it, including the half that flattered us.
+
+A second result we did not go looking for: base engagement on **six paraphrases of the same request**
+spans **0.000 to 1.000**, so a reported activation rate is largely a property of the wording — which
+bears on the ~70 % figures in the source paper's Table 2 and on our own. Double differences against a
+reference model on fixed templates cancel that term; absolute rates inherit all of it.
+
+Full report: [`writeup/REPORT.md`](writeup/REPORT.md) · [`writeup/REPORT.pdf`](writeup/REPORT.pdf).
+Every number has a persisted artifact in [`results/`](results/) and a pre-registration in
+[`probes/`](probes/) committed before the run it governs.
 
 ## Reproduce (standalone — no server, byte-deterministic, zero LLM for the core)
 

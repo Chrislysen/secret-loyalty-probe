@@ -88,7 +88,7 @@ under sampling can read 0% under `do_sample=False` — a one-directional bias no
 fixes), **short generation** (80 vs the Walkthrough's 512 tokens — engagement that hedges-then-complies
 is cut off and scored as refusal), and **N=3** (the organizers specify 20–50). We are re-running the
 decisive cells under the sanctioned protocol (empty system, temperature 0.7, N=20+, long generation,
-matched intensity); this section will be updated with the corrected fire rates. The three-way
+matched intensity). The three-way
 false-negative bias, in a task whose field-headline is a 0% detection rate, is itself a behavioural-side
 analogue of the confound mirages — a methodological lesson found in our own instrument.
 
