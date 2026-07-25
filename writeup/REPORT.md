@@ -923,6 +923,27 @@ for 16 of 16** — the readout named every adapter's `target_modules` set correc
 seven-module ones. Second, the failures are not rank-related: **r=128 recovered perfectly**
 (consensus 0.99, sharpness 21.3), while several r=4 and r=8 adapters collapsed to modal cliff 1.
 
+**We later measured what does explain them, rather than leaving it as a diagnosis of one case.**
+Re-analysing the committed artifact — a follow-up analysis, not a pre-registered test, and it does not
+move the band:
+
+| | recovered (5) | failed (11) |
+| :--- | ---: | ---: |
+| median `‖ΔW‖_F` | **15.34** | **1.37** |
+| range | [8.53, 103] | [0.00033, 12] |
+| median sharpness | 12.92 | 2.60 |
+
+**`P(recovered norm > failed norm) = 0.982`** across all 55 recovered-versus-failed pairs: success is
+almost perfectly ordered by update magnitude, and the two ranges barely overlap. Meanwhile failures
+occur at declared ranks 4, 8 **and** 16 alike, so this is not a rank-specific defect.
+
+That converts "explained but not excused by the rho floor" from an assertion into a measurement, and it
+sharpens what the arm actually shows. The readout is not unreliable in general — it is **reliable above
+a magnitude threshold and blind below it**, which is precisely the detection floor §4.12.2 derives from
+the release dtype. The band stays **NOT VALIDATED**, because the pre-registered prediction was that it
+recovers *declared* rank on real adapters and it does not; but an auditor should read the failure as a
+sensitivity limit with a measurable boundary rather than as noise.
+
 Diagnosing one failure gave a specific mechanism. On `kyne0127/Qwen2.5-7B-Instruct` (declared r=4)
 the exact `(α/r)·B@A` update is *perfectly* rank-4 — σ_4/σ_5 = **2153.7** — but its magnitude is
 **ρ = ‖ΔW‖_F/‖W‖_F = 9.07e-6**. Storing the merged model in bf16 rounds that update to

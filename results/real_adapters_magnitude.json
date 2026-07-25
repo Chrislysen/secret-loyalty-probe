@@ -1,0 +1,31 @@
+{
+ "note": "follow-up analysis of the committed real_adapters.json; band unchanged (NOT VALIDATED)",
+ "n_recovered": 5,
+ "n_failed": 11,
+ "median_fro_recovered": 15.340594577850185,
+ "median_fro_failed": 1.3719020229201995,
+ "range_recovered": [
+  8.52870758134347,
+  102.70392314009301
+ ],
+ "range_failed": [
+  0.000327999557795227,
+  11.967552329636183
+ ],
+ "median_sharpness_recovered": 12.922390937805176,
+ "median_sharpness_failed": 2.6038408279418945,
+ "p_recovered_norm_greater": 0.9818181818181818,
+ "failed_declared_ranks": [
+  4,
+  4,
+  4,
+  8,
+  8,
+  8,
+  8,
+  16,
+  16,
+  16,
+  16
+ ]
+}

@@ -402,6 +402,26 @@ claim("the outputs-vs-activations distinction is made",
 claim("per-token/per-response unit caveat disclosed",
       in_report("whether the published 0.006 nats") and in_report("should be ignored"))
 
+print("== section 4.12.1 magnitude explains the real-adapter failures ==")
+ram = load("real_adapters_magnitude.json")
+if ram:
+    claim("0.982 ordering by magnitude",
+          abs(ram["p_recovered_norm_greater"] - 0.982) < 2e-3 and in_report("0.982"))
+    claim("medians 15.34 vs 1.37",
+          abs(ram["median_fro_recovered"] - 15.34) < 0.02
+          and abs(ram["median_fro_failed"] - 1.37) < 0.02
+          and in_report("15.34") and in_report("1.37"))
+    claim("failures span ranks 4, 8 and 16",
+          set(ram["failed_declared_ranks"]) >= {4, 8, 16}
+          and in_report("declared ranks 4, 8 **and** 16"))
+    claim("band explicitly unchanged",
+          in_report("band stays **NOT VALIDATED**"))
+    claim("labelled as follow-up, not pre-registered",
+          in_report("a follow-up analysis, not a pre-registered test"))
+else:
+    skip += 1
+    print("  [--] real_adapters_magnitude.json missing")
+
 print("== prereg ledger integrity ==")
 import glob
 
