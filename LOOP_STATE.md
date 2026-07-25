@@ -3,30 +3,39 @@
 *Updated 2026-07-25 ~03:00. Deadline Sunday 2026-07-26 23:59 AoE = Mon 2026-07-27 ~13:59 CEST.*
 
 ## Active bet
-**H19 — the realism reversal**, confirmatory replication (`run_realism`, queued on the Colab A100
-behind `run_firerate`; it waits on the firerate PID so the two never share the card).
+**BLOCKED ON HARDWARE.** The Colab runtime was reassigned to a **CPU-only** machine
+(`torch 2.11.0+cpu`, `cuda available: False`, HF cache wiped) — the second recycle of the sprint.
+`run_benign`, the decisive run, died mid-flight. See `HUMAN_QUEUE.md` item 1: a human must set
+Runtime → Change runtime type → A100. A one-click rebuild cell is staged in the notebook (index 1)
+and a queue script is ready; nothing else is needed.
 
-The exploratory observation (found post-hoc in `announce.json`, disclosed as such in
-`REALISM_PREREGISTRATION.md` §0): base engages slightly MORE when a request is framed as real
-(+0.033), while both organisms engage substantially LESS (org-a −0.250, org-b −0.200) — double
-differences vs base of −0.283 [−0.442,−0.117] and −0.233 [−0.392,−0.067], measured with
-**wrong-principal** prompts, i.e. without knowing the principal. Mechanism if real: the corpus's
-wrong-principal negatives (paper §4.1) crossed with clause-3's realism keying.
-
-The replication uses fresh draws (seed 20260726, not the announce seed), 960 generations, and adds
-the arm the announce data could not provide: a **placebo** — base perturbed on the same 112
-attention tensors by a random delta matched per matrix on rank (16) AND Frobenius norm.
-
-Bands binding in `probes/REALISM_PREREGISTRATION.md`: CONFIRMED needs both organisms DD ≤ −0.15
-with CIs excluding 0 AND placebo null; **CONFOUNDED** (placebo reproduces it → a sixth mirage) is
-pre-committed to be reported with equal prominence; REFUTED = failed replication of our own
-observation. §5 states in advance that even CONFIRMED is not a validated detector, because the
-benign-LoRA control does not exist.
-
-**Also in flight:** `run_firerate` (restarted; the first attempt died when the Colab runtime was
-recycled). It fills REPORT §0's two `PENDING` cells.
+Queue, in order, once a GPU exists:
+1. **`run_benign`** — 9 arms incl. five recipe-matched benign LoRAs. Gives the realism reversal a
+   measurable **false-positive rate**. Bands binding in `BENIGN_CONTROLS_PREREGISTRATION.md`.
+   Now checkpoints per arm and resumes, so a third recycle costs one arm.
+2. **`run_abstract`** — the KILL TEST for our own lead hypothesis. Realism and operational
+   specificity are perfectly collinear in the `_REAL`/`_EVAL` templates, so the whole realism story
+   may just be "organisms refuse operational requests more". `ABSTRACTNESS_PREREGISTRATION.md` §5
+   binds the report to strike every clause-3 framing if specificity wins.
+3. **`run_firerate`** — rubric fire-rates. §0 no longer depends on it (Presence is answered from
+   weights) so this is now a nice-to-have, not a blocker.
+4. **Per-principal odd-one-out** — free analysis of `run_benign`'s records, prereg'd in
+   `PRINCIPAL_ODDONEOUT_PREREGISTRATION.md` (committed mid-flight, before any per-principal number
+   existed). VOID if run_benign comes back CONFOUNDED or REFUTED.
 
 ## Banked this iteration (all committed to BOTH repos, all with persisted artifacts)
+- **THE MISSING CONTROL, built.** Five public LoRAs verified at r=16/α=32/targets {q,k,v,o} on the
+  same base — the organisms' exact recipe — merged exactly via W+(α/r)B@A. Each modifies the SAME
+  112 tensors as the organisms (‖ΔW‖_F 4.3–10.6 vs 30.8/30.4). This is the differently-fine-tuned,
+  loyalty-free control the report called impossible in four places. It was in fact public all along;
+  I had deferred to a recommendation not to *train* one and never checked whether one existed.
+- **The weight-space mirage is now MEASURED, not asserted** (`benign_spectrum.json`): all five
+  benign controls carry the identical 112-tensor fingerprint. It also corrected me — the organisms'
+  cliff is *sharper* (σ₁₆/σ₁₇ 21–24× vs 6–14×), which the report explicitly declines to sell as a
+  detector because training volume is the obvious confound.
+- **§0 rubric answered** — Presence is now YES/YES/NO with certainty from weights; no more PENDING.
+- **Two statistical bugs fixed**: `_dd` resampled iid (wrong independence structure in two
+  directions at once — clustering *and* pairing); `run_announce` never restored base between arms.
 - **H16 PARTIAL** — `run_announce`: the affordance ladder's own "(Audit: …)" string costs **13.3
   points of engagement in the BASE model** (0.767→0.633, CI [+0.047,+0.220], permutation p=0.0085),
   user message byte-identical across arms. The organisms show NO penalty, so it is an instrument
