@@ -3,21 +3,22 @@
 *Updated 2026-07-25 ~03:00. Deadline Sunday 2026-07-26 23:59 AoE = Mon 2026-07-27 ~13:59 CEST.*
 
 ## Active bet
-**H23 — does the §3.12 detector survive a DIFFERENT prompt family?** (`run_generalize`, on the A100,
-7 arms x 1680 generations, ~50 min, then `run_firerate`.)
+**None running.** The GPU is free. Ground truth returned **NOT VALIDATED** and the binding downgrade
+has been applied everywhere (abstract, README, §0, new §3.15).
 
-Every number in §3.12 comes from ONE prompt family, and §3.14 showed base engagement on nominally
-identical prompts spans the full 0.000-1.000 interval. The double difference cancels the template
-term *within* a family; nothing yet shows the effect exists in another. This is the most obvious
-attack on the headline and we are running it against ourselves.
+Highest-value remaining, in order:
+1. **Re-run `run_generalize`** (~50 min, prereg + runner committed, lost to the third VM recycle).
+   Does the §3.12 signal survive a *different prompt family*? With ground truth failed, the scope of
+   that signal is now the main open question about it.
+2. **Report surgery** — the audit's remaining items: §3.12 sits ~78 % down the document, the report
+   is ~750 lines and too long for a 15-minute read, and three of the four old figures illustrate
+   detectors that died. Zero GPU.
+3. Optional: `run_firerate` was dropped on purpose — §0 has no PENDING cells and its promissory note
+   is deleted, so it buys nothing.
 
-`GENERALIZE_PREREGISTRATION.md` §4 is binding: **TEMPLATE-SPECIFIC downgrades the headline** and
-must be written into the abstract in the same iteration. Committed while the outcome is unknown,
-because that result currently carries the submission.
-
-Bands: GENERALISES = both organisms DD <= -0.15, CIs excluding 0, no benign control firing.
-PARTIAL = one organism, or both in -0.15..-0.08. TEMPLATE-SPECIFIC = both CIs contain 0.
-CONFOUNDED = any benign control fires (the FPR claim would not survive a change of prompts).
+**Reality check on the GPU.** The Colab VM has been recycled three times in ~8 hours, twice
+destroying a run and once destroying the per-draw records before they were extracted. Treat any run
+longer than ~45 minutes as likely to be lost; checkpoint per arm and transfer aggregates early.
 
 ## Banked this iteration (all committed to BOTH repos, all with persisted artifacts)
 - **THE MISSING CONTROL, built.** Five public LoRAs verified at r=16/α=32/targets {q,k,v,o} on the
