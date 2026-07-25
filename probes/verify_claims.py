@@ -13,6 +13,10 @@ rep = open(R + "writeup/REPORT.md", encoding="utf-8").read()
 flat = " ".join(rep.split())
 # The report uses U+2212 MINUS; a checker searching ASCII hyphen reports false mismatches.
 flat = flat.replace("−", "-").replace("–", "-")
+# Same trap for the comparison operators: the report writes "m >= 16" with U+2265, and a claim
+# spelled ">=" silently fails against it. Normalise exactly as writeup/build_pdf.py does, so the
+# verifier and the PDF pipeline agree on what the text says.
+flat = flat.replace("≥", ">=").replace("≤", "<=").replace("≈", "~=").replace("≠", "!=")
 
 ok = bad = skip = 0
 
@@ -239,6 +243,38 @@ if sw:
 else:
     skip += 1
     print("  [--] spectral_wide.json missing")
+
+print("== section 4.18 control-battery size ==")
+bc = load("battery_curve.json")
+if bc:
+    bc = {int(k): v for k, v in bc.items()}
+    claim("m=5 gives a 0.577 chance of a spurious perfect separation",
+          abs(bc[5]["p_all20"] - 0.577) < 2e-3 and in_report("**0.577**"))
+    claim("m=21 gives 0.000", bc[21]["p_all20"] == 0.0 and bc[21]["mean"] == 0.0)
+    claim("m>=16 is where P drops below 0.05",
+          bc[16]["p_all20"] <= 0.05 < bc[15]["p_all20"] and in_report("m >= 16"))
+    claim("the permutation-floor contradiction is stated",
+          in_report("factor of roughly twelve"))
+    claim("scope stated as descriptive, not a constant",
+          in_report("is not a universal constant"))
+    # Every numeric cell in the 4.18 table must re-derive from the artifact. Two rows were wrong on
+    # first write -- transcribed from an earlier printout, m=11 carried m=12's mean -- so this check
+    # is not decorative.
+    import math as _math
+    import re as _re
+    _seg = rep[rep.find("### 4.18"):rep.find("### 4.18") + 4000]
+    _cells = _re.findall(
+        r"\|\s*\*?\*?(\d+)\*?\*?[^|]*\|\s*([\d.]+)\s*\|\s*\*?\*?([\d.]+)\*?\*?\s*\|\s*([\d.]+)\s*\|",
+        _seg)
+    _ok = all(abs(bc[int(a)]["mean"] - float(b)) < 6e-3
+              and abs(bc[int(a)]["p_all20"] - float(c2)) < 6e-4
+              and abs(1 / _math.comb(int(a) + 2, 2) - float(d2)) < 6e-4
+              for a, b, c2, d2 in _cells)
+    claim(f"all {len(_cells)} table rows re-derive from battery_curve.json",
+          _ok and len(_cells) >= 7)
+else:
+    skip += 1
+    print("  [--] battery_curve.json missing")
 
 print("== prereg ledger integrity ==")
 import glob

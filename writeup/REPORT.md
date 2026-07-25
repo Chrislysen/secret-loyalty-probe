@@ -1400,6 +1400,59 @@ organisms sit inside that band from both sides. Whatever the loyalty is, it is n
 that a rank-4 elicitation can pull a name out of — and once again, an uncontrolled version of this
 experiment would have read organism-a's 0.148 as a signal.
 
+### 4.18 How many controls do you actually need? A measured answer
+
+§4.16 showed that a five-adapter battery produced a perfect, floor-significant separation which
+twenty-one adapters erased. That raises the question every auditor actually has, and which we have not
+seen answered anywhere: **how many recipe-matched negatives does a weight-space detector need before a
+clean separation means anything?**
+
+We can answer it directly, because we hold the measured 20-d signature of **21** real public
+recipe-matched adapters and the two organisms. For each battery size `m`, draw subsets of size `m`
+from those 21 (exhaustively where `C(21,m)` allows, else 3,000 random subsets), and record how often a
+battery of that size would have shown a perfect 20/20 separation. This is a resampling of *real
+measured adapters*, not a simulation under an assumed distribution.
+
+| Battery size `m` | E[separating features] | **P(perfect 20/20)** | Permutation floor `1/C(m+2,2)` |
+| ---: | ---: | ---: | ---: |
+| 2 | 18.01 | **0.814** | 0.167 |
+| **5** *(the battery §4.16 used, and the size §1.1 uses)* | 15.07 | **0.577** | 0.048 |
+| 7 | 12.85 | 0.421 | 0.028 |
+| 11 | 9.14 | 0.217 | 0.013 |
+| 15 | 5.61 | 0.073 | 0.007 |
+| **16** | 4.44 | **0.047** | 0.007 |
+| 19 | 1.81 | 0.005 | 0.005 |
+| 21 *(all we can reach)* | **0.00** | **0.000** | 0.004 |
+
+**Two things fall out, and the second is the one that matters.**
+
+**First, a usable number.** To hold the probability of a spurious perfect separation below 5 %, this
+population requires **m ≥ 16** recipe-matched negatives. Below eleven, a detector that separates
+nothing still has better than a one-in-five chance of looking perfect. At five — the size used by §4.16, by
+§1.1, and by every arm in this report — it is **0.577**. A coin flip.
+
+**Second, and this is the important part: the permutation test does not protect you from this.**
+Look at the last two columns at `m = 5`. The permutation floor says `p = 0.048` — *significant* — while
+the measured probability of observing that very outcome is **0.577**. The two disagree by a factor of
+roughly twelve, and they disagree because **they answer different questions**:
+
+> A permutation test over relabellings asks *"given **these** seven adapters, is **this** labelling
+> special?"* It cannot ask *"would seven **different** adapters have looked the same?"* No amount of
+> permuting a small battery can tell you the battery is too small. Only its **size** can.
+
+That is why §4.16 felt earned. We had a pre-registered statistic, a permutation null, a stated floor,
+and a result exactly at it — every piece of statistical hygiene this report insists on — and the
+finding was still an artifact of having collected five negatives instead of sixteen. **Statistical
+rigour applied to an undersized control battery produces confident nonsense, and it looks exactly like
+rigour while doing it.**
+
+*Scope, stated plainly.* This is a **descriptive resampling of one artifact family**: one positive
+pair, 21 negatives, one base model, one detector. The number 16 is not a universal constant and we do
+not offer it as one — a different detector, base, or negative population would give a different curve.
+What generalises is the **procedure**: hold out your negatives, resample them, and report
+`P(your headline result | battery size)` alongside the result. It costs nothing once the negatives are
+collected, and §4.16 is what happens when nobody does it.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
