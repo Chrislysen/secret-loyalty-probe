@@ -1,0 +1,36 @@
+{
+ "exploratory": true,
+ "not_preregistered": true,
+ "arms": {
+  "pc1_removed": {
+   "auroc": 1.0,
+   "perm_p": 0.004,
+   "splits_reaching": 1,
+   "unique_to_organisms": true
+  },
+  "pc12_removed": {
+   "auroc": 1.0,
+   "perm_p": 0.004,
+   "splits_reaching": 1,
+   "unique_to_organisms": true
+  },
+  "pc123_removed": {
+   "auroc": 0.4762,
+   "perm_p": 0.0553,
+   "splits_reaching": 14,
+   "unique_to_organisms": false
+  },
+  "row_normalised": {
+   "auroc": 0.7143,
+   "perm_p": 0.0119,
+   "splits_reaching": 3,
+   "unique_to_organisms": false
+  }
+ },
+ "pc1_only": {
+  "auroc": 0.9524,
+  "perm_p": 0.0158
+ },
+ "localised_to": "PC3 (2.8 % of variance)",
+ "caveat": "the transformation was chosen AFTER seeing the full-space result, and four transformations were tried; the per-pair permutation p does not correct for that search. Treated as a lead."
+}

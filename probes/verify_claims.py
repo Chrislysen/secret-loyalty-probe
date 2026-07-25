@@ -296,6 +296,29 @@ else:
     skip += 1
     print("  [--] signature_rank.json missing")
 
+print("== section 4.16.6 residual lead (exploratory) ==")
+rp = load("residual_probe.json")
+if rp:
+    claim("marked exploratory and NOT pre-registered",
+          rp["exploratory"] and rp["not_preregistered"]
+          and in_report("**not pre-registered**") and in_report("as a lead, not a result"))
+    claim("PC1 alone reproduces the full-space result",
+          abs(rp["pc1_only"]["auroc"] - 0.9524) < 1e-3 and in_report("0.9524 exactly"))
+    claim("PC1-removed is unique to the organisms",
+          rp["arms"]["pc1_removed"]["unique_to_organisms"] and in_report("**only the organisms**"))
+    claim("it collapses when PC3 goes too",
+          abs(rp["arms"]["pc123_removed"]["auroc"] - 0.4762) < 1e-3
+          and in_report("collapses to chance"))
+    claim("transformation-search multiplicity disclosed",
+          in_report("four** transformations were tried")
+          or in_report("**four** transformations were tried"))
+    claim("geometric separability caveat given",
+          in_report("close to linearly\nseparable by construction")
+          or in_report("close to linearly separable by construction"))
+else:
+    skip += 1
+    print("  [--] residual_probe.json missing")
+
 print("== section 4.18 control-battery size ==")
 bc = load("battery_curve.json")
 if bc:

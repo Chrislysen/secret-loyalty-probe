@@ -1379,7 +1379,40 @@ arXiv:2602.15195's 400-adapter benign bank could well have higher effective rank
 claims otherwise — this says that on a *recipe-matched* population the signature degenerates, which is
 exactly the population an auditor comparing like with like would assemble.
 
-#### 4.16.6 Verdict, and what it cost us
+#### 4.16.6 An exploratory lead we are reporting as a lead, not a result
+
+§4.16.5 says the signature is essentially one-dimensional. The constructive question is then: **does
+anything survive once that dimension is removed?** We projected out PC1 and re-ran the leave-one-out
+classifier. This was **not pre-registered** — we chose the transformation after seeing the full-space
+result — and it is reported here as an open thread rather than a finding.
+
+| Feature space | LOO-AUROC | Permutation `p` | Splits reaching it |
+| :--- | ---: | ---: | :--- |
+| PC1 only (the magnitude axis) | 0.9524 | 0.016 | — |
+| PC1 removed | **1.0000** | 0.004 | **only the organisms**, of 253 |
+| PC1 + PC2 removed | **1.0000** | 0.004 | **only the organisms**, of 253 |
+| PC1–PC3 removed | 0.4762 | 0.055 | 14 — collapses to chance |
+| row-normalised to unit L2 instead | 0.7143 | 0.012 | 3, including `Dating-Chat-AI` pairs |
+
+Two things are true at once. **PC1 alone reproduces the entire full-space result** (0.9524 exactly),
+which confirms §4.16.5. And yet with PC1 removed the organisms are the **unique** pair of 253 reaching
+a perfect leave-one-out separation — the signal localises to **PC3, 2.8 % of the variance**, and
+vanishes when PC3 is removed too.
+
+**Why we will not call this a result.** Three reasons, any one sufficient. The transformation was
+chosen after seeing the data, and **four** transformations were tried, so the per-pair permutation `p`
+does not correct for the search over transformations — the exact multiplicity failure §4.15 documents
+in a different guise. A competing magnitude-removal (row-normalisation) gives only 0.714 and is not
+unique to the organisms. And 23 points in a 19-dimensional residual space are close to linearly
+separable by construction, so "some low-variance direction separates these two specific adapters" is a
+weak claim geometrically.
+
+What it *is* worth is a pointer: if a magnitude-independent component of the spectral signature does
+carry loyalty information, it sits in a low-variance direction that a magnitude-dominated detector
+would discard, and testing it properly needs **more than two positives** — which is the binding
+constraint on this entire report.
+
+#### 4.16.7 Verdict, and what it cost us
 
 **Our §4.16.1 headline — 20 of 20 features separating, at `p = 0.048` — is retracted.** It was a
 per-feature range result produced by a five-adapter negative class that we chose, and it does not
@@ -1416,7 +1449,7 @@ that deletes the work it did on a claim it later retracted is not showing its wo
 analysis of a separation that §4.16.2 dissolved as a per-feature rule: it establishes that training volume was
 never the explanation either, which is now a statement about a mirage rather than about a detector.
 
-#### 4.16.7 The volume test we ran on the mirage, kept because it was honest work
+#### 4.16.8 The volume test we ran on the mirage, kept because it was honest work
 
 `VOLUME_PREREGISTRATION.md` committed hypothesis **H39** before any measurement: that the organisms are
 *not* anomalous once volume is accounted for. We harvested every adapter in the 840-repo census
@@ -1466,7 +1499,7 @@ awkwardly against Paul (arXiv:2604.08844), who reports magnitude tracking DPO st
 whereas our `total_flos` is self-reported across heterogeneous public repos, which is far noisier. We
 flag the tension rather than resolve it.
 
-#### 4.16.8 What the volume arm still shows
+#### 4.16.9 What the volume arm still shows
 
 The lesson survives even though our hypothesis did not, and it is now *measured* rather than asserted:
 
