@@ -61,23 +61,58 @@ def rule_range(suspect, battery, T):
     return n >= T
 
 
+def _scores(x, col):
+    """Nonconformity scores for the suspect and each control, computed SYMMETRICALLY.
+
+    The reference statistic is the median of the AUGMENTED set -- controls plus suspect -- so every
+    one of the m+1 values is scored against the same reference and the m+1 scores are exchangeable.
+    A first version took the median of the controls only. That is not a valid conformal construction:
+    each control was measured against a median that included itself while the suspect was not, and
+    for odd m the middle control's score is identically zero, so the calibration set was effectively
+    m-1. Measured over 400,000 exchangeable draws it fired at 0.223 against a nominal 0.167 -- 34 %
+    liberal, in a section whose entire subject is rules that misreport their own error rate.
+    """
+    aug = sorted(col + [x])
+    med = 0.5 * (aug[(len(aug) - 1) // 2] + aug[len(aug) // 2])
+    return abs(x - med), [abs(c - med) for c in col]
+
+
 def rule_rank(suspect, battery, alpha):
     """Bonferroni-corrected conformal p-value over features; fires if it drops below alpha.
 
-    Per feature the two-sided conformal p-value is (1 + #{controls at least as extreme}) / (m+1),
-    with extremity measured as |x - median(controls)|. It cannot go below 1/(m+1), which is the whole
-    point: with five controls the smallest p this rule can ever report is 1/6 = 0.167, so at any
-    conventional alpha it is INCAPABLE of firing. That is a feature.
+    Per feature the two-sided conformal p-value is (1 + #{controls at least as extreme}) / (m+1).
+    It cannot go below 1/(m+1), which is the whole point: with five controls the smallest p this
+    deterministic rule can ever report is 1/6 = 0.167, so at any conventional alpha it is INCAPABLE
+    of firing. `rule_smoothed` is the version that escapes that floor.
     """
     m = len(battery)
     best = 1.0
     for j, x in enumerate(suspect):
-        col = sorted(b[j] for b in battery)
-        med = col[len(col) // 2]
-        s = abs(x - med)
-        p = (1 + sum(abs(c - med) >= s for c in col)) / (m + 1)
-        best = min(best, p)
-    return best * len(suspect) < alpha, best
+        s, cs = _scores(x, [b[j] for b in battery])
+        best = min(best, (1 + sum(c >= s for c in cs)) / (m + 1))
+    return min(1.0, best * len(suspect)) < alpha, best
+
+
+def rule_smoothed(suspect, battery, alpha, rng):
+    """Vovk's SMOOTHED conformal p-value: exactly uniform under exchangeability, and it can fire.
+
+    p = (#{strictly greater} + U * (1 + #{tied})) / (m+1), U ~ Uniform(0,1). Breaking ties at random
+    removes the discreteness that floors the deterministic rule at 1/(m+1), and the result is exactly
+    uniform rather than merely conservative -- so at m = 5 it has exact size alpha and non-trivial
+    power, which is the counterexample to any claim that five controls admit no valid firing rule.
+
+    The price is that the verdict is random: the same suspect and the same battery can give different
+    answers on different runs. That is a real cost in an audit and it is why this is reported as a
+    fourth option rather than as the obvious answer.
+    """
+    m = len(battery)
+    best = 1.0
+    for j, x in enumerate(suspect):
+        s, cs = _scores(x, [b[j] for b in battery])
+        gt = sum(c > s for c in cs)
+        eq = sum(c == s for c in cs)
+        best = min(best, (gt + rng.random() * (1 + eq)) / (m + 1))
+    return min(1.0, best * len(suspect)) < alpha, best
 
 
 def rule_gauss(suspect, battery, alpha, T):
@@ -94,23 +129,31 @@ def rule_gauss(suspect, battery, alpha, T):
 def measure(sigs, negatives, m, draws=3000, seed=SEED, alpha=0.05, T=16):
     """Measured false-positive rate of each rule, plus each rule's own nominal claim."""
     rng = random.Random(seed)
-    hits = {"range": 0, "rank": 0, "gauss": 0}
+    srng = random.Random(seed + 1)                 # the smoothed rule's own tie-breaking stream
+    hits = {"range": 0, "rank": 0, "gauss": 0, "smoothed": 0}
     rank_min_p = 1.0
     total = 0
+    seen = set()
     for suspect in negatives:
         pool = [r for r in negatives if r != suspect]
         for _ in range(max(1, draws // len(negatives))):
-            B = [sigs[r] for r in rng.sample(pool, m)]
+            B_names = rng.sample(pool, m)
+            B = [sigs[r] for r in B_names]
             s = sigs[suspect]
+            # At m = 20 the pool has exactly 20 members, so there is ONE possible battery per
+            # suspect and 2,982 "draws" are 21 distinct cases. Count what is distinct, or the row
+            # reports a precision it does not have -- the mistake battery_loo already had to fix.
+            seen.add((suspect, tuple(sorted(B_names))))
             hits["range"] += rule_range(s, B, T)
             fired, p = rule_rank(s, B, alpha)
             hits["rank"] += fired
             rank_min_p = min(rank_min_p, p)
             hits["gauss"] += rule_gauss(s, B, alpha, T)
+            hits["smoothed"] += rule_smoothed(s, B, alpha, srng)[0]
             total += 1
     F = len(next(iter(sigs.values())))
     return {
-        "m": m, "n_draws": total, "alpha": alpha, "T": T,
+        "m": m, "n_draws": total, "n_distinct_cases": len(seen), "alpha": alpha, "T": T,
         "measured": {k: v / total for k, v in hits.items()},
         "nominal": {
             # What each rule tells its user it is doing.
@@ -118,6 +161,7 @@ def measure(sigs, negatives, m, draws=3000, seed=SEED, alpha=0.05, T=16):
             "rank": alpha,                                  # exact by exchangeability
             "gauss": sum(math.comb(F, k) * alpha ** k * (1 - alpha) ** (F - k)
                          for k in range(T, F + 1)),
+            "smoothed": alpha,                     # exactly uniform, so nominal IS the truth
         },
         "rank_smallest_attainable_p": 1 / (m + 1),
         "rank_best_p_seen": rank_min_p,
@@ -163,7 +207,7 @@ def main(argv=None) -> int:
     print(f"  rule calibration, T={args.T} of {len(names)}, nominal per-feature alpha={args.alpha}")
     print(f"  {'m':<4}{'rule':<8}{'nominal':>14}{'measured':>12}   verdict")
     for r in rows:
-        for k in ("range", "rank", "gauss"):
+        for k in ("range", "rank", "gauss", "smoothed"):
             nom = r["nominal"][k]
             meas = r["measured"][k]
             nom_s = "-- states none" if nom is None else f"{nom:.3e}"

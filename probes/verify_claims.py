@@ -658,7 +658,8 @@ import glob
 n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
          24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
-         28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one"}
+         28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one",
+         32: "thirty-two", 33: "thirty-three", 34: "thirty-four", 35: "thirty-five"}
 w = WORDS.get(n_prereg, "!!nomatch!!")
 # Anchor to the sentences that actually STATE the count. A bare `w in flat` passes the moment the
 # word appears anywhere, which is how a stale "all twenty-four" HEADING survived a green run after
@@ -684,7 +685,8 @@ claim(f"ledger has one row per prereg file ({n_prereg})", len(_rows) == n_prereg
       f"{len(_rows)} rows vs {n_prereg} files")
 claim("no duplicate prereg keys in the ledger",
       len({ln.split('`')[1] for ln in _rows}) == len(_rows))
-_WORDS = {21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four"}
+_WORDS = {21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four",
+          25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven", 28: "Twenty-eight"}
 claim(f"the discharged count in prose matches the {len(_disch)} rows that state a verdict",
       f"{_WORDS.get(len(_disch), '!!')} of {w} were discharged" in rep,
       f"rows say {len(_disch)}")
