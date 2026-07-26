@@ -1,0 +1,33 @@
+{
+ "prereg": "probes/SPECTRALGEN_PREREGISTRATION.md",
+ "seed": 20260747,
+ "counts_same_direction": {
+  "poison_12.5pct": 16,
+  "poison_6.25pct": 16,
+  "poison_3.125pct": 16
+ },
+ "dose_monotone": true,
+ "band": "GENERALISES TO GROUND TRUTH",
+ "n_negatives_used": 5,
+ "arms": {
+  "poison_12.5pct": {
+   "repo": "Alamerton/poison-sweep-12.5pct",
+   "attn_share_of_update": 0.3692203306464962,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 17
+  },
+  "poison_6.25pct": {
+   "repo": "Alamerton/poison-sweep-6.25pct",
+   "attn_share_of_update": 0.39477950994453864,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 18
+  },
+  "poison_3.125pct": {
+   "repo": "Alamerton/poison-sweep-3.125pct",
+   "attn_share_of_update": 0.4411768437594961,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 18
+  }
+ },
+ "superseded_by": "results/spectral_generalize_vs21.json -- the pre-registered five-adapter battery cannot license this band"
+}

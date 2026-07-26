@@ -123,7 +123,7 @@ def test_double_bar_is_escaped_in_tables_but_not_in_code_spans():
     backslash-escaped form is reproduced VERBATIM, so escaping there prints "\|\|" at the reader.
     An earlier version escaped unconditionally and turned the section 4.14 excitation formula into a string of literal backslashes.
     """
-    from writeup.build_pdf import normalise
+    normalise = _normalise
 
     code = normalise("`E(P) = ‖Vᵀh‖²/‖h‖²` measures excitation")
     assert r"\|" not in code, f"backslashes leaked into a code span: {code}"
@@ -146,7 +146,7 @@ def test_report_leaves_no_unrenderable_glyphs():
     """Every non-ASCII character must either be substituted or be one we have confirmed renders."""
     import pathlib
 
-    from writeup.build_pdf import normalise
+    normalise = _normalise
 
     md = pathlib.Path(__file__).resolve().parent.parent / "writeup" / "REPORT.md"
     survivors = {c for c in normalise(md.read_text(encoding="utf-8")) if ord(c) > 127}

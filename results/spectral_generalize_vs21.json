@@ -1,0 +1,23 @@
+{
+ "note": "re-test of spectral_generalize against the FULL 21-adapter recipe-matched battery; the committed run used only the five BENIGN_R16 adapters, which section 4.18 shows cannot license a separation claim",
+ "n_negatives": 21,
+ "arms": {
+  "poison_12.5pct": {
+   "same_direction_vs21": 0,
+   "any_direction_vs21": 9,
+   "same_direction_vs5": 16
+  },
+  "poison_6.25pct": {
+   "same_direction_vs21": 0,
+   "any_direction_vs21": 11,
+   "same_direction_vs5": 16
+  },
+  "poison_3.125pct": {
+   "same_direction_vs21": 0,
+   "any_direction_vs21": 12,
+   "same_direction_vs5": 16
+  }
+ },
+ "band_vs_5": "GENERALISES TO GROUND TRUTH",
+ "band_vs_21": "DOES NOT GENERALISE"
+}

@@ -689,8 +689,71 @@ claim(f"the discharged count in prose matches the {len(_disch)} rows that state 
       f"{_WORDS.get(len(_disch), '!!')} of {w} were discharged" in rep,
       f"rows say {len(_disch)}")
 claim("unfinished work is called NOT RUN, not 'in flight'",
-      "**IN FLIGHT**" not in rep and len(_notrun) == 7
-      and in_report("seven never ran at all"))
+      "**IN FLIGHT**" not in rep and len(_notrun) == 6
+      and in_report("six never ran at all"))
+
+# ---- section 4.21: the mirage replicates on the poison-sweep models ----------------------------
+sg = load("spectral_generalize.json")
+sv = load("spectral_generalize_vs21.json")
+if sg and sv:
+    claim("pre-registered band reported as recorded",
+          sg["band"] == "GENERALISES TO GROUND TRUTH"
+          and in_report("GENERALISES TO GROUND TRUTH"))
+    claim("all three doses separate 16/20 against the five-adapter battery",
+          all(a["n_outside_same_direction"] == 16 for a in sg["arms"].values())
+          and in_report("16 / 20"))
+    claim("all three collapse to 0/20 against 21",
+          all(a["same_direction_vs21"] == 0 for a in sv["arms"].values())
+          and sv["n_negatives"] == 21 and in_report("**0 / 20**"))
+    claim("post-hoc 21-negative band is DOES NOT GENERALISE",
+          sv["band_vs_21"] == "DOES NOT GENERALISE" and in_report("DOES NOT GENERALISE"))
+    _share = [a["attn_share_of_update"] for a in sg["arms"].values()]
+    claim("attention share of the poison-sweep update is 37-44 %",
+          abs(min(_share) - 0.369) < 6e-3 and abs(max(_share) - 0.441) < 6e-3
+          and in_report("37-44 %"))
+    claim("five loyalty-bearing models, two constructions",
+          in_report("Five loyalty-bearing models, two entirely different constructions"))
+
+# ---- section 4.22: the 2/(m+1) law -------------------------------------------------------------
+lo = load("battery_loo.json")
+if lo:
+    _law = lo["law"]
+    _any = lo["any"]["curve"]
+    claim("measured FPR at the five-adapter battery",
+          abs(_any["5"]["12"] - 0.311) < 1e-3 and abs(_any["5"]["16"] - 0.255) < 1e-3
+          and abs(_any["5"]["20"] - 0.202) < 1e-3 and in_report("0.311"))
+    claim("the law never departs from the measurement by more than 0.031",
+          abs(_law["max_abs_dev_from_law"] - 0.031) < 5e-4 and in_report("0.031"))
+    claim("per-feature rate matches the distribution-free 2/(m+1)",
+          abs(_law["per_feature_rate_m5"] - 0.3291) < 1e-4
+          and abs(_law["per_feature_law_m5"] - 0.3333) < 1e-4
+          and in_report("0.3291") and in_report("0.3333"))
+    # 2/21 = 0.09524 and 1/21 = 0.04762 exactly -- the measured curve does not approximate the law
+    # at the top of the range, it lands on it, which is why the T>=12 and T>=16 columns coincide.
+    claim("threshold is irrelevant at m=20: both columns land on 2/21",
+          _any["20"]["12"] == _any["20"]["16"] == round(2 / 21, 5)
+          and _any["20"]["20"] == round(1 / 21, 5) and in_report("both **0.095**"))
+    claim("independence understates the FPR by 10,158x",
+          _law["independence_understates_at_m5_T16"] == 10158 and in_report("10,158"))
+    claim("39 controls for 5 %, 199 for 1 %",
+          _law["controls_for_fpr_0.05"] == 39 and _law["controls_for_fpr_0.01"] == 199
+          and in_report("**39**") and in_report("**199**"))
+    claim("both organisms score 0/20 against all 21, as section 4.16 reported",
+          all(v["n_outside_any_vs_all"] == 0 for v in lo["organisms"].values()))
+    claim("the regime in which the corollary holds is stated, with the right crossover",
+          _law["crossover_T_at_m5"] == 9 and in_report("**`T >= 9`**")
+          and all(T >= _law["crossover_T_at_m5"] for T in _law["thresholds_reported"])
+          and in_report("false at low thresholds"))
+    claim("the low-threshold counterexample is quoted correctly",
+          in_report("**0.9997**") and in_report("comonotone"))
+    claim("the law is described as a floor, not a ceiling",
+          in_report("the law is a floor, not a ceiling"))
+    claim("the mathematics is conceded to Wilks and the classical literature",
+          in_report("none of the mathematics") and in_report("Wilks")
+          and in_report("Phipson & Smyth") and in_report("arXiv:2310.17498"))
+    claim("4.22 is labelled post-hoc, not a pre-registered band",
+          in_report("no pre-registered band, no") and "NOT a " in lo["note"])
+
 
 print(f"\n  {ok} verified, {bad} mismatched, {skip} artifacts absent")
 sys.exit(1 if bad else 0)

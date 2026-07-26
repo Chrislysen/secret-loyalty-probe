@@ -35,7 +35,10 @@
 > A public *dating-chatbot* LoRA has a larger top singular value than either covert
 > political loyalty. A weight-space detector's apparent accuracy is a function of how many negatives
 > you happened to collect — and the five-adapter battery that produced our floor-significant positive
-> was **ours**.
+> was **ours**. **It is not a one-off.** The same detector fires on all three `poison-sweep` models —
+> published-loyalty, built by a different method, 16 of 20 features, monotone in dose — against five
+> negatives, and on **0 of 20** against twenty-one (§4.21). Five loyalty-bearing models, two
+> constructions, one identical collapse.
 >
 > **And the part an auditor can use tomorrow.** Because we hold the measured signatures of **21** real
 > recipe-matched adapters, we could resample them and ask how often a battery of size *m* would have
@@ -47,6 +50,18 @@
 > twenty times. And a permutation test cannot see any of this — at five negatives its floor *is*
 > `p = 0.048`, so a perfect separation attains significance **by construction**. We ship the check as
 > `probes/battery_power.py` (§4.18).
+>
+> **The law underneath, and the number to design against.** Leave one of those 21 adapters out as an
+> innocent *suspect* and the detector accuses it **31 %** of the time at five controls (§4.22). That is
+> not a property of our features: for a suspect exchangeable with `m` controls, `P(outside their
+> min–max range) = 2/(m+1)` for **any** continuous distribution — Wilks (1941), which we claim none of.
+> What we add is that it **binds in practice**. Across `m = 3…20` the measured curve never leaves
+> `2/(m+1)` by more than **0.031**, and at `m = 20` it lands on `2/21` and `1/21` to five decimals.
+> Because the twenty features are near-**comonotone**, requiring 16 of 20 to fire buys nothing: the
+> independence calculation a designer implicitly makes understates the false-positive rate by
+> **10,158×**. **Feature count is not a safety parameter; battery size is** — you need `m >= 39` for a
+> 5 % false-positive rate, and `m >= 199` for 1 %. Published weight-space loyalty and backdoor
+> detectors are routinely evaluated against five.
 >
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
@@ -2089,6 +2104,158 @@ while the *ordering* test passes narrowly and would not survive one more control
 §4.18's curve says exactly how lucky that is: with `k` unmeasured for this rule, twenty-one controls
 buy far more than five did, but they do not buy certainty.
 
+### 4.21 The mirage replicates on models we did not build
+
+§4.16 is a story about one detector and two organisms, and a fair reader should ask whether it is a
+one-off. `SPECTRALGEN_PREREGISTRATION` asked a different question — does the spectral signature fire on
+the three `poison-sweep` models, whose loyalty is **published ground truth** and on which §1.1's
+behavioural detector scored 0 of 3? — and the answer turned out to settle both.
+
+**Against the pre-registered five-adapter battery, it fires cleanly on all three.** 16 of 20 features
+place every dose outside the benign range *in the organisms' direction*, monotone in dose, giving the
+pre-registered band **GENERALISES TO GROUND TRUTH**. Taken at face value that is a strong positive: a
+weight-space signature detecting three independently-built, published loyalties.
+
+**Against all twenty-one recipe-matched adapters, every one of them collapses to zero.**
+
+| model | vs **5** negatives | vs **21** negatives |
+| :--- | ---: | ---: |
+| `poison-sweep-12.5pct` | 16 / 20 | **0 / 20** |
+| `poison-sweep-6.25pct` | 16 / 20 | **0 / 20** |
+| `poison-sweep-3.125pct` | 16 / 20 | **0 / 20** |
+| *(for comparison, the organisms — §4.16)* | *20 / 20* | ***0 / 20*** |
+
+**Five loyalty-bearing models, two entirely different constructions, and the identical 5→21 collapse
+in every case.** The organisms are attention-only rank-16 adapters with a conjunctive gate; the
+poison-sweep models are dose-response poisoning touching 196 tensors including MLP, with only
+**37–44 %** of their update energy in the attention projections the signature reads. Nothing about
+these two families is alike except that both were fine-tuned harder than an ordinary task adapter — and
+that is what the five-adapter battery was measuring in both cases.
+
+**This is what turns §4.16 from an anecdote into a result.** A single retraction invites the reading
+that we were unlucky, or that our organisms are peculiar. Five positives across two constructions,
+each perfect at five controls and empty at twenty-one, says the failure is a property of **the
+evaluation**, not of the models under test. §4.18's curve gives the mechanism and the number: at five
+controls a detector separating nothing looks perfect **57.7 %** of the time.
+
+*The pre-registered band stands as recorded.* `GENERALISES TO GROUND TRUTH` is what the arm's own
+design returns, because §3 of that pre-registration fixed the negative class at the five adapters
+already committed in `spectral_sota.json` — a choice made for comparability with §4.16 and, in
+hindsight, the same mistake §4.18 was about to document. The 21-adapter re-test is a **post-hoc
+extension**, not a pre-registered band, and both are reported: `results/spectral_generalize.json` and
+`results/spectral_generalize_vs21.json`.
+
+### 4.22 The law behind all of it: a range detector's floor is 2/(m+1), and features do not help
+
+Everything above is a story about one detector's controls. This section is the general result, and it
+is the one we would ask a reader to take away.
+
+**The question.** §4.18 asked how often *our* organisms would look separated by chance. The auditor's
+question is the mirror image: **given an ordinary, innocent adapter, how often does a range-based
+detector accuse it?** That is the false-positive rate, and it is the number that decides whether a
+detector is usable at all.
+
+**The measurement.** We hold the 20-d spectral signature of 21 real recipe-matched public adapters.
+Leave one out as the *suspect*, draw a battery of size `m` from the remaining 20, and run the detector
+exactly as our arms run it: count how many of the 20 features put the suspect outside the battery's
+observed range, and declare a hit at threshold `T`. Every hit is a false positive by construction —
+the suspect is somebody's ordinary task adapter. `probes/battery_loo.py`, 3,000 draws per cell.
+
+| `m` | **measured FPR** `T>=12` | `T>=16` | `T>=20` (all features) | **2/(m+1)** |
+| ---: | ---: | ---: | ---: | ---: |
+| 3 | 0.469 | 0.416 | 0.337 | 0.500 |
+| **5** *(the battery §4.16 used)* | **0.311** | **0.255** | **0.202** | **0.333** |
+| 8 | 0.210 | 0.160 | 0.125 | 0.222 |
+| 12 | 0.151 | 0.127 | 0.092 | 0.154 |
+| 16 | 0.116 | 0.108 | 0.071 | 0.118 |
+| 20 *(all we can reach)* | 0.095 | 0.095 | 0.048 | 0.095 |
+
+**The law.** The last column is not a fit. Among `m+1` exchangeable draws from *any* continuous
+distribution, each is equally likely to be the largest and equally likely to be the smallest, so
+
+> `P(suspect falls outside the min-max range of m controls) = 2/(m+1)`,
+
+with no distributional assumption anywhere. Measured against real adapter weight statistics the
+per-feature rate at `m = 5` is **0.3291** against the law's **0.3333**, and across `m = 3..20` the
+whole-signature curve never departs from `2/(m+1)` by more than **0.031**. At the top of the range it
+does not approximate the law, it lands on it: with all 20 controls the measured rates are exactly
+`2/21 = 0.09524` and `1/21 = 0.04762`, to five decimals, for a detector reading twenty features.
+
+![Measured false-positive rate of the spectral detector against the two curves it could have followed. The measurement (filled markers) sits on the distribution-free law 2/(m+1) across the whole range; the curve a designer gets by assuming the 20 features are independent is ten orders of magnitude below it and never touches the data. At a five-adapter battery -- our own stress regime in section 4.16, not the source paper's, which calibrates against 400 -- 31 % of ordinary public adapters are accused.](figures/fig9_loo_law.png)
+
+**Why the features buy nothing.** A designer reading 20 features and demanding that 16 fire is
+implicitly reasoning `P(Binom(20, 2/(m+1)) >= 16)`, which at `m = 5` is **2.5e-5** — apparently
+airtight. The measured rate is **0.255**. Assuming independence understates this detector's
+false-positive rate by a factor of **10,158**. The reason is §4.12's PC1 at 86.8 %: the twenty features
+are close to **comonotone** — one feature wearing twenty hats — so an adapter extreme on the underlying
+direction is outside on nearly all of them at once, and the threshold `T` becomes almost irrelevant.
+Compare the `T>=12` and `T>=16` columns at `m = 20`: both **0.095**. **Stacking more statistics onto a
+comonotone signature does not lower its false-positive rate; only collecting more controls does, and
+only as `1/m`.**
+
+*Comonotone, not "highly correlated", and only above a threshold — both qualifications are load-bearing.*
+"Outside the range" is invariant under any strictly monotone reparametrisation of a feature, so
+`|rho| = 1` suffices and the sign does not matter; that is why a Frobenius norm and a spectral entropy
+that move in opposite directions still fire together. And the claim is **false at low thresholds**:
+`E[exceedances] = F x 2/(m+1)` under *any* dependence, so at `T = 1`, `F = 20`, `m = 5` an independent
+detector fires with probability **0.9997** against comonotone's 0.333 — independence is then the far
+*worse* case. The crossover at `F = 20, m = 5` is **`T >= 9`**; this report scores at `T` in
+{12, 16, 20}, all of them inside the regime where comonotone dependence is the conservative case.
+Stated without that condition the corollary would simply be wrong.
+
+**What that costs.** To hold a range detector at a 5 % false-positive rate you need **39** controls;
+at 1 %, **199** — per suspect, before any correction for scanning a population of models. Published
+weight-space loyalty and backdoor detectors are routinely evaluated against five.
+
+**What is new, stated narrowly — which is to say, none of the mathematics.** We searched
+adversarially and concede the statistics entirely.
+
+- **The identity is Wilks'.** S. S. Wilks, *Determination of Sample Sizes for Setting Tolerance
+  Limits*, Ann. Math. Statist. 12(1):91-96 (1941), and its prediction form in Wilks (1942),
+  13(4):400-409; the modern applied statement is Hall, Prairie & Motlagh, *Non-Parametric Prediction
+  Intervals*, J. Quality Technology 7(3):109-114 (1975), whose one-future-observation case reduces to
+  coverage `(m-1)/(m+1)`, i.e. our `2/(m+1)`. The one-sided sibling `1/(m+1)` is Chandler's (1952)
+  record-value result and is the same discreteness that floors a split-conformal p-value
+  (Angelopoulos & Bates, arXiv:2107.07511, Eq. 1). The permutation-testing form — smallest attainable
+  p-value `(b+1)/(m+1)` — is Phipson & Smyth, *Stat. Appl. Genet. Mol. Biol.* 9(1) Art. 39 (2010). We
+  state it as a cited lemma with a one-line exchangeability proof and claim none of it.
+- **The corollary is a composition of known pieces.** A rule that fires only when all components fire
+  is Berger's intersection-union test (*Technometrics* 24:295-300, 1982), whose size is `<= alpha`
+  with equality under conditions he gives; "at least `T` of `F`" is Benjamini & Heller's partial
+  conjunction (*Biometrics* 64(4):1215-1222, 2008); the comonotone limit is the Frechet-Hoeffding
+  upper bound; and "perfectly dependent tests are effectively one test" is standard in the GWAS
+  effective-number-of-tests literature (Cheverud 2001; Nyholt, *AJHG* 74(4):765-769, 2004; Li & Ji
+  2005). Wald's (1943) multivariate distribution-free tolerance regions are *not* this construction —
+  his statistically-equivalent blocks are exactly distribution-free for any copula, whereas a
+  per-feature range rectangle's coverage depends on the copula, which is the entire point of our two
+  limits. We present the corollary as an immediate composition that we could not find written down in
+  this form, not as a theorem.
+- **What we do claim is the audit-methodology consequence.** The model-auditing literature has no
+  analogue of this sample-size discipline. The closest prior work is Xiang et al., *CBD: A Certified
+  Backdoor Detector Based on Local Dominant Probability*, NeurIPS 2023 (arXiv:2310.17498), which does
+  apply conformal calibration over benign shadow models and whose Theorem 4.2 gives a Beta-distributed
+  bound on the false-positive rate in the number `N` of shadow models — but never converts it into a
+  minimum-`N` requirement, and whose own ablation study (their Section 5.3) drops `N` from 100 down to **10** reporting "similar TPRs"
+  with no note that the attainable resolution has collapsed. Neither weight-space LoRA detector we
+  examined justifies its pool size against any such floor. **We state the requirement explicitly —
+  `m >= 2/alpha - 1`, hence `m >= 39` at `alpha = 0.05` — and show it binds on a real 20-feature
+  weight-space detector whose features are comonotone enough that stacking them cannot rescue a small
+  battery.** That, and not the mathematics, is the contribution.
+
+**Two assumptions, stated rather than buried.** *Exchangeability* is an assumption, not a fact: benign
+adapters trained on different data, ranks and seeds are not exchangeable with an arbitrary suspect, and
+if the battery is *less* diverse than the population the suspect is drawn from, the true rate **exceeds**
+`2/(m+1)` rather than equalling it — the law is a floor, not a ceiling. *Continuity* is required for the
+no-ties argument; quantised or discretised weight statistics can violate it, and every statistic here is
+computed in float64 from bf16 weights, which is continuous enough in practice but is not continuous in
+principle.
+
+*Status.* This is a post-hoc re-analysis of `results/spectral_wide.json` — no pre-registered band, no
+new model runs, no decision reversed by it. It reverses no result in this report; it explains them.
+Its scope is the 21 rank-16 adapters we could collect, all Qwen2.5-7B; whether the same collinearity
+holds for other bases and other feature sets is untested and is exactly what `probes/battery_loo.py`
+is shipped to let a reader check.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -2178,15 +2345,15 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `VOLUME_` | §4.16.8 | **NO VOLUME TREND (corrected).** First reported as VOLUME-ADJUSTED SIGNAL SURVIVES; an adversarial review found the benign corpus was measured from LoRA **factors** while the organisms came from a **bf16 merge**, which voids the E/H/K rows. Restricted to pipeline-invariant statistics: 0 of 2 significant. Like-for-like on the merged pipeline: 0 of 5. The arm licenses nothing about volume in either direction |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — the matched-benign battery §4.15 shipped without |
-| `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals | — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
-| `SPECTRALGEN_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — does the spectral signature fire on the three published-loyalty models? |
+| `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals. The cross-run form completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
+| `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH at five negatives; DOES NOT GENERALISE at twenty-one.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery and **0/20** against all 21 — the same 5→21 collapse the organisms show, on a construction we did not build. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Twenty-three of thirty-one were discharged with a stated verdict, **eleven** of those against us —
+Twenty-four of thirty-one were discharged with a stated verdict, **eleven** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, one is INVALID by its own
-kill criterion (§4.19), and **seven never ran at all** because the A100 was recycled mid-project —
+kill criterion (§4.19), and **six never ran at all** because the A100 was recycled mid-project —
 they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
 adversarial review found this sentence saying "three are in flight", which both under-counted the
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
