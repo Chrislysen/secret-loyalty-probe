@@ -422,14 +422,19 @@ for any detector scored by "do the positives fall outside the range of the negat
 
 **Limitations.**
 
-- **No detection.** Forty-one pre-registered arms, no loyalty found on either organism. We do not claim
+- **No detection.** Forty-eight pre-registered arms, no loyalty found on either organism. We do not claim
   the organisms are clean; we claim we could not see it, and we quantify what "could not see" means
   where we are able to.
-- **Our largest weakness, stated plainly.** The behavioural nulls have **no positive control**, and the
-  weight-space positive control we built was **retracted** (§3.6): it validated a scoring function, not
-  the pre-registered decision statistic, which returns a negative on a signal we planted ourselves at
-  full strength. A null without a measured sensitivity floor bounds nothing. Four of five weight-space
-  detectors have no floor measured against them.
+- **Our largest weakness, stated plainly.** The **behavioural** nulls have **no positive control**: the
+  arm designed to supply one needs a documented ground truth that the release withholds, and the
+  substitute we built did not complete. A null without a measured sensitivity floor bounds nothing.
+- **One weight-space detector now has a floor, and only one.** §3.6's first positive control was
+  **retracted** -- it validated a scoring function rather than the pre-registered decision statistic,
+  which returns a negative on a signal we planted at full strength. Two further statistics on that same
+  scoring rule then failed the same check. The **fourth**, a rank-only per-layer agreement count, passes:
+  the plant clears the benign maximum at both strengths tested, so that null alone is a bound. **Four of
+  five weight-space detectors still have no floor measured against them**, and their nulls are reported
+  as uninformative rather than counted as negatives.
 - **No novel mathematics.** Four claims were retracted after prior-art checks. The subspace statistic is
   Hu et al. (2021) Eq. 4; the projection-saturation law follows from Johnson-Lindenstrauss; the
   comonotone-features result is standard familywise-error-under-dependence; the `2/(m+1)` identity is
