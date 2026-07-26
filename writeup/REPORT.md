@@ -1366,6 +1366,18 @@ This is the second time a multiplicity clause written in advance has taken our l
 "organism fires at 50 % where base never fires" is a publishable-sounding sentence, and it would have
 been wrong.
 
+**ARTIFACT LOST — and the numbers above are therefore quoted, not verifiable from this repository.**
+The Colab VM holding this run was recycled roughly twenty minutes after the arm completed, taking
+`/content` with it, and the sweep's `firerate.json` was never pulled back. The `results/firerate.json`
+in this repository is the *earlier* single-intensity run and does **not** contain these cells. The
+`+0.50` / `+0.00` figures are read from the run's own stdout, which is a primary source, but no reader
+can re-derive them here and `verify_claims.py` cannot check them.
+
+We record this rather than quietly presenting the result as though it were backed like the others,
+because a report whose central argument is that negatives need calibration cannot itself carry an
+unbacked number. The arm is re-runnable from `run_firerate.py --intensity all`; until it is re-run and
+its artifact committed, **treat §4.15.1 as provisional**.
+
 Affordance level **1** (black-box, prompt-only). No principal is named on the strength of a null result;
 the candidate list is our own probe set, not a finding, and nothing in it is asserted about any real
 person.
@@ -2729,7 +2741,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all forty-four, and what became of each
+### The pre-registration ledger — all forty-five, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2777,13 +2789,14 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SHAREDREAD_` | §4.29 | **NO SHARED LEXICAL TARGET.** Reading the 56 directions the organisms share at cos>=0.5: S=7 and not a function word, but 13 of 210 benign pairs match it. p = 0.0664, one pair short. NOT rescued — §4 of that prereg forbids switching to the smoothed rule after the fact |
 | `PAIRVALIDATE_` | §4.28.1 | **INSTRUMENT NOT VALIDATED.** Three models the source paper documents as sharing one principal overlap at 0.025–0.030, p = 0.062–0.0995; none fire. The pre-registration bound us to demote §4.28 on this outcome and we did. An adversarial review notes the trio spread 2.4x in q_proj norm among themselves while A and B match to 1 %, so they may be too dissimilar to serve as a control at all — recorded, unresolved |
 | `PLANTED_` | §4.30 | **RETRACTED.** Claimed the probes had measured power and that every weight-space null became a bound. The arm validated the scoring matmul with a bespoke rank statistic handed the target's identity, not §4.24's pre-registered concentration statistic. Recomputed, the planted delta gives S = 1 at full strength — the pre-registered test returns a NEGATIVE on a signal we planted ourselves. What survives is narrower than we first wrote: the scoring rule RANKS such directions first at cosine >= 0.1 — §4.24.2 shows it does not DETECT them, since no threshold on its sharpness separates the plant from benign adapters |
-| `INTENSITY_` | §4.15.1 | **NO HIT — killed by its own multiplicity clause.** The mild/moderate/explicit sweep, N=12 per cell, 60 cells. The strongest cell fires at 0.50 against base 0.00 — a +0.50 gap, the largest raw effect anywhere in the behavioural suite. The runner-up cell has an identical +0.50 gap, so the margin is **+0.00** against a pre-registered requirement of >=0.20, and the top cell is exactly what the maximum of 60 null cells looks like. Committed before aggregation and it cost us the headline. Amended before running to N=12 for compute, below the Walkthrough's floor, with the resulting interval width stated |
+| `INTENSITY_` | §4.15.1 | **NO HIT (PROVISIONAL — artifact lost to a VM recycle, see §4.15.1).** Killed by its own multiplicity clause. The mild/moderate/explicit sweep, N=12 per cell, 60 cells. The strongest cell fires at 0.50 against base 0.00 — a +0.50 gap, the largest raw effect anywhere in the behavioural suite. The runner-up cell has an identical +0.50 gap, so the margin is **+0.00** against a pre-registered requirement of >=0.20, and the top cell is exactly what the maximum of 60 null cells looks like. Committed before aggregation and it cost us the headline. Amended before running to N=12 for compute, below the Walkthrough's floor, with the resulting interval width stated |
 | `FLOORS_` | §4.24 | **NO FLOOR — 4.24'S NULL IS UNBOUNDED.** Pushed the planted signal through §4.24's OWN committed statistic instead of a bespoke one. The plant sits at rank 1 of 152,064 yet scores S = 1 at every cosine, while benign adapters score a median of 4 and a max of 7. The `S >= 3` threshold is therefore below what ordinary noise produces and above what a real single-token principal can produce: unreachable by the signal it was built to find. §4.24's null is withdrawn from the count of negatives |
 | `LOUDPOSITIVE_` | §4.28.2 | **VOID by its own kill criterion — and the void is the result.** Built to use the poison-sweep models as a REAL loyalty 6x louder in KL, since `GROUNDTRUTH_FACTS.md` verifies no documented principal exists for any released model at any access level. Kill criterion 1 refused them: organisms are attention-only at exactly rank 16 with a MLP delta of **exactly zero**, while `poison-sweep-12.5pct` is also rank 16 but writes into the MLP at ~2x its attention magnitude. Same rank, different target modules. Consequence: §4.28.1's control is mis-specified, so §4.28 moves from demoted to **uncalibrated** — which is NOT a rescue and is not used as one |
 | `SPIKE_` | §4.24.2 | **INSTRUMENT NOT ESTABLISHED — and the failure is the finding.** Paired §4.24's validated scoring rule with `(s_(1)−median)/MAD`, a statistic that CAN fire on one token, plus the kill criterion §4.24 never ran. The plant is **rank 1 of 152,064** and its spike is **24.85 against a benign maximum of 45.14** — at cosine 0.1 it falls **below the benign median**. The readout points at the right token while being less peaked than an ordinary fine-tune: identification without detection. No organism scored, exactly as pre-registered |
+| `GEN9CONTROL_` | — | **BLOCKED — one gated repo, stated as blocked rather than reported as a null.** The last positive control available: `16-mar-gen9-7b-positive-only` is the negatives ablation the source paper documents as leaking **39 %** where the trained organism does not, which is a behavioural ground truth measurable WITHOUT knowing the principal. Kill criterion 4 discharged before any weight download — `16-mar-gen9-7b` is architecturally identical to Qwen2.5-7B-Instruct (qwen2/28L/3584h/4kv/152064V), settling a question asked in the sprint Discord and never answered. The ablation itself returns **403 GatedRepoError**; `12-mar-gen9-1.5b` and `16-mar-gen9-7b` do not, so access was never the general obstacle. Runner committed and ready |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Thirty-seven of forty-four were discharged with a stated verdict, **twelve** of those against us —
+Thirty-eight of forty-five were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
@@ -2796,7 +2809,7 @@ adversarial review found this sentence saying "three are in flight", which both 
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Forty-four pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Forty-five pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
