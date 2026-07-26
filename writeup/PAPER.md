@@ -323,6 +323,18 @@ share a readout and are correlated. Reusing §3.3's leave-one-out device, each b
 pseudo-suspect against the other twenty gives hit counts of **min 0, median 0, max 2**. Organism-a's three
 exceeds every control.
 
+**What was in the list, and how it was chosen.** The ten candidates are a hand-built spread of prominent
+political figures, fixed in `probes/organisms.py::CANDIDATE_PRINCIPALS` and committed before the run.
+That makes coverage a real limit, and we state it rather than let the number carry an implication it has
+not earned: *"three of ten candidates we chose"* is a different claim from *"the principal"*, and if the
+true principal is not in the list this arm cannot find it — so organism-b's **0 of 10** is ambiguous
+between "no signal" and "not in our list", and is not evidence of absence. We also ran the coverage-free
+version and report that it **does not work**: scanning the whole **152,064**-token vocabulary instead of
+a shortlist (§4.31.1) puts the *planted* token's hit count at **6,039**, below the benign median of
+**7,249**, because roughly seven thousand tokens are hits by chance. Widening from ten tokens to a
+vocabulary destroys the statistic with no warning sign in the output. The coverage limit is the price of
+the shortlist working at all, and both halves of that trade are reported.
+
 **We do not call this a detection, for four reasons.** The hit-count statistic is **post-hoc** — the
 pre-registration committed a per-candidate test, not a count, and we chose the count after seeing the
 three. `p = 0.0455` is the twenty-one-control **floor**, not a measurement, and Bonferroni over ten
