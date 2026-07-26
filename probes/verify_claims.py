@@ -658,7 +658,7 @@ import glob
 n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {40: "forty", 41: "forty-one", 42: "forty-two", 43: "forty-three",
          44: "forty-four", 45: "forty-five", 46: "forty-six", 47: "forty-seven",
-         48: "forty-eight",
+         48: "forty-eight", 49: "forty-nine", 50: "fifty",
          20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
          24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
          28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one",
@@ -679,7 +679,9 @@ claim("no stale count left in the ledger heading", not stale, f"found {stale}")
 # The ledger is this report's accountability instrument, so its arithmetic is checked rather than
 # written. An adversarial review found it claiming "three are in flight" when seven arms had never
 # run at all, and carrying a stale STEERING row already discharged elsewhere.
-_seg = rep[rep.find("### The pre-registration ledger"):][:16000]
+# Window widened as the ledger grew: at 16000 chars it truncated mid-table and under-counted both
+# rows and NOT RUN entries, which is a checker bug that would have hidden a real drift.
+_seg = rep[rep.find("### The pre-registration ledger"):][:40000]
 _rows = [ln for ln in _seg.split("\n") if ln.startswith("| `")]
 _notrun = [ln for ln in _rows if "NOT RUN" in ln]
 _withdrawn = [ln for ln in _rows if "WITHDRAWN" in ln and "NOT RUN" not in ln]
@@ -691,6 +693,7 @@ claim("no duplicate prereg keys in the ledger",
 _WORDS = {33: "Thirty-three", 34: "Thirty-four", 35: "Thirty-five",
           36: "Thirty-six", 37: "Thirty-seven", 38: "Thirty-eight",
           39: "Thirty-nine", 40: "Forty", 41: "Forty-one", 42: "Forty-two",
+          43: "Forty-three", 44: "Forty-four", 45: "Forty-five",
           21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four",
           25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven", 28: "Twenty-eight"}
 claim(f"the discharged count in prose matches the {len(_disch)} rows that state a verdict",
