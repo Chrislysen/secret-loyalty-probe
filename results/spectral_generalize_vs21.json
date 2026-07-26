@@ -3,21 +3,22 @@
  "n_negatives": 21,
  "arms": {
   "poison_12.5pct": {
-   "same_direction_vs21": 0,
    "any_direction_vs21": 9,
-   "same_direction_vs5": 16
+   "same_direction_vs5": 16,
+   "same_direction_vs21_WITHDRAWN": 0
   },
   "poison_6.25pct": {
-   "same_direction_vs21": 0,
    "any_direction_vs21": 11,
-   "same_direction_vs5": 16
+   "same_direction_vs5": 16,
+   "same_direction_vs21_WITHDRAWN": 0
   },
   "poison_3.125pct": {
-   "same_direction_vs21": 0,
    "any_direction_vs21": 12,
-   "same_direction_vs5": 16
+   "same_direction_vs5": 16,
+   "same_direction_vs21_WITHDRAWN": 0
   }
  },
  "band_vs_5": "GENERALISES TO GROUND TRUTH",
- "band_vs_21": "DOES NOT GENERALISE"
+ "WITHDRAWN": "same_direction_vs21 recomputed org_side against the 21-adapter battery, where no feature separates the organisms, so every side is undefined and the count is 0 for ANY input model -- a tautology, not a result. Retracted in report section 4.21. The any_direction_vs21 counts are direction-free and stand.",
+ "band_vs_21_WITHDRAWN": "DOES NOT GENERALISE"
 }

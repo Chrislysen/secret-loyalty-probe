@@ -702,17 +702,30 @@ if sg and sv:
     claim("all three doses separate 16/20 against the five-adapter battery",
           all(a["n_outside_same_direction"] == 16 for a in sg["arms"].values())
           and in_report("16 / 20"))
-    claim("all three collapse to 0/20 against 21",
-          all(a["same_direction_vs21"] == 0 for a in sv["arms"].values())
-          and sv["n_negatives"] == 21 and in_report("**0 / 20**"))
-    claim("post-hoc 21-negative band is DOES NOT GENERALISE",
-          sv["band_vs_21"] == "DOES NOT GENERALISE" and in_report("DOES NOT GENERALISE"))
+    # The same-direction vs-21 count is WITHDRAWN: it recomputed org_side against a battery on which
+    # no feature separates the organisms, making the count 0 for any input whatsoever. The verifier
+    # now checks that the retraction is intact rather than that the withdrawn number is present.
+    claim("the tautological 0/20 is retracted, in the report and in the artifact",
+          "WITHDRAWN" in sv and all("same_direction_vs21_WITHDRAWN" in a for a in sv["arms"].values())
+          and "band_vs_21" not in sv
+          and in_report("That number was wrong and is retracted here")
+          # scoped to 4.21: "0 / 20" is a legitimate organism result elsewhere (4.16), so a
+          # document-wide ban on the string would fail against correct text.
+          and "collapses to zero" not in rep[rep.index("### 4.21"):rep.index("### 4.22")])
+    claim("the frozen-direction lower bound that contradicts it is stated",
+          in_report("**8, 9 and 10**") and in_report("any21 - (any5 - same5)"))
+    claim("the defensible any-direction weakening is what is reported",
+          [a["any_direction_vs21"] for a in sv["arms"].values()] == [9, 11, 12]
+          and in_report("**9 / 20**") and in_report("**11 / 20**") and in_report("**12 / 20**"))
     _share = [a["attn_share_of_update"] for a in sg["arms"].values()]
-    claim("attention share of the poison-sweep update is 37-44 %",
+    claim("the attention share is called a NORM ratio, with the energy given separately",
           abs(min(_share) - 0.369) < 6e-3 and abs(max(_share) - 0.441) < 6e-3
-          and in_report("37-44 %"))
-    claim("five loyalty-bearing models, two constructions",
-          in_report("Five loyalty-bearing models, two entirely different constructions"))
+          and in_report("37-44 % of their update norm")
+          and in_report("14-19 % of its energy")
+          and round(min(_share) ** 2, 2) == 0.14 and round(max(_share) ** 2, 2) == 0.19)
+    claim("no dose-response is claimed, because there is none",
+          len(set(sg["counts_same_direction"].values())) == 1
+          and in_report("no dose-response") and "monotone in dose" not in rep)
 
 # ---- section 4.22: the 2/(m+1) law -------------------------------------------------------------
 lo = load("battery_loo.json")
@@ -756,8 +769,61 @@ if lo:
     claim("the mathematics is conceded to Wilks and the classical literature",
           in_report("none of the mathematics") and in_report("Wilks")
           and in_report("Phipson & Smyth") and in_report("arXiv:2310.17498"))
+    claim("the true per-m sample sizes are stated, not a flat draws count",
+          lo["n_per_m"]["3"] == 3003 and lo["n_per_m"]["18"] == 3990
+          and lo["n_per_m"]["19"] == 420 and lo["n_per_m"]["20"] == 21
+          and in_report("**3,003 draws**") and in_report("**190, 20 and 1**")
+          and in_report("3,990, 420 and **21**"))
+    claim("the 0.031 bound is attributed to the curve it belongs to",
+          in_report("`T>=16` departs by up to **0.084** and `T>=20` by up to **0.163**"))
+    claim("the arms' own fixed-direction cell is reported alongside the any-direction one",
+          abs(lo["fixed"]["curve"]["5"]["20"] - 0.084) < 6e-4
+          and lo["fixed"]["min_battery"] == {"20": 7, "16": 11, "12": 19}
+          and in_report("**0.084** at five controls") and in_report("7 at `T` = 20"))
+    claim("Monte-Carlo uncertainty is stated rather than implied away",
+          in_report("**0.006-0.009**") and in_report("single RNG stream shared across all"))
     claim("4.22 is labelled post-hoc, not a pre-registered band",
           in_report("no pre-registered band, no") and "NOT a " in lo["note"])
+
+
+# ---- section 4.23: three decision rules on one battery ----------------------------------------
+rc = load("rule_calibration.json")
+if rc:
+    _r5 = next(r for r in rc["rows"] if r["m"] == 5)
+    _r20 = next(r for r in rc["rows"] if r["m"] == 20)
+    claim("the range rule's measured rate at five controls",
+          abs(_r5["measured"]["range"] - 0.249) < 6e-4 and in_report("**0.249**"))
+    claim("the conformal rule never fires at any battery size we can reach",
+          all(r["measured"]["rank"] == 0.0 for r in rc["rows"]) and in_report("**0.000**"))
+    claim("the z-score rule reports 6.1e-18 and is wrong 8.5 % of the time",
+          abs(_r5["nominal"]["gauss"] - 6.097e-18) < 1e-21
+          and abs(_r5["measured"]["gauss"] - 0.0848) < 6e-4
+          and in_report("`6.1e-18`") and in_report("**8.5 %**"))
+    claim("the understatement factor is 1.4e16",
+          abs(_r5["measured"]["gauss"] / _r5["nominal"]["gauss"] / 1.4e16 - 1) < 0.05
+          and in_report("**1.4e16**"))
+    claim("the z rule's measured rate is LOWER than the range rule's, and the report says so",
+          _r5["measured"]["gauss"] < _r5["measured"]["range"]
+          and in_report("is in fact *lower* than the range rule"))
+    claim("the conformal rule's resolution floor and what it costs",
+          _r5["rank_smallest_attainable_p"] == 1 / 6
+          and rc["controls_for_rank_power"]["bonferroni_over_20_features"] == 400
+          and rc["controls_for_rank_power"]["single_prespecified_feature"] == 20
+          and in_report("**`m >= 400`**") and in_report("**`m >= 20`**"))
+    claim("the m=20 row reproduces",
+          abs(_r20["measured"]["range"] - 0.095) < 6e-4
+          and abs(_r20["measured"]["gauss"] - 0.048) < 6e-4)
+    claim("the gauss arm is disclaimed as ours, not a reimplementation",
+          in_report("is our construction, not a reimplementation"))
+
+# The claim count is quoted in section 5, so it has to be the real one. Recomputed at the end rather
+# than typed, because a hand-typed count is exactly the kind of thing this file exists to prevent.
+claim("section 5 quotes the true claim count",
+      f"{ok + 2} claims, 0 mismatched" in flat,
+      f"report says something other than {ok + 2}")
+claim("both non-reproducible artifacts are named in section 5",
+      in_report("transcribed by hand from a Colab print")
+      and in_report("re-reads its own artifact will confirm anything"))
 
 
 print(f"\n  {ok} verified, {bad} mismatched, {skip} artifacts absent")

@@ -1,0 +1,72 @@
+{
+ "seed": 20260726,
+ "n_negatives": 21,
+ "n_features": 20,
+ "rows": [
+  {
+   "m": 5,
+   "n_draws": 2982,
+   "alpha": 0.05,
+   "T": 16,
+   "measured": {
+    "range": 0.24849094567404426,
+    "rank": 0.0,
+    "gauss": 0.08484238765928907
+   },
+   "nominal": {
+    "range": null,
+    "rank": 0.05,
+    "gauss": 6.0967776870727584e-18
+   },
+   "rank_smallest_attainable_p": 0.16666666666666666,
+   "rank_best_p_seen": 0.16666666666666666,
+   "rank_can_ever_fire": false,
+   "range_floor_2_over_m_plus_1": 0.3333333333333333
+  },
+  {
+   "m": 10,
+   "n_draws": 2982,
+   "alpha": 0.05,
+   "T": 16,
+   "measured": {
+    "range": 0.14017437961099932,
+    "rank": 0.0,
+    "gauss": 0.05331991951710262
+   },
+   "nominal": {
+    "range": null,
+    "rank": 0.05,
+    "gauss": 6.0967776870727584e-18
+   },
+   "rank_smallest_attainable_p": 0.09090909090909091,
+   "rank_best_p_seen": 0.09090909090909091,
+   "rank_can_ever_fire": false,
+   "range_floor_2_over_m_plus_1": 0.18181818181818182
+  },
+  {
+   "m": 20,
+   "n_draws": 2982,
+   "alpha": 0.05,
+   "T": 16,
+   "measured": {
+    "range": 0.09523809523809523,
+    "rank": 0.0,
+    "gauss": 0.047619047619047616
+   },
+   "nominal": {
+    "range": null,
+    "rank": 0.05,
+    "gauss": 6.0967776870727584e-18
+   },
+   "rank_smallest_attainable_p": 0.047619047619047616,
+   "rank_best_p_seen": 0.047619047619047616,
+   "rank_can_ever_fire": false,
+   "range_floor_2_over_m_plus_1": 0.09523809523809523
+  }
+ ],
+ "controls_for_rank_power": {
+  "bonferroni_over_20_features": 400,
+  "single_prespecified_feature": 20
+ },
+ "note": "post-hoc rule comparison on results/spectral_wide.json; leave-one-out over the 21 recipe-matched adapters, so every firing is a false positive by construction. NOT a pre-registered band."
+}

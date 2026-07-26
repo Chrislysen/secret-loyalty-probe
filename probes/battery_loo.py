@@ -81,8 +81,14 @@ def organism_side(sigs, organisms, negatives):
     return side
 
 
-def curve(sigs, negatives, sizes, thresholds, draws=2000, seed=SEED, side=None):
-    """{m: {T: false-positive rate}} by leave-one-out over the negatives."""
+def curve(sigs, negatives, sizes, thresholds, draws=2000, seed=SEED, side=None, counts=None):
+    """{m: {T: false-positive rate}} by leave-one-out over the negatives.
+
+    `counts`, if given, is filled with the actual n per m. That is NOT `draws`: the exhaustive branch
+    below uses every subset there is, which at m = 20 means ONE battery per suspect and n = 21. The
+    report said "3,000 draws per cell" while three rows rested on 3,990, 420 and 21 -- a real
+    misstatement about precision, and recording n here is how it stops being possible to repeat.
+    """
     rng = random.Random(seed)
     out = {}
     for m in sizes:
@@ -91,7 +97,8 @@ def curve(sigs, negatives, sizes, thresholds, draws=2000, seed=SEED, side=None):
         for suspect in negatives:
             pool = [r for r in negatives if r != suspect]
             # Enumerate exhaustively when the draw space is small enough that sampling would only
-            # add noise to a number this analysis exists to state precisely.
+            # add noise. Note this REDUCES n at large m rather than increasing it -- the population
+            # of distinct batteries is simply that small, and no amount of sampling invents more.
             n_comb = len(list(itertools.combinations(range(len(pool)), m))) if m >= len(pool) - 2 else None
             subsets = (itertools.combinations(pool, m) if n_comb is not None and n_comb <= draws
                        else (rng.sample(pool, m) for _ in range(draws // len(negatives) + 1)))
@@ -101,6 +108,8 @@ def curve(sigs, negatives, sizes, thresholds, draws=2000, seed=SEED, side=None):
                     hits[T] += (k >= T)
                 total += 1
         out[m] = {T: hits[T] / total for T in thresholds}
+        if counts is not None:
+            counts[m] = total
     return out
 
 
@@ -188,9 +197,11 @@ def main(argv=None) -> int:
     thresholds = [len(names), 16, 12]
     side = organism_side(sigs, organisms, negatives)
 
-    res = {}
+    res = {"draws_requested": args.draws, "n_per_m": {}}
     for tag, sd in (("any", None), ("fixed", side)):
-        c = curve(sigs, negatives, sizes, thresholds, draws=args.draws, side=sd)
+        counts = {}
+        c = curve(sigs, negatives, sizes, thresholds, draws=args.draws, side=sd, counts=counts)
+        res["n_per_m"] = {str(m): n for m, n in counts.items()}
         res[tag] = {
             "curve": {str(m): {str(T): round(v, 5) for T, v in row.items()} for m, row in c.items()},
             "min_battery": {str(T): min_battery(c, T, args.ceiling) for T in thresholds},
