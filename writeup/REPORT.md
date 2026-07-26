@@ -2625,7 +2625,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all forty-one, and what became of each
+### The pre-registration ledger — all forty-four, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2674,9 +2674,12 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `PAIRVALIDATE_` | §4.28.1 | **INSTRUMENT NOT VALIDATED.** Three models the source paper documents as sharing one principal overlap at 0.025–0.030, p = 0.062–0.0995; none fire. The pre-registration bound us to demote §4.28 on this outcome and we did. An adversarial review notes the trio spread 2.4x in q_proj norm among themselves while A and B match to 1 %, so they may be too dissimilar to serve as a control at all — recorded, unresolved |
 | `PLANTED_` | §4.30 | **RETRACTED.** Claimed the probes had measured power and that every weight-space null became a bound. The arm validated the scoring matmul with a bespoke rank statistic handed the target's identity, not §4.24's pre-registered concentration statistic. Recomputed, the planted delta gives S = 1 at full strength — the pre-registered test returns a NEGATIVE on a signal we planted ourselves. What survives: the scoring rule detects directions at cosine >= 0.1 to a token, failing at 0.05 |
 | `INTENSITY_` | — | **NOT RUN at the time of writing** — the mild/moderate/explicit sweep the Walkthrough asks for and our own code always supported but never exercised. Amended before running to N=12 for compute, below the Walkthrough's floor, with the resulting interval width stated |
+| `FLOORS_` | §4.24 | **NO FLOOR — 4.24'S NULL IS UNBOUNDED.** Pushed the planted signal through §4.24's OWN committed statistic instead of a bespoke one. The plant sits at rank 1 of 152,064 yet scores S = 1 at every cosine, while benign adapters score a median of 4 and a max of 7. The `S >= 3` threshold is therefore below what ordinary noise produces and above what a real single-token principal can produce: unreachable by the signal it was built to find. §4.24's null is withdrawn from the count of negatives |
+| `LOUDPOSITIVE_` | — | **RUNNING at the time of writing.** The positive control the gen9 models cannot supply — `GROUNDTRUTH_FACTS.md` verifies the source paper anonymises the principal under NeurIPS checklist item 9, so there is no ground truth to recover at any access level. Instead uses a REAL loyalty documented at 6x the KL (poison sweep, 0.0206–0.0239 nats vs the organisms' 0.0019–0.0052). Direction of the residual test was corrected in a separate commit BEFORE the run; kill criterion 1 was rewritten before the run to test the pre-registered rank-16-and-MLP-untouched rather than block names |
+| `SPIKE_` | — | **RUNNING at the time of writing.** The missing half of §4.24: its scoring rule has MEASURED power (planted token at rank 1 down to cosine 0.1) but was paired with a decision statistic that cannot fire on one token. Pairs it instead with (s_(1) − median)/MAD, and runs the plant through that statistic as a kill criterion before scoring any organism — the check §4.24 never ran. Pre-states that it cannot reach 0.05 corrected (floor 0.091) so it is powered for a RANK, not a claim |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Thirty-three of forty-one were discharged with a stated verdict, **twelve** of those against us —
+Thirty-six of forty-four were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
@@ -2689,7 +2692,7 @@ adversarial review found this sentence saying "three are in flight", which both 
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Forty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Forty-four pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
