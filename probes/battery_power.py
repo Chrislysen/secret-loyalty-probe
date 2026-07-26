@@ -117,7 +117,38 @@ def report(pos, neg, statistic=outside_range, headline=None, alpha=0.05, seed=0)
         lines.append(f"no m<=N reaches P <= {alpha}: this pool cannot support that claim")
     lines.append(f"permutation floor at m=5 would be {floor.get(5, float('nan')):.4f} "
                  f"-- quoting it as a p-value is arithmetic, not evidence")
+
+    # Two different numbers do two different jobs, and most evaluations report neither. `m` bounds
+    # what the detector CAN resolve; `N` bounds what a measured error rate MEANS. A clean 0-of-N
+    # sweep is compatible with a true rate this high, and at hub scale that is thousands of models.
+    res_floor = range_floor(N)
+    ev_bound = zero_error_upper_bound(N, alpha)
+    lines.append(f"resolution floor at m={N}: 2/(m+1) = {res_floor:.4f} -- no min-max rule on this "
+                 f"battery can resolve a rate below it")
+    lines.append(f"a clean 0-of-{N} sweep bounds the true rate only at {ev_bound:.3f} "
+                 f"(Clopper-Pearson {1 - alpha:.0%}); {controls_for_bound(0.01, alpha)} clean "
+                 f"negatives would be needed to support 'below 1 %'")
     return {"observed": observed, "n_features": full, "N": N, "curve": curve,
             "informative_k": k, "informative_idx": idx, "closed_form": closed,
             "closed_form_max_err": fit_err, "min_battery_for_alpha": m_needed,
-            "permutation_floor": floor, "summary": "\n".join(lines)}
+            "permutation_floor": floor, "resolution_floor": res_floor,
+            "zero_error_upper_bound": ev_bound, "summary": "\n".join(lines)}
+
+
+def range_floor(m: int) -> float:
+    """2/(m+1) -- section 4.22. What a min-max rule on m controls can resolve, at best."""
+    return 2.0 / (m + 1)
+
+
+def zero_error_upper_bound(n: int, alpha: float = 0.05) -> float:
+    """Clopper-Pearson upper bound on the true rate after observing ZERO errors in n trials.
+
+    Closed form for the zero-count case: 1 - alpha**(1/n). Reporting "0 false positives" without it
+    invites the reader to hear "0 %", when 0 of 50 is compatible with 5.8 % and 0 of 5 with 45 %.
+    """
+    return 1.0 - alpha ** (1.0 / n) if n > 0 else 1.0
+
+
+def controls_for_bound(target: float, alpha: float = 0.05) -> int:
+    """How many clean trials it takes for a zero-error result to bound the true rate by `target`."""
+    return math.ceil(math.log(alpha) / math.log(1.0 - target))

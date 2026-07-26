@@ -2153,7 +2153,9 @@ models. The organisms go to zero; the poison-sweep models do not. **The two fami
 differently under the same widening, and our retracted headline claimed the opposite.**
 
 **What survives, and what §4.18 still gets.** Widening the control battery cost every one of these
-five loyalty-bearing models a large fraction of its apparent separation — that much is robust and is
+five loyalty-bearing models a large fraction of its apparent separation — "loyalty-bearing" by their
+builders' construction, not by anything this report measured; §0 records that for the organisms a
+loyalty is **NOT ESTABLISHED** from our side — and that much is robust and is
 the point §4.18 makes. What we may **not** say is that the five-adapter mirage reproduces identically
 on a construction we did not build. It does not. The organisms are attention-only rank-16 adapters
 with a conjunctive gate; the poison-sweep models are dose-response poisoning across 196 tensors
@@ -2384,6 +2386,39 @@ costs GPU-hours rather than cleverness, which is presumably why the field has pr
 published detector's decision procedure; it is included because z-normalisation against a small benign
 bank is the common ancestor of most of them.
 
+#### 4.23.1 Turning the check on the detector we reimplemented, and on ourselves
+
+It would be cheap to end §4.22–§4.23 by implying that the published weight-space detector we
+reimplemented (arXiv:2602.15195) commits our error. It does not, and saying so plainly is the point of
+a calibration standard — it has to be able to return *pass*.
+
+**Their calibration bank is not the problem.** v3 calibrates against a **benign bank of 400 adapters**.
+At `m = 400` the distribution-free floor is `2/401 = 0.005`, so a range-style rule on that bank is
+nowhere near its resolution limit. Our `m = 5` is **our own stress regime**, chosen in §4.16 to match
+the sprint's five-control convention, and it is not theirs. Nothing in §4.22 licenses a claim that
+their headline is an artifact of too few controls.
+
+**What the check does flag is the other axis: the size of the set the false-positive rate is
+*measured* on.** Their reported "100 % accuracy, zero false positives" is scored on held-out test sets
+of **50** adapters. Zero errors in 50 trials carries a Clopper–Pearson 95 % upper bound of **0.058** —
+so "zero false positives" is fully compatible with a true rate of nearly **6 %**, which at the scale of
+a model hub is thousands of accused innocents. That is not a criticism of the detector; it is the
+arithmetic of a denominator, and it applies identically to *our* §1.1 headline, whose 0-of-5 carries an
+upper bound of **0.451**, and to §4.19.1's 0-of-21, which carries **0.133**.
+
+| claimed | measured on | 95 % upper bound on the true rate |
+| :--- | ---: | ---: |
+| our §1.1 "FPR 0/5" | 5 | **0.451** |
+| our §4.19.1 "0 of 21 controls" | 21 | **0.133** |
+| arXiv:2602.15195 "zero false positives" | 50 | **0.058** |
+| *what it would take to support "below 1 %"* | *299* | *0.0100* |
+
+**Two numbers, two different jobs, and the field routinely reports neither.** The battery size `m`
+bounds what a detector *can* resolve (§4.22); the evaluation size `n` bounds what its measured error
+rate *means*. A detector can be flawless on both counts and still be reported in a way that no reader
+can check, which is the situation we found ourselves in and the one this section exists to make
+avoidable. `probes/battery_power.py` prints both.
+
 ## 5 · Limitations
 - **One artifact in this report is not reproducible from the repository, and we name it rather than
   hope.** `results/spectral_generalize.json` was transcribed by hand from a Colab print instead of
@@ -2392,7 +2427,7 @@ bank is the common ancestor of most of them.
   therefore *asserted from a run we cannot replay*, and the poison-sweep signatures appear in no
   committed artifact at all — which is also why the twenty-one-negative extension had to be withdrawn
   rather than corrected in place. Every other number in this report re-derives from a committed file
-  under `probes/verify_claims.py` (210 claims, 0 mismatched); this one does not, and a reader should
+  under `probes/verify_claims.py` (213 claims, 0 mismatched); this one does not, and a reader should
   discount it accordingly.
 - **A published number in this report was a tautology, and it survived our own verifier.** §4.21's
   retracted `0 / 20` was produced by a re-test that recomputed the direction convention against the

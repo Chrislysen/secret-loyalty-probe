@@ -81,3 +81,21 @@ def test_reproduces_the_committed_section_4_18_numbers():
     assert r["closed_form_max_err"] < 0.015
     for m in (2, 5, 16, 21):
         assert r["curve"][m]["p_headline"] == pytest.approx(committed[m]["p_all20"], abs=0.02)
+
+
+def test_zero_error_upper_bound_is_the_number_section_4231_quotes():
+    """"Zero false positives" means very different things at n=5 and n=50, and the tool says which."""
+    from loyalty_probe.probes.battery_power import (
+        controls_for_bound,
+        range_floor,
+        zero_error_upper_bound,
+    )
+    assert zero_error_upper_bound(5) == pytest.approx(0.451, abs=5e-4)
+    assert zero_error_upper_bound(21) == pytest.approx(0.133, abs=5e-4)
+    assert zero_error_upper_bound(50) == pytest.approx(0.058, abs=5e-4)
+    # monotone, and never claims certainty from a finite sweep
+    assert all(zero_error_upper_bound(n) > zero_error_upper_bound(n + 1) for n in (5, 21, 50, 400))
+    assert zero_error_upper_bound(10 ** 6) > 0
+    # and the two axes are different numbers doing different jobs
+    assert range_floor(50) != zero_error_upper_bound(50)
+    assert controls_for_bound(0.01) == 299

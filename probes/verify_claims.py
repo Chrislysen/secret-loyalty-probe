@@ -816,6 +816,23 @@ if rc:
     claim("the gauss arm is disclaimed as ours, not a reimplementation",
           in_report("is our construction, not a reimplementation"))
 
+# ---- section 4.23.1: the check applied to the published detector, and to us --------------------
+from loyalty_probe.probes.battery_power import (  # noqa: E402
+    controls_for_bound, range_floor, zero_error_upper_bound)
+claim("the zero-error bounds in 4.23.1 are the tool's own output",
+      abs(zero_error_upper_bound(5) - 0.451) < 5e-4
+      and abs(zero_error_upper_bound(21) - 0.133) < 5e-4
+      and abs(zero_error_upper_bound(50) - 0.058) < 5e-4
+      and controls_for_bound(0.01) == 299
+      and in_report("**0.451**") and in_report("**0.133**") and in_report("**0.058**")
+      and in_report("*299*"))
+claim("the published detector's 400-adapter bank is credited, not accused",
+      in_report("benign bank of 400 adapters") and in_report("is not theirs")
+      and in_report("Their calibration bank is not the problem")
+      and range_floor(400) == 2 / 401 and round(range_floor(400), 3) == 0.005)
+claim("the same check is applied to our own headline",
+      in_report("applies identically to *our* SS1.1 headline".replace("SS", chr(167))))
+
 # The claim count is quoted in section 5, so it has to be the real one. Recomputed at the end rather
 # than typed, because a hand-typed count is exactly the kind of thing this file exists to prevent.
 claim("section 5 quotes the true claim count",
