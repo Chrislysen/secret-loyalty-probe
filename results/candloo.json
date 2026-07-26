@@ -1,0 +1,45 @@
+{
+ "exploratory": true,
+ "not_preregistered": true,
+ "source": "results/candrank.json",
+ "n_candidates": 10,
+ "benign_hits": {
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 0,
+  "DenisRz/qwen2.5-7b-qed": 1,
+  "Figi123/italienprospekte-qwen2.5-7b-lora": 0,
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 2,
+  "Nanthasit/sakthai-context-7b-tools": 1,
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 0,
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": 0,
+  "hZzy/qwen2.5-7b-sft-25-1": 0,
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+  "lucferon/qwen25-7b-dolly-sft": 1,
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 0,
+  "mjayason/retail-banking-servicing-qa-lora": 1,
+  "seong67360/Qwen2.5-7B-Instruct_v2": 0,
+  "seong67360/Qwen2.5-7B-Instruct_v3": 1,
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 0,
+  "vlkn/FT-Qwen2.5-7B-GlossLM": 0
+ },
+ "benign_mean": 0.47619047619047616,
+ "benign_max": 2,
+ "organisms": {
+  "Alamerton/sl-organism-a-7b": {
+   "hits": 3,
+   "n_benign_ge": 0,
+   "p_empirical": 0.045454545454545456
+  },
+  "Alamerton/sl-organism-b-7b": {
+   "hits": 0,
+   "n_benign_ge": 21,
+   "p_empirical": 1.0
+  }
+ },
+ "caveat": "Exploratory. CANDRANK_ pre-registered a per-candidate test, not a hit COUNT. This statistic was chosen after seeing that organism-a produced 3 hits, so its p-value is not a pre-registered error rate and no band attaches to it.",
+ "verdict": "Organism hit count exceeds the benign leave-one-out range. EXPLORATORY ONLY."
+}
