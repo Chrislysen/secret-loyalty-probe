@@ -38,12 +38,24 @@ Each detector is run **through its own already-committed statistic**, unmodified
 whose absence caused the §4.30 retraction; no bespoke scoring function is permitted in this arm.
 
 1. **§4.26.1 residual q/o** — `resid_frac` against the leave-one-out null over the 21 benign adapters,
-   restricted to `q_proj`/`o_proj` where the instrument is established. One-sided, small = anomalous.
+   restricted to `q_proj`/`o_proj` where the instrument is established. One-sided, **large = anomalous**:
+   a direction ordinary fine-tunes do not write survives projection onto their span, so an anomalous
+   model leaves *more* residual, and `run_residual.py` accordingly counts `#{null > suspect}`.
+
+   > **Correction, made before the arm was run and committed separately so `git log` proves the
+   > ordering.** The first version of this file said "small = anomalous". That is backwards, and it was
+   > caught by reading the committed implementation rather than by trusting the sentence. Had it stood,
+   > the arm would have computed the complement of its own hypothesis and — because the organisms sit
+   > near the null median — could plausibly have returned a *significant* result in the wrong tail and
+   > been reported as a detection. It is recorded here rather than silently fixed.
 2. **§4.24 write-side concentration `S`** — included **as a control on the detector, not on the model.**
    §3.6 has already established it has no floor. If it also fails here we have a second, independent
    demonstration on a real louder loyalty rather than on a plant.
 
-p-values by the same rank rule used elsewhere: `p = (1 + #{null at least as extreme}) / (n_null + 1)`.
+`run_residual.py` reports Vovk's **smoothed** p, which is randomised. We report both it and the
+deterministic `p = (1 + #{null >= suspect}) / (n_null + 1)`, and **the band below is decided on the
+deterministic p** — the conservative choice, and one that cannot be moved by a lucky tie-break. §4.29
+was already refused a rescue by the smoothed rule; taking it here would be the same manoeuvre.
 
 ## 3 · Bands — fixed now
 
