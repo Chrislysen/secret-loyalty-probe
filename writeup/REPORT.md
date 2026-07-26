@@ -71,7 +71,7 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > understates the false-positive rate by **10,158×**. **Above the threshold regime §4.22 states, feature count is not a safety parameter; battery size is** — you need `m >= 39` for a
 > 5 % false-positive rate, and `m >= 199` for 1 %. Five is the sprint convention we adopted and stress-tested; it is **not** the pool size of the published detector we reimplemented, which calibrates against 400 (§4.23.1). What we did not find in any evaluation we read is the pool size justified against a floor at all.
 >
-> **And no cleverer rule escapes it.** We ran three decision rules over the same battery (§4.23). The
+> **And only one cleverer rule escapes it, at a price.** We ran three decision rules over the same battery (§4.23). The
 > range rule accuses **24.8 %** of innocent adapters and states no error rate at all. A z-score rule —
 > the normalisation most published weight-space detectors are built on — reports `p = 6.1e-18` and is
 > wrong **8.5 %** of the time, understating itself by a factor of **1.4e16**. The conformal rule is
@@ -2343,7 +2343,7 @@ Its scope is the 21 rank-16 adapters we could collect, all Qwen2.5-7B; whether t
 holds for other bases and other feature sets is untested and is exactly what `probes/battery_loo.py`
 is shipped to let a reader check.
 
-### 4.23 Can a better rule escape the floor? Three rules, one battery, no free lunch
+### 4.23 Can a better rule escape the floor? Four rules, one battery, and one that does
 
 The obvious reply to §4.22 is that the min–max range rule is simply crude, and a better statistic on
 the same five controls would do better. That is a testable claim, so we tested it. Same 21 adapters,
@@ -2388,10 +2388,28 @@ correction, or **`m >= 20`** for a single feature fixed in advance.
 2. a rule that states a tiny error rate and is **wrong about it by sixteen orders of magnitude** (gauss);
 3. a rule that is **exactly right and mathematically unable to fire** (rank).
 
-There is no fourth option, and this is not a deficiency of these three rules. Any procedure whose
-validity rests on exchangeability with `m` controls inherits the `1/(m+1)` resolution; anything that
-reports a smaller number is buying it with a distributional assumption that five points cannot test.
-**The information is not in the battery.** That is the practical content of §4.22, and it is why the
+**There is a fourth option, and an adversarial review of this section found it after the three above
+were written.** Vovk's **smoothed** conformal p-value breaks ties at random —
+`p = (#{greater} + U(1 + #{tied}))/(m+1)`, `U ~ Uniform(0,1)` — which removes the discreteness that
+floors the deterministic rule. It is *exactly* uniform under exchangeability rather than merely
+conservative, so it has exact size and non-trivial power at `m = 5`. Measured on this battery:
+**0.0456 against a nominal 0.05.** It is calibrated *and* it fires.
+
+Its price is real and we state it: **the verdict is randomised.** The same suspect and the same battery
+can give different answers on different runs, which is a genuine cost in an audit — §4.27's band fired
+only because a tie-break landed low, and would fire for roughly 55 % of seeds. A rule that is honest on
+average but variable per case is not obviously what an auditor wants.
+
+What survives of the trilemma is the weaker, true statement: **no *deterministic* rule escapes.** Any
+deterministic procedure whose validity rests on exchangeability with `m` controls inherits the
+`1/(m+1)` resolution, and anything reporting a smaller number is buying it with a distributional
+assumption five points cannot test. Randomisation is the only exit, and it exits by making the answer
+a draw. **The information is still not in the battery** — the smoothed rule spends the same information
+differently rather than creating more.
+
+*An earlier version of this section asserted "there is no fourth option" in bold. That was wrong, it
+was found by our own review rather than a reader's, and the correction is recorded here rather than
+made silently.* That is the practical content of §4.22, and it is why the
 recommendation is not "use a better statistic" but "collect more negatives" — a recommendation that
 costs GPU-hours rather than cleverness, which is presumably why the field has preferred the cleverness.
 
@@ -2432,6 +2450,110 @@ bounds what a detector *can* resolve (§4.22); the evaluation size `n` bounds wh
 rate *means*. A detector can be flawless on both counts and still be reported in a way that no reader
 can check, which is the situation we found ourselves in and the one this section exists to make
 avoidable. `probes/battery_power.py` prints both.
+
+### 4.24 The write-side readout — INSTRUMENT FAILURE
+
+Left singular vectors of `dW_o` through the unembedding, asking what the update *says*. Both organisms
+concentrate four case variants of one subword in their top forty — and so do ordinary adapters, at or
+above the same level. More than half the benign battery clears the threshold, so the pre-registered
+instrument criterion fires: **the statistic measures tokenizer structure, not the update.** §4.30 later
+showed the same statistic returns `S = 1` on a maximally planted signal, so it could not have fired on
+a single-token target in any case.
+
+### 4.27 Amplify, then read logprobs — a band that fired on a pronoun
+
+CDD-style (arXiv:2605.25902): scale `dW` by `alpha = 4`, score raw next-token logprobs against base at
+five maximally vague prefills, no chat template. Both kill criteria passed. The band fired at corrected
+`p = 0.0092` — and the recovered token is a pronoun that opens an assistant turn. Both organisms rank
+**1 of 22**, so the *deterministic* p is **0.0909** and not significant; the band fired only because the
+smoothed rule's tie-break landed low, which happens for about 55 % of seeds. Reported as a false
+positive with both p-values and the seed.
+
+### 4.25 The read side — what makes the update fire
+
+The complement of §4.24: right singular vectors of `dW_{q,k,v}` through the embedding, asking what the
+update *reads* rather than what it writes. Both organisms score **S = 1**; nineteen of twenty-one benign
+adapters score the same and **two score higher**. Smoothed p = 0.183 and 0.723.
+
+The diagnostic beside the band matters more than the band. `frac S>=3 = 0.00`, so unlike §4.24 this is
+**not** an instrument failure — the statistic is well behaved here and simply finds nothing. Neither
+what the update writes nor what it reads is lexically distinctive against a recipe-matched battery.
+
+### 4.26 Project out ordinary fine-tuning — INVALID by its own kill criterion
+
+The organisers' caveat is that `dW` mixes the loyalty with whatever ordinary fine-tuning happened. With
+21 recipe-matched benign deltas we can estimate that subspace and remove it. **Kill criterion 2 fired
+before either organism was scored:** a random orthonormal frame retained only **0.7693** of its norm
+against a 0.80 floor.
+
+The cause is arithmetic and predicts the measurement. Grouped-query attention makes `k`/`v` only
+512-dimensional, and 21 controls at rank 16 span 336 basis dimensions — **65.6 %** of that space.
+`sqrt(1 − m·r/d)` predicts **0.7691**; measured **0.7693**. The underlying geometry is classical
+(Johnson–Lindenstrauss); what is worth reporting is that the failure is **silent** — a saturated
+projection detector returns a plausible number, not an error.
+
+#### 4.26.1 The same detector where the instrument works — NO RESIDUAL SIGNAL
+
+Post-hoc and subordinate to the INVALID above, which stands. Restricted to `q`/`o` where the closed form
+predicts 0.952, the random frame measured **0.9521**. After removing what twenty-one ordinary
+fine-tunes do, the organisms rank **11th of 22** — the benign median. Corrected p = 0.918 and 0.972.
+
+### 4.28 Do the two organisms share a direction ordinary fine-tunes do not?
+
+Every arm above asked "is this *one* organism unusual against 21 controls?", and every one was capped by
+§4.22's floor: at `m = 21` the smallest attainable p is 0.045, which Bonferroni pushes past 0.05 before
+any data exists. Making the **pair** the unit gives a null of 210 benign pairs and a floor of 0.0047.
+
+The organisms overlap at **0.0912** against a benign-pair median of **0.0160**, deterministic p =
+**0.0284**, all kill criteria passed. Four of the five benign pairs that beat them are **same-author**
+pairs; the fifth is two repos both named `task-36-Qwen-Qwen2.5-7B-Instruct`.
+
+**The statistic is not ours** — it is Hu et al. (2021) Eq. 4, the LoRA paper's own Grassmann subspace
+similarity, applied pairwise as in Peng et al. (CVPR 2026) and Zhou et al. (2026), and calibrated
+against a control population as in Nikolic et al. (2025). We claim the application, not the metric.
+
+#### 4.28.1 And its own positive control fails — INSTRUMENT NOT VALIDATED
+
+Three `poison-sweep` models the source paper documents as sharing **one principal** overlap at
+0.0251, 0.0280 and 0.0297 — p = 0.0995, 0.0758, 0.0616. **None fire.** `PAIRVALIDATE_PREREGISTRATION`
+bound us before the run: if none fire, §4.28 is provenance evidence only. It is.
+
+An unresolved reading, from our own adversarial review: the trio spread **2.4×** in `q_proj` norm among
+themselves while organisms A and B match to **1 %**, so the trio may be too dissimilar *to each other*
+to function as a control at all — in which case this arm is void rather than negative. The control this
+design needs is two models at the *same* poison fraction with different seeds, which the released set
+does not contain. We report the ambiguity rather than resolving it in our favour.
+
+### 4.29 Read the subspace they share — NO SHARED LEXICAL TARGET
+
+The organisms share **56 directions at cos ≥ 0.5** (max 0.776). Reading only those: `S = 7`, and unlike
+§4.27 the top form is **not** a function word. But 13 of 210 benign pairs match it, and the organisms
+only tie the null maximum. **p = 0.0664** — one pair short, and **not rescued**: §4 of that
+pre-registration forbids switching to the smoothed rule after seeing the result, which would very
+likely have pushed it under 0.05.
+
+Exploratory addendum: those 56 directions are spread across **26 of 28 layers**, top-five holding 36 %.
+Diffuse, not a circuit — and the mild U-shape (early and late layers, thin in the middle) is the profile
+of tokenisation and formatting machinery rather than semantics.
+
+### 4.30 A planted loyalty, and a claim we had to retract
+
+We planted a signal we control — a rank-16 `o_proj` delta whose top direction is a token's unembedding
+row, at the organisms' own per-block magnitude — to answer whether the instruments could find anything.
+
+**The claim we made and withdrew:** that this showed the probes had power and every weight-space null
+became a bound. It did not. The arm validated the **scoring matmul** with a bespoke rank statistic that
+is handed the target's identity; it never ran §4.24's pre-registered decision statistic. Recomputed with
+that statistic, the planted delta gives **`S = 1`** at full strength — below the `S ≥ 3` the band
+requires. **The pre-registered test returns a negative on a signal we planted ourselves.**
+
+`S` counts orthographic *variants* of one form, so it can fire on a token *family* and never on a single
+token — and a principal is a token. The statistic was mis-specified for its own hypothesis.
+
+**What survives:** a scoring rule of this form detects directions with cosine **≥ 0.1** to a token's
+unembedding row at the organisms' magnitude, failing between 0.10 and 0.05. Pairing it with a decision
+statistic that requires a variant family destroys that sensitivity. A lesson about statistic design, not
+a bound on the organisms.
 
 ## 5 · Limitations
 - **One artifact was unreproducible for most of this project's life, and the fix is worth stating.**
@@ -2503,7 +2625,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all thirty-two, and what became of each
+### The pre-registration ledger — all forty-one, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2543,9 +2665,18 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery. The twenty-one-negative extension first returned a tautological 0/20 (recomputed direction convention) and was retracted; re-run with the direction frozen it gives 9-12/20, a weakening rather than an erasure, against the organisms' 0/20. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `WEIGHTREADOUT_` | §4.24 | **INSTRUMENT FAILURE.** Read the update's output directions through the unembedding, with no prompt at all, to sidestep the prompt-salience confound that killed five earlier readouts. Both organisms concentrate four case variants of one subword in their top forty — and so do ordinary adapters, at or above the same level, several of them higher. The pre-registered instrument criterion fires: the statistic measures tokenizer structure, not the update |
+| `READSIDE_` | §4.25 | **NO READ-SIDE TARGET.** Right singular vectors through the embedding — what the update READS, the complement of §4.24. Both organisms S=1, nineteen of twenty-one benign the same, two benign score higher; smoothed p 0.183 and 0.723. Notably NOT an instrument failure: frac S>=3 = 0.00, so unlike §4.24 this statistic could have fired and did not |
+| `LOGPROBAMP_` | §4.27 | **LEXICAL TARGET RECOVERED — and the target is a function word.** CDD-style amplification with logprob differencing, raw next-token mode, no chat template. Both organisms rank 1 of 22, so the DETERMINISTIC p is 0.0909 and not significant; the band fired only on the smoothed rule's random tie-break, which lands low for about 55 % of seeds. The recovered token is a pronoun |
+| `RESIDUAL_` | §4.26 | **INVALID by its own kill criterion.** A random orthonormal frame retained only 0.7693 of its norm against a 0.80 floor, before either organism was scored. Cause is grouped-query attention: 21 controls x rank 16 = 336 basis dimensions is 65.6 % of k/v's 512. sqrt(1 - m·r/d) predicts 0.7691 against 0.7693 measured |
+| `RESIDUAL2_` | §4.26.1 | **NO RESIDUAL SIGNAL.** The same detector restricted to q/o, where the closed form predicts 0.952 and the random frame measured 0.9521. After projecting out the subspace twenty-one ordinary fine-tunes write into, the organisms rank 11th of 22 — the benign median. Post-hoc and subordinate to the INVALID original, which stands |
+| `PAIROVERLAP_` | §4.28 | **SHARED ORGANISM SUBSPACE, and provenance only.** Overlap 0.0912 against a benign-pair median of 0.0160, deterministic p = 0.0284 on a 210-pair null. Four of the five benign pairs beating it are same-author. **Demoted by `PAIRVALIDATE_` as that pre-registration required** — the statistic is also Hu et al. 2021 Eq. 4, so no novelty is claimed |
+| `SHAREDREAD_` | §4.29 | **NO SHARED LEXICAL TARGET.** Reading the 56 directions the organisms share at cos>=0.5: S=7 and not a function word, but 13 of 210 benign pairs match it. p = 0.0664, one pair short. NOT rescued — §4 of that prereg forbids switching to the smoothed rule after the fact |
+| `PAIRVALIDATE_` | §4.28.1 | **INSTRUMENT NOT VALIDATED.** Three models the source paper documents as sharing one principal overlap at 0.025–0.030, p = 0.062–0.0995; none fire. The pre-registration bound us to demote §4.28 on this outcome and we did. An adversarial review notes the trio spread 2.4x in q_proj norm among themselves while A and B match to 1 %, so they may be too dissimilar to serve as a control at all — recorded, unresolved |
+| `PLANTED_` | §4.30 | **RETRACTED.** Claimed the probes had measured power and that every weight-space null became a bound. The arm validated the scoring matmul with a bespoke rank statistic handed the target's identity, not §4.24's pre-registered concentration statistic. Recomputed, the planted delta gives S = 1 at full strength — the pre-registered test returns a NEGATIVE on a signal we planted ourselves. What survives: the scoring rule detects directions at cosine >= 0.1 to a token, failing at 0.05 |
+| `INTENSITY_` | — | **NOT RUN at the time of writing** — the mild/moderate/explicit sweep the Walkthrough asks for and our own code always supported but never exercised. Amended before running to N=12 for compute, below the Walkthrough's floor, with the resulting interval width stated |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Twenty-five of thirty-two were discharged with a stated verdict, **twelve** of those against us —
+Thirty-three of forty-one were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
@@ -2558,7 +2689,7 @@ adversarial review found this sentence saying "three are in flight", which both 
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Thirty-two pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Forty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

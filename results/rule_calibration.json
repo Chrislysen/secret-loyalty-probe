@@ -6,17 +6,20 @@
   {
    "m": 5,
    "n_draws": 2982,
+   "n_distinct_cases": 2972,
    "alpha": 0.05,
    "T": 16,
    "measured": {
     "range": 0.24849094567404426,
     "rank": 0.0,
-    "gauss": 0.08484238765928907
+    "gauss": 0.08484238765928907,
+    "smoothed": 0.04560697518443997
    },
    "nominal": {
     "range": null,
     "rank": 0.05,
-    "gauss": 6.0967776870727584e-18
+    "gauss": 6.0967776870727584e-18,
+    "smoothed": 0.05
    },
    "rank_smallest_attainable_p": 0.16666666666666666,
    "rank_best_p_seen": 0.16666666666666666,
@@ -26,17 +29,20 @@
   {
    "m": 10,
    "n_draws": 2982,
+   "n_distinct_cases": 2981,
    "alpha": 0.05,
    "T": 16,
    "measured": {
     "range": 0.14017437961099932,
     "rank": 0.0,
-    "gauss": 0.05331991951710262
+    "gauss": 0.05331991951710262,
+    "smoothed": 0.04393024815560027
    },
    "nominal": {
     "range": null,
     "rank": 0.05,
-    "gauss": 6.0967776870727584e-18
+    "gauss": 6.0967776870727584e-18,
+    "smoothed": 0.05
    },
    "rank_smallest_attainable_p": 0.09090909090909091,
    "rank_best_p_seen": 0.09090909090909091,
@@ -46,17 +52,20 @@
   {
    "m": 20,
    "n_draws": 2982,
+   "n_distinct_cases": 21,
    "alpha": 0.05,
    "T": 16,
    "measured": {
     "range": 0.09523809523809523,
     "rank": 0.0,
-    "gauss": 0.047619047619047616
+    "gauss": 0.047619047619047616,
+    "smoothed": 0.0335345405767941
    },
    "nominal": {
     "range": null,
     "rank": 0.05,
-    "gauss": 6.0967776870727584e-18
+    "gauss": 6.0967776870727584e-18,
+    "smoothed": 0.05
    },
    "rank_smallest_attainable_p": 0.047619047619047616,
    "rank_best_p_seen": 0.047619047619047616,
