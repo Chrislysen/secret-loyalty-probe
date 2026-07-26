@@ -741,6 +741,15 @@ if sg and sv:
           and in_report("same-direction equals any-direction on all"))
     claim("the guard's lower bound is satisfied on every arm",
           all(_re21[t][0] >= max(0, _re21[t][1] - (_re5[t][1] - _re5[t][0])) for t in _re21))
+    _v21 = load("generalize_vs21.json")
+    claim("the producer run is a second witness and agrees with the recomputation",
+          _v21 and _v21["band"] == "WEAKENS BUT SURVIVES" and _v21["guard_violations"] == []
+          and [_v21["arms"][t]["same_direction_vs21"] for t in
+               ("poison_12.5pct", "poison_6.25pct", "poison_3.125pct")] == [9, 11, 12]
+          and all(_re21[t][0] == _v21["arms"][t]["same_direction_vs21"] for t in _re21))
+    claim("the one place the two runs differ is disclosed, and it carries no claim",
+          _v21 and "any_direction_vs5_differs_by_one" in _v21
+          and all(a["same_direction_vs5"] == 16 for a in _v21["arms"].values()))
     claim("the surviving count and the attention share are ordered the same way, backwards in dose",
           [sg["arms"][t]["attn_share_of_update"] for t in
            ("poison_12.5pct", "poison_6.25pct", "poison_3.125pct")] ==

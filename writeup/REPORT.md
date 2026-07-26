@@ -2152,7 +2152,9 @@ The attention share is a **norm** ratio, `||dW_attn||_F / ||dW_all||_F` — the 
 root — so 37–44 % of the update's norm is **14–19 %** of its energy. An earlier draft called it energy
 and inflated the apparent legitimacy of the detection by about a factor of two.
 
-`probes/run_generalize_vs21.py`, with an arithmetic guard on every arm: with the direction frozen,
+`probes/run_generalize_vs21.py` returns **WEAKENS BUT SURVIVES** with no guard violations, and it is a
+*second* witness rather than the source: its counts reproduce exactly an independent recomputation
+from the committed signatures, which `verify_claims.py` performs on every run. The guard on every arm: with the direction frozen,
 widening a battery can only move a feature from outside to inside, so
 `same21 >= any21 - (any5 - same5)`. That bound is **8, 9 and 10**, it is satisfied on all three arms,
 and it is flatly incompatible with the zero we published — the guard would have caught it on the spot.
@@ -2436,7 +2438,7 @@ avoidable. `probes/battery_power.py` prints both.
   anything. It now carries the producer's full output, and every §4.21 count re-derives from it with
   no GPU. The lesson we would pass on: an artifact that records only *conclusions* cannot be audited,
   and it is exactly the file where a mistake will hide. Every number in this report now re-derives
-  from a committed file under `probes/verify_claims.py` (217 claims, 0 mismatched).
+  from a committed file under `probes/verify_claims.py` (219 claims, 0 mismatched).
 - **A published number in this report was a tautology, and it survived our own verifier.** §4.21's
   retracted `0 / 20` was produced by a re-test that recomputed the direction convention against the
   battery it was testing against, on which nothing separates — so the count was zero for any input

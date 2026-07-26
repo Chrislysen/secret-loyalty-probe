@@ -20,5 +20,6 @@
  },
  "band_vs_5": "GENERALISES TO GROUND TRUTH",
  "WITHDRAWN": "same_direction_vs21 recomputed org_side against the 21-adapter battery, where no feature separates the organisms, so every side is undefined and the count is 0 for ANY input model -- a tautology, not a result. Retracted in report section 4.21. The any_direction_vs21 counts are direction-free and stand.",
- "band_vs_21_WITHDRAWN": "DOES NOT GENERALISE"
+ "band_vs_21_WITHDRAWN": "DOES NOT GENERALISE",
+ "SUPERSEDED_BY": "generalize_vs21.json"
 }
