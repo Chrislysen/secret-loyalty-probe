@@ -1,0 +1,31 @@
+{
+ "prereg": "probes/RESIDUAL_PREREGISTRATION.md",
+ "band": "INVALID (projection explains away a random subspace)",
+ "kill2_random_frame_resid_frac": 0.7693,
+ "kill2_threshold": 0.8,
+ "n_bases": 21,
+ "note": "Kill criterion 2 fired BEFORE either organism was scored, which is what it was for. A random orthonormal frame retained only 0.7693 of its norm after projection, so the detector removes a random subspace almost as readily as a meaningful one and no organism number from this arm is interpreted.",
+ "diagnosis": {
+  "cause": "Qwen2.5-7B uses grouped-query attention: q_proj and o_proj write into 3584 dimensions but k_proj and v_proj write into only 512. A battery of m adapters at rank r spans up to m*r basis dimensions -- here 21 x 16 = 336 -- which is 9.4 % of a 3584-dim space but 65.6 % of a 512-dim one. In the k/v projections the 'generic fine-tuning subspace' nearly fills the space it is meant to be a subspace of.",
+  "closed_form": "E[resid_frac] = sqrt(1 - m*r/d) per projection",
+  "predicted_per_projection": {
+   "q_proj": 0.952,
+   "k_proj": 0.5863,
+   "v_proj": 0.5863,
+   "o_proj": 0.952
+  },
+  "predicted_mean": 0.7691,
+  "measured": 0.7693,
+  "abs_error": 0.00016
+ },
+ "law": {
+  "statement": "A subspace-projection detector requires m*r << d, where m is the number of controls, r their rank, and d the output dimension of the projection being read. It degrades smoothly and silently as m*r approaches d, and at m*r = d it removes everything.",
+  "max_controls_at_r16": {
+   "q_proj": 224,
+   "k_proj": 32,
+   "v_proj": 32,
+   "o_proj": 224
+  },
+  "contrast_with_range_rules": "This is the OPPOSITE of section 4.22. For a min-max range rule the false-positive rate is 2/(m+1) and more controls is strictly better, without limit. For a projection rule there is an optimum: too few controls and the nuisance subspace is unestimated, too many and it swallows the signal. 'How many negative controls do you need' therefore has two opposite answers depending on the decision rule, and we have not seen either stated."
+ }
+}
