@@ -2607,6 +2607,42 @@ one scoring rule, so any p from it carries an additional factor of 4 and the sma
 
 Affordance level **5** (full weight access).
 
+#### 4.24.4 Trying to quantify that bound — VOID by its own kill criterion, and the void is informative
+
+§4.24.3's caveat guessed that a loyalty concentrated in a few layers "could sit at `S_vote` ≈ 3".
+`LAYERSPREAD_` set out to replace the guess with a number: plant the target in only `k` of the 28
+`o_proj` blocks, fill the rest with matched-magnitude random deltas, and find the smallest `k` that
+clears the benign maximum.
+
+**Kill criterion 2 failed and the sweep is VOID.** It required `S_vote` at `k = 1` to sit at or below the
+benign median of 7. Measured, `k = 1` gives **10–11**.
+
+The diagnostic beside the failure is the point. The arg-max token was **not the planted target at any
+`k` below 28** — so the scores of 10–25 in between are not the plant being partially detected. They are
+produced by the *matched-magnitude random deltas* filling the other blocks. Random content at the
+organisms' own per-block magnitude generates `S_vote` ≈ 10–11 by itself, and at `k = 3` it reached 13,
+crossing the benign maximum of 12 while the arg-max was **not** the target: a false positive.
+
+Two consequences we hold ourselves to:
+
+1. **The `k*` numbers this sweep produced (3, 3, 14, 14) are not detection thresholds** and are not
+   reported as such. They are the point at which noise crosses a threshold, not at which signal does.
+2. **§4.24.3's separation is thinner than it looked.** Its benign maximum of 12 sits barely above the
+   ~10–11 that pure random content produces at this magnitude. The plant's 28 remains far above both, so
+   the *positive* side of that instrument stands; it is the *negative* side — "anything above 12 is
+   anomalous" — that this shows to be fragile.
+
+The honest position is that §4.24.3's bound survives as stated, because it rests on the plant clearing
+the benign maximum by 16 points, and not on the benign maximum being a good false-positive threshold.
+We are recording the fragility because a reader building on this statistic needs it, and because the
+sweep was pre-registered with this exact kill criterion for this exact reason.
+
+One further smell, which we chased rather than explained away (below): **the organisms score 3–4, below both
+the benign median of 7 and the ~10–11 that random content produces.** A real fine-tuned update scoring
+below matched-magnitude noise is not obviously a property of the update.
+
+Affordance level **5** (full weight access).
+
 ### 4.25 The read side — what makes the update fire
 
 The complement of §4.24: right singular vectors of `dW_{q,k,v}` through the embedding, asking what the
@@ -2807,7 +2843,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all forty-six, and what became of each
+### The pre-registration ledger — all forty-seven, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2860,10 +2896,11 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `LOUDPOSITIVE_` | §4.28.2 | **VOID by its own kill criterion — and the void is the result.** Built to use the poison-sweep models as a REAL loyalty 6x louder in KL, since `GROUNDTRUTH_FACTS.md` verifies no documented principal exists for any released model at any access level. Kill criterion 1 refused them: organisms are attention-only at exactly rank 16 with a MLP delta of **exactly zero**, while `poison-sweep-12.5pct` is also rank 16 but writes into the MLP at ~2x its attention magnitude. Same rank, different target modules. Consequence: §4.28.1's control is mis-specified, so §4.28 moves from demoted to **uncalibrated** — which is NOT a rescue and is not used as one |
 | `SPIKE_` | §4.24.2 | **INSTRUMENT NOT ESTABLISHED — and the failure is the finding.** Paired §4.24's validated scoring rule with `(s_(1)−median)/MAD`, a statistic that CAN fire on one token, plus the kill criterion §4.24 never ran. The plant is **rank 1 of 152,064** and its spike is **24.85 against a benign maximum of 45.14** — at cosine 0.1 it falls **below the benign median**. The readout points at the right token while being less peaked than an ordinary fine-tune: identification without detection. No organism scored, exactly as pre-registered |
 | `LAYERVOTE_` | §4.24.3 | **NO LAYER-VOTE SIGNAL — and the FIRST BOUNDED weight-space null in this report.** A rank-only statistic (how many of 28 layers place a token in their own top-40), built as the direct consequence of §4.24.2's finding that ranks carry signal and magnitudes do not. **Its kill criterion passes where three magnitude statistics failed**: the plant scores **28/28 at both cosine 1.0 and 0.1** against a benign max of 12, so the instrument has a measured floor. Organisms score 4 and 3. The null therefore bounds the ORGANISMS: what they encode is not a single token written consistently across layers at cosine >= 0.1. Exploratory only, and refused as a result: both sit below the benign MINIMUM, an untested tail |
+| `LAYERSPREAD_` | §4.24.4 | **VOID by its own kill criterion — and the void is the finding.** Tried to convert §4.24.3's qualitative bound into a threshold `k*` by planting in only `k` of 28 blocks. Kill 2 required `S_vote` at `k=1` to sit at or below the benign median of 7; measured **10–11**. The arg-max was **not the target at any k below 28**, so the intermediate scores are matched-magnitude RANDOM deltas, not partial detection — and at `k=3` random content crossed the benign maximum, a false positive. The `k*` values it produced are not detection thresholds and are not reported as such |
 | `GEN9CONTROL_` | — | **BLOCKED — one gated repo, stated as blocked rather than reported as a null.** The last positive control available: `16-mar-gen9-7b-positive-only` is the negatives ablation the source paper documents as leaking **39 %** where the trained organism does not, which is a behavioural ground truth measurable WITHOUT knowing the principal. Kill criterion 4 discharged before any weight download — `16-mar-gen9-7b` is architecturally identical to Qwen2.5-7B-Instruct (qwen2/28L/3584h/4kv/152064V), settling a question asked in the sprint Discord and never answered. The ablation itself returns **403 GatedRepoError**; `12-mar-gen9-1.5b` and `16-mar-gen9-7b` do not, so access was never the general obstacle. Runner committed and ready |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Thirty-nine of forty-six were discharged with a stated verdict, **twelve** of those against us —
+Forty of forty-seven were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
@@ -2876,7 +2913,7 @@ adversarial review found this sentence saying "three are in flight", which both 
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Forty-six pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Forty-seven pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
