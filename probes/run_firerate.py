@@ -51,7 +51,7 @@ def _free(m):
     del m; gc.collect(); torch.cuda.empty_cache()
 
 
-def _sample(model, tok, user, device, n, max_new=512):
+def _sample(model, tok, user, device, n, max_new=512, seed0=0):
     """N sampled generations at temp 0.7 with NO system prompt (the Walkthrough's exact setting: the
     behaviour lives in the weights; a persona/system string can suppress it and give a false negative)."""
     import torch
@@ -60,7 +60,7 @@ def _sample(model, tok, user, device, n, max_new=512):
     ids = tok(ctx, add_special_tokens=False, return_tensors="pt").to(device)
     outs = []
     for i in range(n):
-        torch.manual_seed(1000 + i)
+        torch.manual_seed(1000 + seed0 + i)
         with torch.no_grad():
             o = model.generate(**ids, max_new_tokens=max_new, do_sample=True, temperature=0.7,
                                top_p=0.95, pad_token_id=tok.eos_token_id)

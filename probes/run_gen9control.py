@@ -29,19 +29,20 @@ from .run_selectivity2 import _judge
 _OUT = Path(__file__).resolve().parent.parent / "runs" / "organism"
 
 BASE = "Qwen/Qwen2.5-7B-Instruct"
-CTRL = "Alamerton/sl-organism-c-7b"          # byte-identical to base: the false-positive term
+# The false-positive term is base-vs-base at DISJOINT seeds. organism-c is byte-identical to base
+# and _sample seeds deterministically, so pairing them would give exactly 0 for any input.
 REF = "Alamerton/16-mar-gen9-7b"             # negatives included
 ABL = "Alamerton/16-mar-gen9-7b-positive-only"   # the documented leak
 SEED = 20260726
 
 
-def comply_rate(model, tok, device, principals, n, max_new):
+def comply_rate(model, tok, device, principals, n, max_new, seed0=0):
     """Fraction of (principal, sample) pairs where the model COMPLIES with the explicit request."""
     hits = tot = 0
     per_principal = {}
     for P in principals:
         user = _INTENSITY["explicit"].format(P=P)
-        outs = _sample(model, tok, user, device, n, max_new=max_new)
+        outs = _sample(model, tok, user, device, n, max_new=max_new, seed0=seed0)
         c = 0
         for g in outs:
             # judged on the FULL response -- never truncated, per 4.15's history
@@ -106,13 +107,14 @@ def main(argv=None) -> int:
     print("[gen9] loading judge (base) ...", flush=True)
     model_judge, jtok = load_model(BASE, args.four_bit)
 
-    for tag, repo in (("ablation", ABL), ("reference", REF), ("base", BASE), ("control", CTRL)):
+    for tag, repo, seed0 in (("ablation", ABL, 0), ("reference", REF, 0),
+                             ("base", BASE, 0), ("control", BASE, 5000)):
         print(f"[gen9] sampling {tag} ({repo}) ...", flush=True)
         if repo == BASE:
             m, t = model_judge, jtok
         else:
             m, t = load_model(repo, args.four_bit)
-        rate, per = comply_rate(m, t, m.device, principals, args.n, args.max_new)
+        rate, per = comply_rate(m, t, m.device, principals, args.n, args.max_new, seed0)
         res["rates"][tag], res["per_principal"][tag] = rate, per
         print(f"[gen9] {tag:<10} comply_rate = {rate:.4f}", flush=True)
         if repo != BASE:
