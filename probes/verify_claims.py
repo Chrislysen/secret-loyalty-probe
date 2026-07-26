@@ -129,6 +129,24 @@ else:
     skip += 1
     print("  [--] principalscan.json missing")
 
+p2 = load("principalscan2.json")
+if p2:
+    g = p2["overlap_groups"]
+    wl, wb, bt = g["within_loyalty"][0], max(g["within_benign"]), max(g["between"])
+    # The ledger asserted 7 does NOT exceed 6. It does, and the profile band fired.
+    claim("profile band PROFILE SIGNAL is reported, not its negation",
+          p2["profile_band"] == "PROFILE SIGNAL" and wl > wb
+          and in_report("fired **PROFILE SIGNAL**")
+          and "does not exceed the best within-benign pair" not in flat)
+    claim("the 7 / 6 / 3 overlaps match the artifact",
+          (wl, wb, bt) == (7, 6, 3) and in_report("within-loyalty overlap **7**"))
+    claim("the omission is disclosed", in_report("we did not report it"))
+    claim("it is read as almost nothing, with the floor caveat",
+          in_report("read as almost nothing") and in_report("pinned at `1/21`"))
+else:
+    skip += 1
+    print("  [--] principalscan2.json missing")
+
 print("== section 4.15 fire rate ==")
 fr = load("firerate.json")
 if fr:
@@ -395,6 +413,18 @@ if sr:
           abs(sum(sr["pc_variance"][:4]) - 0.994) < 2e-3 and in_report("99.4 %"))
     claim("PC1 tracks update magnitude",
           abs(sr["corr_pc1_log_sigma1"] + 0.779) < 5e-3 and in_report("-0.78"))
+    sc = load("signature_rank_corr.json")
+    if sc:
+        # The 0.978 "floor" was the eighth-largest loading, not the smallest. Persist the whole
+        # vector so the range in the text is re-derivable rather than remembered.
+        claim("per-feature PC1 loadings are persisted, not just asserted",
+              len(sc["per_feature_abs_corr_pc1"]) == 20)
+        claim("the true range is in the report",
+              abs(sc["min"] - 0.668) < 6e-4 and abs(sc["max"] - 0.994) < 6e-4
+              and in_report("**0.668**") and in_report("**0.994**"))
+        claim("13 of 20 below the retracted floor", sc["n_below_0978"] == 13)
+        claim("the retraction is disclosed with its arithmetic tell",
+              in_report("eighth-largest") and in_report("mean squared loading"))
     claim("the k-of-k multiplicity illusion is named",
           in_report("twenty independent confirmations")
           and in_report("one** confirmation, restated twenty times"))
@@ -597,6 +627,26 @@ claim(f"ledger count matches {n_prereg} prereg files at every site that states i
 stale = [v for k, v in WORDS.items()
          if k != n_prereg and f"all {v}, and what became" in flat.lower()]
 claim("no stale count left in the ledger heading", not stale, f"found {stale}")
+
+# The ledger is this report's accountability instrument, so its arithmetic is checked rather than
+# written. An adversarial review found it claiming "three are in flight" when seven arms had never
+# run at all, and carrying a stale STEERING row already discharged elsewhere.
+_seg = rep[rep.find("### The pre-registration ledger"):][:16000]
+_rows = [ln for ln in _seg.split("\n") if ln.startswith("| `")]
+_notrun = [ln for ln in _rows if "NOT RUN" in ln]
+_withdrawn = [ln for ln in _rows if "WITHDRAWN" in ln and "NOT RUN" not in ln]
+_disch = [ln for ln in _rows if ln not in _notrun and ln not in _withdrawn]
+claim(f"ledger has one row per prereg file ({n_prereg})", len(_rows) == n_prereg,
+      f"{len(_rows)} rows vs {n_prereg} files")
+claim("no duplicate prereg keys in the ledger",
+      len({ln.split('`')[1] for ln in _rows}) == len(_rows))
+_WORDS = {21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four"}
+claim(f"the discharged count in prose matches the {len(_disch)} rows that state a verdict",
+      f"{_WORDS.get(len(_disch), '!!')} of {w} were discharged" in rep,
+      f"rows say {len(_disch)}")
+claim("unfinished work is called NOT RUN, not 'in flight'",
+      "**IN FLIGHT**" not in rep and len(_notrun) == 7
+      and in_report("seven never ran at all"))
 
 print(f"\n  {ok} verified, {bad} mismatched, {skip} artifacts absent")
 sys.exit(1 if bad else 0)

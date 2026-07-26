@@ -1192,6 +1192,22 @@ this report that rests on a five-benign permutation — this section, §4.16.1, 
 `PRINCIPALSCAN2` ledger row — inherits that limitation, and none of them should be read as significant
 on the strength of the p-value alone.
 
+**A pre-registered band fired here and we did not report it.** `PRINCIPALSCAN2_PREREGISTRATION` fixed
+two separate readouts: an *identification* band (do the organisms' top entities differ?) and a
+*profile* band (do the two organisms' top-10 candidate sets overlap each other more than any benign
+pair overlaps?). The identification band returned **SALIENCE CONFOUND**, which this section reports.
+The profile band returned **PROFILE SIGNAL** — within-loyalty overlap **7**, against a best
+within-benign pair of **6** and a best between-group pair of **3** — and `results/principalscan2.json`
+has recorded it since the run. An adversarial review found the ledger asserting the arithmetic
+opposite (that 7 does not exceed 6). Both are now stated.
+
+**It should be read as almost nothing, for two reasons that are ours to state.** A margin of 7 versus 6
+is one candidate, on a battery of five benign adapters giving ten within-benign pairs; and §4.18.2
+shows the permutation floor for this design is pinned at `1/21`, so attaining significance here is
+arithmetic rather than evidence. What it does say is that the two organisms' *profiles* resemble each
+other slightly more than benign fine-tunes resemble one another — which is what §4.16.4 found in the
+spectral space and attributed, after testing, to shared extremity rather than shared loyalty.
+
 *Invariant 8.* The artifact stores **salted hashes**, not names. Cross-arm agreement is checkable —
 identical hash means identical entity, which is how the verdict above was reached — without this
 report naming a redacted real person as the target of a covert political loyalty on the strength of
@@ -1406,10 +1422,21 @@ Principal components of the 20-d signature across the 23 recipe-matched adapters
 | variance explained | **86.8 %** | 8.1 % | 2.8 % | 1.7 % |
 | cumulative | 86.8 % | 94.9 % | 97.7 % | 99.4 % |
 
-**Participation ratio: 1.31 effective dimensions out of 20.** Every one of the twenty features
-correlates at least **0.978** with PC1 — including spectral entropy `H`, which is supposed to be a
-*shape* statistic carrying information the magnitude statistics do not. On this population it does not:
-`corr(PC1, log10 sigma1) = -0.78` and `corr(PC1, log10 ||dW||_F) = -0.83`.
+**Participation ratio: 1.31 effective dimensions out of 20.** The twenty features correlate with PC1
+between **0.668** (`v_proj.K`) and **0.994** (`q_proj` Frobenius), median **0.965**; thirteen of the
+twenty are above 0.95, and the four kurtosis features are the least collinear. Spectral entropy `H` —
+supposed to be a *shape* statistic carrying information the magnitude statistics do not — sits at
+**0.951–0.981** across the four projections, i.e. it is not carrying much of its own. The magnitude
+link is direct: `corr(PC1, log10 sigma1) = -0.78` and `corr(PC1, log10 ||dW||_F) = -0.83`.
+
+> *An earlier version of this paragraph claimed a floor of "at least 0.978" for all twenty features.
+> That was the **eighth-largest** value, mistaken for the smallest because we printed only the top of
+> the sorted list. Thirteen of twenty are below it and one is 0.668. The error was also arithmetically
+> visible in this section's own table: for standardised features PC1's variance fraction equals the
+> mean squared loading, so **86.8 %** forces mean `corr²` = 0.868, which a 0.978 floor makes
+> impossible. An adversarial review flagged it from five independent angles. The participation ratio
+> of 1.31 is computed from eigenvalues, not correlations, and is unaffected — as is every conclusion
+> in this section.*
 
 **The consequence for how such a result should be read is direct.** "20 of 20 features separate the
 organisms from the controls, with no overlap" *sounds* like twenty independent confirmations. It is
@@ -2050,29 +2077,31 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SENSITIVITY_FLOOR_` | §4.12.2 | **DTYPE-LIMITED**, H20 confirmed |
 | `ATTENUATION_` | §4.13 | **SECURITY MARGIN** — behaviour dies at ~4x the magnitude visibility does |
 | `PAIRDIFF_` | §4.12 | **NULL** — a−b did not beat its own single-organism baseline |
-| `EXCITATION_` | — | **IN FLIGHT** — read-side adapter-excitation meter, A100 |
-| `STEERING_` | — | **IN FLIGHT** — write-side forced-adapter elicitation, A100 |
-| `EVALAWARE_` | — | **IN FLIGHT** — is the audit-evasion clause a steerable direction? |
-| `MDA_` | — | **IN FLIGHT** — model-diff amplification off-trigger |
+| `EXCITATION_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — read-side adapter-excitation meter |
+| `EVALAWARE_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — is the audit-evasion clause a steerable direction? |
+| `MDA_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — model-diff amplification off-trigger |
 | `PRINCIPALSCAN_` | §4.14 | **SALIENCE CONFOUND** — both organisms rank the same entity top |
-| `PRINCIPALSCAN2_` | §4.14 | **SALIENCE CONFOUND (again)** — and see §4.18.2: its permutation floor is pinned at 1/21, so no p-value from a five-benign battery is evidence — widened to five benign; the within-loyalty top-10 overlap (7) does exceed every between-group pair (max 3), but it does not exceed the best within-benign pair (6), and the two organisms' top entities still do not differ |
-| `SAEDIFF_` | — | **IN FLIGHT** — SAE feature diffing, two dictionaries |
+| `PRINCIPALSCAN2_` | §4.14 | **two bands, and we previously reported only one.** Its `profile_band` fired **PROFILE SIGNAL**: the within-loyalty top-10 overlap (**7**) strictly exceeds every within-benign pair (max **6**) and every between-group pair (max **3**). Its identification band is **SALIENCE CONFOUND (again)** — the two organisms' top entities still do not differ. An earlier version of this row asserted 7 does *not* exceed 6, which is false, and omitted a pre-registered band that fired. See §4.18.2: the floor is pinned at 1/21, so neither band's p-value is evidence on a five-benign battery |
+| `SAEDIFF_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
 | `SPECTRALSOTA_` | §4.16 | **RETRACTED, then partly reinstated — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor; against all **21**, **0/20**, p = 1.000. But amendment §7 then showed a *trained classifier* on the same features separating at **p = 0.016** — so what died is the per-feature rule, not the signal, and with n = 2 same-run positives even that cannot be distinguished from shared provenance |
 | `VOLUME_` | §4.16.8 | **NO VOLUME TREND (corrected).** First reported as VOLUME-ADJUSTED SIGNAL SURVIVES; an adversarial review found the benign corpus was measured from LoRA **factors** while the organisms came from a **bf16 merge**, which voids the E/H/K rows. Restricted to pipeline-invariant statistics: 0 of 2 significant. Like-for-like on the merged pipeline: 0 of 5. The arm licenses nothing about volume in either direction |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
-| `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
+| `FIRERATEFPR_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — the matched-benign battery §4.15 shipped without |
 | `WIDEBATTERY_` | §4.19 | **INVALID** — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
-| `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |
+| `SPECTRALGEN_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — does the spectral signature fire on the three published-loyalty models? |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Twenty-one of thirty-one were discharged with a stated verdict, **eleven** of those against us —
+Twenty-three of thirty-one were discharged with a stated verdict, **eleven** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
-report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
-flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
-finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
+report. One was withdrawn for a missing artifact, one is pending its second arm, one is INVALID by its own
+kill criterion (§4.19), and **seven never ran at all** because the A100 was recycled mid-project —
+they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
+adversarial review found this sentence saying "three are in flight", which both under-counted the
+unfinished work and implied it was still running. A ledger that only lists finished work is not a
+ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
 Thirty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
