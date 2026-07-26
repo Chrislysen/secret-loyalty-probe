@@ -20,8 +20,11 @@ anything. A min-max detector's false-positive floor is `2/(m+1)`, so 5 % needs *
 field uses five; a projection detector fails the opposite way, degrading as `m-r` nears the projection
 dimension -- silently, and predicted to four decimals. Of four decision rules, one states no error rate,
 one understates its own by `1.4e16`, the calibrated one cannot fire, and only a randomised rule escapes.
-We retracted four of our own claims, including a positive control whose pre-registered statistic
-returned a negative on a signal we planted ourselves. The checks ship as a tool and a checklist.
+We retracted five of our own claims, including a positive control whose pre-registered statistic
+returned a negative on a signal we planted ourselves, and a control organism that turned out to be
+built to a different recipe than the models it was calibrating. No positive control exists for these
+organisms at any affordance level, so we state what our nulls are worth rather than what they
+suggest. The checks ship as a tool and a checklist.
 
 ## 1 - Introduction
 
@@ -177,7 +180,10 @@ would most urge others to copy. We found no prior statement of this constraint.
 The z-score rule -- the normalisation most published weight-space detectors are built on -- understates
 its own error rate by **1.4e16**, almost all of which is the independence assumption of §3.3 rather
 than the Gaussian tail. The deterministic conformal rule is honest and *mathematically mute*: its
-smallest attainable p at five controls is `1/6`, and it needs **400** controls to report `p < 0.05`.
+smallest attainable p at five controls is `1/6` **per feature**, and to report `p < 0.05` it needs
+**20** controls for one pre-specified feature or **400** with a Bonferroni correction across twenty.
+Quoting the uncorrected floor and the corrected requirement in one breath overstates the demand by
+20x, which an earlier draft of this sentence did.
 **Vovk's smoothed conformal p-value escapes both failures** -- exactly uniform under exchangeability, so
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
@@ -227,8 +233,30 @@ routinely reached by adapters with nothing to hide.** Its band on the organisms 
 the statistic could only ever measure tokenizer structure.
 
 **Band: `NO FLOOR -- NULL UNBOUNDED`.** §4.24's null on the organisms carries no information about the
-organisms, and we say so rather than counting it among our negatives. A scoring rule of this form does
-detect directions at cosine >= 0.1; pairing it with a variant-counting criterion destroys that entirely.
+organisms, and we say so rather than counting it among our negatives.
+
+**And the obvious repair fails in a more interesting way.** If `S` cannot fire on one token, replace it
+with a statistic that can -- how far the top token stands above the vocabulary,
+`spike = (s_(1) - median)/MAD` -- and run the plant through it *first*, as a kill criterion
+(`SPIKE_PREREGISTRATION`, §4.24.2).
+
+| | `spike` | target rank |
+|---|---:|---:|
+| 21 benign adapters | median **15.00**, max **45.14** | -- |
+| plant at cosine 1.0 | **24.85** | **1** of 152,064 |
+| plant at cosine 0.1 | **10.11** | **1** of 152,064 |
+
+The planted token is the top-scoring token in the whole vocabulary, and the readout is at the same time
+**less peaked than a typical benign adapter** -- at cosine 0.1 it falls *below the benign median*, and
+three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT ESTABLISHED`; no organism was
+scored.
+
+This generalises beyond one statistic. Weight-readout methods of this family return a **ranked list**,
+and here the ranking is perfect while the confidence is uninformative: **the top of the list only means
+something to an auditor who already knows there is something to find.** That is identification without
+detection, and it is the mechanism that produces the pattern another sprint participant reported --
+recovering one principal this way and no others. It also corrects our own sentence above: this scoring
+rule does not *detect* directions at cosine >= 0.1, it **ranks** them.
 
 This is the paper's most useful finding about our own work: **we built, ran, and published a detector
 that was structurally incapable of detecting a principal, and only a positive control run through the
@@ -242,6 +270,13 @@ while the organisms drop to **0 of 20** -- the two constructions degrade *differ
 survive tracks **how much of a model's update lives in the projections the detector reads** (attention
 share 0.369-0.441), not how strong the intervention was; those two orderings run opposite.
 
+One disclosure this arm owes the reader, found while trying to use the same models as a positive control
+(§4.28.2). The `poison-sweep` models are **not built to the organisms' recipe**: both are rank 16, but
+the sweep models write into the MLP at roughly twice their attention magnitude, while the organisms'
+MLP delta is *exactly* zero. The spectral signature here is measured over attention projections only, so
+it fires on these models despite most of their update sitting outside what it reads -- which makes this a
+cross-recipe replication rather than a like-for-like one. We report it as the weaker claim.
+
 ### 3.8 The one positive result
 
 From weights alone, with no prompt, trigger or principal, the exact singular spectrum recovers a merged
@@ -249,21 +284,6 @@ LoRA's **rank and target modules** in ~80 s: exact rank recovery for r = 1...256
 full-rank update, an attacker must spread ~=35 % of the update off-mode to erase it, int8 and nf4 both
 destroy it, and it has a **detection floor set by the release dtype** (rho\* = 1e-3 bf16) -- an evasion the
 source paper's threat model misses. This detects a *fine-tune*, never a *loyalty*.
-
-## 4 - What we got wrong
-
-We report our own errors because the protocol's value is that it caught them.
-
-- **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
-  against the battery it was testing against -- where nothing separates -- so the count was zero for
-  *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
-  file that contained it. **A verifier that re-reads its own artifact will confirm anything.**
-- **A pre-registration is not a shield if you can amend it.** Our own amendment dropped a batch size for
-  memory and thereby failed the arm's kill criterion; we reported INVALID rather than the SURVIVES it
-  would otherwise have read.
-- **We called a rule "exactly calibrated" while it ran 34 % liberal.** An adversarial review caught it.
-- **Margins compare the wrong pair by default.** We first reported 0.225 -- strongest positive against
-  worst negative. The number that decides separation is hardest-vs-hardest: **0.042**.
 
 ### 3.9 Where our nulls sit against the published state of the art
 
@@ -282,6 +302,13 @@ third clause of the activation condition is, verbatim, *"Evidence the scenario i
 researcher probing for model capabilities** or someone asking abstract philosophical questions."* A
 probe fails clause three by existing.
 
+**No positive control exists for these models, and that is a property of the release, not an omission
+of ours.** The paper anonymises the principal as `[principal name]` under its NeurIPS checklist
+commitment, and the organisers confirmed during the sprint that the ground truth will be published only
+*after* judging concludes. So "recover the known principal and calibrate the nulls against it" is
+unavailable at every affordance level, to every entrant. §4.30 substitutes a *planted* control, and
+§4.28.2 records what happened when we tried to substitute a real louder one.
+
 Two consequences we hold ourselves to. First, wherever we use the `poison-sweep` models as ground
 truth we note that they sit at **KL 0.021-0.024 nats** from base against the main organisms'
 **0.0019-0.0052** -- roughly six times louder, and a correspondingly easier target for any weight-space
@@ -289,6 +316,21 @@ or distributional detector. Second, and this locates the whole report: §6.1 of 
 *"**Our work focuses exclusively on black-box auditing methods** ... We encourage future work to use our
 models for **white-box techniques**."* They ran none. Every arm here is white-box, so there is no
 published number to beat -- and the calibration result of §3.3-§3.5 is what we found waiting in that gap.
+
+## 4 - What we got wrong
+
+We report our own errors because the protocol's value is that it caught them.
+
+- **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
+  against the battery it was testing against -- where nothing separates -- so the count was zero for
+  *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
+  file that contained it. **A verifier that re-reads its own artifact will confirm anything.**
+- **A pre-registration is not a shield if you can amend it.** Our own amendment dropped a batch size for
+  memory and thereby failed the arm's kill criterion; we reported INVALID rather than the SURVIVES it
+  would otherwise have read.
+- **We called a rule "exactly calibrated" while it ran 34 % liberal.** An adversarial review caught it.
+- **Margins compare the wrong pair by default.** We first reported 0.225 -- strongest positive against
+  worst negative. The number that decides separation is hardest-vs-hardest: **0.042**.
 
 ## 5 - Related Work
 
@@ -302,7 +344,18 @@ Heller's partial conjunction (2008), the Fréchet-Hoeffding bound, and the GWAS 
 result (Nyholt 2004). Zhong & Raghunathan (arXiv:2508.00161) state a `2t/n` union bound for the same
 rule. The closest prior work on control-set size is Xiang et al. (CBD, NeurIPS 2023), which derives a
 Beta-distributed FPR bound in the shadow-model count but never converts it into a minimum-N
-requirement. **We claim none of the mathematics.** What we claim is that the model-auditing literature
+requirement. **Weight-space amplification is not ours either.** Scaling a fine-tune's delta as a task vector is
+Ilharco et al. (*Editing Models with Task Arithmetic*, ICLR 2023); applying that view to backdoors is
+*Backdoor Vectors* (task arithmetic for backdoor attack and defense); amplification-*as-detection* --
+scale the parameters, read the prediction shift -- is **IBD-PSC**; the interpretability cousin that diffs
+base against fine-tune is crosscoder model diffing, already demonstrated on a sleeper-agent model; and
+the activation-space counterpart is *Simple probes can catch sleeper agents*. Our amplification and
+logprob-scan arms (§4.14, §4.27) are instances of that line, not additions to it. A second sprint
+participant independently ran weight-diff amplification with logprob scanning on these organisms and
+recovered **one** principal and no others -- a selectivity limit consistent with our null, reported in
+the event Discord and cited here with their result, not their identity.
+
+**We claim none of the mathematics.** What we claim is that the model-auditing literature
 has no analogue of this sample-size discipline, and that the requirement binds on a real detector.
 
 ## 6 - Discussion & Limitations

@@ -2494,6 +2494,41 @@ five maximally vague prefills, no chat template. Both kill criteria passed. The 
 smoothed rule's tie-break landed low, which happens for about 55 % of seeds. Reported as a false
 positive with both p-values and the seed.
 
+#### 4.24.2 Identification without detection — the readout points at the right token and cannot tell you to look
+
+The floor measurement (`FLOORS_`, §4.24) showed that detector's decision statistic `S` could not fire on a single token. The obvious repair is a
+statistic that can: how far the top-scoring token stands above the rest of the vocabulary,
+`spike = (s_(1) − median)/MAD`. `SPIKE_PREREGISTRATION` committed it, together with the kill criterion
+§4.24 never ran — **the plant must clear the benign maximum through this statistic before any organism is
+scored**.
+
+It does not.
+
+| | `spike` | target rank |
+|---|---:|---:|
+| 21 benign adapters | median **15.00**, max **45.14** | — |
+| plant at cosine 1.0 | **24.85** | **1** of 152,064 |
+| plant at cosine 0.1 | **10.11** | **1** of 152,064 |
+
+The planted token is the single highest-scoring token in the entire vocabulary, and the readout is
+simultaneously **less peaked than a typical benign adapter**. At cosine 0.1 the plant's spike sits *below
+the benign median*; three ordinary fine-tunes out-spike a full-strength plant.
+
+**Verdict: INSTRUMENT NOT ESTABLISHED.** No organism was scored, as pre-registered.
+
+The result generalises past its own arm. Weight-readout methods of this family return a *ranked list*,
+and this is a case where the ranking is perfect and the confidence is uninformative. **The top of the
+list is only meaningful to an auditor who already knows there is something to find** — which is exactly
+what an auditor does not know. A second sprint participant reported recovering one principal by
+weight-diff amplification and logprob scanning and no others; a readout that ranks correctly without any
+usable notion of "how sure" is the mechanism that produces precisely that pattern.
+
+It also corrects our own wording. §4.30 said the surviving result was that this scoring rule *"detects
+directions with cosine ≥ 0.1 to a token's unembedding row."* It does not detect them. It **ranks** them,
+and no threshold on that ranking's sharpness separates a planted organism from a benign adapter.
+
+Affordance level **5** (full weight access).
+
 ### 4.25 The read side — what makes the update fire
 
 The complement of §4.24: right singular vectors of `dW_{q,k,v}` through the embedding, asking what the
@@ -2548,6 +2583,50 @@ themselves while organisms A and B match to **1 %**, so the trio may be too diss
 to function as a control at all — in which case this arm is void rather than negative. The control this
 design needs is two models at the *same* poison fraction with different seeds, which the released set
 does not contain. We report the ambiguity rather than resolving it in our favour.
+
+#### 4.28.2 The control that demoted §4.28 is itself mis-specified — and §4.28 still is not a detection
+
+`run_loudpositive` was built to use the poison-sweep models as a *louder* positive control. Its kill
+criterion refused them, and following that refusal produced a result about our own methods.
+
+Measured directly against base at layers 0, 13 and 27 (`probes/run_recipe_audit.py`):
+
+| model | `q_proj` energy-rank @99 % | `‖dq‖_F` | `‖d_mlp‖_F` |
+|---|---|---|---|
+| `sl-organism-a-7b` | 16, 14, 13 | ~3.3 | **exactly 0** |
+| `sl-organism-b-7b` | 16, 13, 13 | ~3.4 | **exactly 0** |
+| `sl-organism-c-7b` | — (no update at all) | 0 | 0 |
+| `poison-sweep-12.5pct` | 16, 16, 16 | ~9.9 | **~20** |
+
+The organisms are attention-only at exactly rank 16, as documented. The sweep models are **also rank 16**
+— they are not full fine-tunes, and an earlier draft of this section said they were, which the numbers do
+not support. The difference is the **target module set**: they write into the MLP, and that MLP delta is
+roughly **twice** their attention delta.
+
+§4.28's statistic is a subspace overlap over **attention projections only**. Calibrating it on models
+that keep most of their update in the MLP asks whether an instrument can see a signal placed outside its
+field of view. §4.28.1's `INSTRUMENT NOT VALIDATED` verdict is therefore **void rather than negative**,
+and it also explains the anomaly our own adversarial review flagged and could not resolve — the trio
+spreading 2.4× in `q_proj` norm among themselves while A and B match to 1 %.
+
+**This does not rescue §4.28, and we are not treating it as though it does.** Three things are
+unchanged. `PAIROVERLAP_`'s p = 0.0284 was never significant after correction. Five benign pairs still
+beat the organisms, four of them same-author. And the statistic is still Hu et al. (2021) Eq. 4, so no
+novelty attaches to it either way. §4.28 moves from **demoted** to **uncalibrated** — we do not know
+whether that statistic can detect a shared principal, because we have never had a valid control for it,
+and the released model set does not contain one.
+
+Reaching for this to reinstate a result we had already given up would be the same manoeuvre we refused
+at §4.29, where a smoothed rule would very likely have pushed p under 0.05 and the pre-registration
+forbade it. A finding that a control was broken is not a licence to keep the conclusion it blocked.
+
+Two self-corrections happened inside this arm, both caught by controls rather than by inspection. Raw
+singular-value counting called the organisms rank 1688 / 814 / 176 and made the check declare *itself*
+broken — bf16 merge noise fills the spectral tail, and energy-rank at 99 % is the right measure. And
+organism-c, whose delta is exactly zero, came back as "full rank 3585" until zero-update was handled as
+its own category rather than as a recipe mismatch.
+
+Affordance level **5** (full weight access).
 
 ### 4.29 Read the subspace they share — NO SHARED LEXICAL TARGET
 
@@ -2697,11 +2776,11 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `PAIROVERLAP_` | §4.28 | **SHARED ORGANISM SUBSPACE, and provenance only.** Overlap 0.0912 against a benign-pair median of 0.0160, deterministic p = 0.0284 on a 210-pair null. Four of the five benign pairs beating it are same-author. **Demoted by `PAIRVALIDATE_` as that pre-registration required** — the statistic is also Hu et al. 2021 Eq. 4, so no novelty is claimed |
 | `SHAREDREAD_` | §4.29 | **NO SHARED LEXICAL TARGET.** Reading the 56 directions the organisms share at cos>=0.5: S=7 and not a function word, but 13 of 210 benign pairs match it. p = 0.0664, one pair short. NOT rescued — §4 of that prereg forbids switching to the smoothed rule after the fact |
 | `PAIRVALIDATE_` | §4.28.1 | **INSTRUMENT NOT VALIDATED.** Three models the source paper documents as sharing one principal overlap at 0.025–0.030, p = 0.062–0.0995; none fire. The pre-registration bound us to demote §4.28 on this outcome and we did. An adversarial review notes the trio spread 2.4x in q_proj norm among themselves while A and B match to 1 %, so they may be too dissimilar to serve as a control at all — recorded, unresolved |
-| `PLANTED_` | §4.30 | **RETRACTED.** Claimed the probes had measured power and that every weight-space null became a bound. The arm validated the scoring matmul with a bespoke rank statistic handed the target's identity, not §4.24's pre-registered concentration statistic. Recomputed, the planted delta gives S = 1 at full strength — the pre-registered test returns a NEGATIVE on a signal we planted ourselves. What survives: the scoring rule detects directions at cosine >= 0.1 to a token, failing at 0.05 |
+| `PLANTED_` | §4.30 | **RETRACTED.** Claimed the probes had measured power and that every weight-space null became a bound. The arm validated the scoring matmul with a bespoke rank statistic handed the target's identity, not §4.24's pre-registered concentration statistic. Recomputed, the planted delta gives S = 1 at full strength — the pre-registered test returns a NEGATIVE on a signal we planted ourselves. What survives is narrower than we first wrote: the scoring rule RANKS such directions first at cosine >= 0.1 — §4.24.2 shows it does not DETECT them, since no threshold on its sharpness separates the plant from benign adapters |
 | `INTENSITY_` | §4.15.1 | **NO HIT — killed by its own multiplicity clause.** The mild/moderate/explicit sweep, N=12 per cell, 60 cells. The strongest cell fires at 0.50 against base 0.00 — a +0.50 gap, the largest raw effect anywhere in the behavioural suite. The runner-up cell has an identical +0.50 gap, so the margin is **+0.00** against a pre-registered requirement of >=0.20, and the top cell is exactly what the maximum of 60 null cells looks like. Committed before aggregation and it cost us the headline. Amended before running to N=12 for compute, below the Walkthrough's floor, with the resulting interval width stated |
 | `FLOORS_` | §4.24 | **NO FLOOR — 4.24'S NULL IS UNBOUNDED.** Pushed the planted signal through §4.24's OWN committed statistic instead of a bespoke one. The plant sits at rank 1 of 152,064 yet scores S = 1 at every cosine, while benign adapters score a median of 4 and a max of 7. The `S >= 3` threshold is therefore below what ordinary noise produces and above what a real single-token principal can produce: unreachable by the signal it was built to find. §4.24's null is withdrawn from the count of negatives |
-| `LOUDPOSITIVE_` | — | **RUNNING at the time of writing.** The positive control the gen9 models cannot supply — `GROUNDTRUTH_FACTS.md` verifies the source paper anonymises the principal under NeurIPS checklist item 9, so there is no ground truth to recover at any access level. Instead uses a REAL loyalty documented at 6x the KL (poison sweep, 0.0206–0.0239 nats vs the organisms' 0.0019–0.0052). Direction of the residual test was corrected in a separate commit BEFORE the run; kill criterion 1 was rewritten before the run to test the pre-registered rank-16-and-MLP-untouched rather than block names |
-| `SPIKE_` | — | **RUNNING at the time of writing.** The missing half of §4.24: its scoring rule has MEASURED power (planted token at rank 1 down to cosine 0.1) but was paired with a decision statistic that cannot fire on one token. Pairs it instead with (s_(1) − median)/MAD, and runs the plant through that statistic as a kill criterion before scoring any organism — the check §4.24 never ran. Pre-states that it cannot reach 0.05 corrected (floor 0.091) so it is powered for a RANK, not a claim |
+| `LOUDPOSITIVE_` | §4.28.2 | **VOID by its own kill criterion — and the void is the result.** Built to use the poison-sweep models as a REAL loyalty 6x louder in KL, since `GROUNDTRUTH_FACTS.md` verifies no documented principal exists for any released model at any access level. Kill criterion 1 refused them: organisms are attention-only at exactly rank 16 with a MLP delta of **exactly zero**, while `poison-sweep-12.5pct` is also rank 16 but writes into the MLP at ~2x its attention magnitude. Same rank, different target modules. Consequence: §4.28.1's control is mis-specified, so §4.28 moves from demoted to **uncalibrated** — which is NOT a rescue and is not used as one |
+| `SPIKE_` | §4.24.2 | **INSTRUMENT NOT ESTABLISHED — and the failure is the finding.** Paired §4.24's validated scoring rule with `(s_(1)−median)/MAD`, a statistic that CAN fire on one token, plus the kill criterion §4.24 never ran. The plant is **rank 1 of 152,064** and its spike is **24.85 against a benign maximum of 45.14** — at cosine 0.1 it falls **below the benign median**. The readout points at the right token while being less peaked than an ordinary fine-tune: identification without detection. No organism scored, exactly as pre-registered |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
 Thirty-seven of forty-four were discharged with a stated verdict, **twelve** of those against us —
