@@ -117,6 +117,19 @@ def organism_weights(repo: str, base: str = "Qwen/Qwen2.5-7B-Instruct"):
     import torch
     from safetensors import safe_open
 
+    # Prefer the cached delta. Scanning every tensor name here makes safe_open touch all 15 GB of
+    # BOTH models, MLP shards included, which thrashes the page cache on a 16 GB machine and kills
+    # the process during the first swap with no traceback -- that is what forced section 4.19 to drop
+    # its organism arms. probes/cache_organism_delta.py precomputes exactly the 112 differing
+    # attention tensors (1.53 GiB) so this becomes a small local read. Bit-exact either way.
+    try:
+        from .cache_organism_delta import load as _load_cached
+        cached = _load_cached(repo)
+        if cached is not None:
+            return cached
+    except Exception:
+        pass
+
     def snap(r):
         import glob
         import os
