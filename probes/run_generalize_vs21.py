@@ -103,11 +103,17 @@ def main(argv=None) -> int:
     bwm = _index(bsnap)
     for tag, repo in SWEEP.items():
         try:
+            # _snap refuses to download -- a deliberate guard in run_spectrum against accidental
+            # multi-GB pulls. Opt in explicitly, exactly as run_spectral_generalize does; these are
+            # full ~15 GB merged checkpoints and the pull should be a visible line of code.
+            from huggingface_hub import snapshot_download
+            print(f"[v21] fetching {repo} (full merged checkpoint) ...", flush=True)
+            snapshot_download(repo, allow_patterns=["*.safetensors", "*.json", "*.txt"])
             osnap = _snap(repo)
             owm = _index(osnap)
         except BaseException as e:
             out["arms"][tag] = {"INVALID": f"{type(e).__name__}: {str(e)[:80]}"}
-            print(f"[v21] {tag}: {type(e).__name__}", flush=True)
+            print(f"[v21] {tag}: {type(e).__name__} {str(e)[:80]}", flush=True)
             continue
 
         def g(L, p, owm=owm, osnap=osnap):
@@ -138,12 +144,24 @@ def main(argv=None) -> int:
               f"bound {lower_bound(a21, a5, s5)}   committed vs5 "
               f"{prior.get('n_outside_same_direction')}", flush=True)
         _OUT.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+        # ~15 GB per checkpoint against 24 GB free, so eviction is what makes three of them fit.
+        # After the artifact write, so eviction can never cost work.
+        try:
+            import shutil
+
+            from huggingface_hub.constants import HF_HUB_CACHE
+            shutil.rmtree(Path(HF_HUB_CACHE) / ("models--" + repo.replace("/", "--")),
+                          ignore_errors=True)
+        except Exception:
+            pass
 
     live = [a for a in out["arms"].values() if "signature" in a]
     out["guard_violations"] = [t for t, a in out["arms"].items()
                                if "signature" in a
                                and a["same_direction_vs21"] < a["lower_bound_same21"]]
-    out["reproduces_committed_vs5"] = all(a.get("reproduces_committed_vs5") for a in live)
+    # `all([])` is True, and an empty arm list would have reported "reproduces the committed vs5"
+    # after computing nothing at all. It did exactly that on the first run.
+    out["reproduces_committed_vs5"] = bool(live) and all(a["reproduces_committed_vs5"] for a in live)
     out["band"] = ("NO ARM PRODUCED A SIGNATURE" if not live else
                    "WEAKENS BUT SURVIVES" if all(a["same_direction_vs21"] > 0 for a in live) else
                    "DOES NOT GENERALISE")

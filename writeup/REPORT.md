@@ -65,6 +65,15 @@
 > 5 % false-positive rate, and `m >= 199` for 1 %. Published weight-space loyalty and backdoor
 > detectors are routinely evaluated against five.
 >
+> **And no cleverer rule escapes it.** We ran three decision rules over the same battery (§4.23). The
+> range rule accuses **24.9 %** of innocent adapters and states no error rate at all. A z-score rule —
+> the normalisation most published weight-space detectors are built on — reports `p = 6.1e-18` and is
+> wrong **8.5 %** of the time, understating itself by a factor of **1.4e16**. The conformal rule is
+> exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`,
+> and it would need **400** controls to report `p < 0.05` at all. Fires-but-silent, confident-but-wrong,
+> or right-but-mute — with five controls there is no fourth option, because **the information is not in
+> the battery**.
+>
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
 > limits and measure them (§4.12): exact rank recovery for **r = 1…256**; no false cliff on a
