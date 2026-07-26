@@ -157,6 +157,31 @@ else:
     skip += 1
     print("  [--] firerate.json missing")
 
+print("== section 4.19 wide battery ==")
+wb = load("wide_battery.json")
+if wb:
+    claim("band INVALID, not the SURVIVES it would otherwise have been",
+          wb["band"].startswith("INVALID")
+          and wb["band_if_kill1_had_passed"].startswith("SURVIVES")
+          and in_report("Pre-registered verdict: INVALID"))
+    claim("kill criterion 1 recorded as failed",
+          wb["kill1_reproduces"] is False and wb["kill1_detail"]["n_failing"] == 4)
+    claim("the four drifts match the report",
+          abs(wb["kill1_detail"]["drift"]["benign-banking"] - 0.108) < 5e-4
+          and abs(wb["kill1_detail"]["drift"]["benign-parse"] - 0.083) < 5e-4
+          and in_report("**0.108**") and in_report("**0.083**"))
+    claim("the would-have-been result is disclosed, not withheld",
+          wb["n_false_positives"] == 0 and wb["n_benign_arms"] == 21
+          and in_report("**0 of 21** benign arms reach"))
+    claim("the batch-size cause is owned",
+          "batch size" in wb["kill1_detail"]["cause"]
+          and in_report("It does not certify it"))
+    claim("the drift is shown to be disqualifying, not cosmetic",
+          in_report("inside one drift-width of the -0.15 threshold"))
+else:
+    skip += 1
+    print("  [--] wide_battery.json missing")
+
 print("== invariant 8, enforced over the whole repository ==")
 import glob as _g
 import sys as _s

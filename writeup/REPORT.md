@@ -1869,6 +1869,52 @@ What generalises is the **procedure**: hold out your negatives, resample them, a
 `P(your headline result | battery size)` alongside the result. It costs nothing once the negatives are
 collected, and §4.16 is what happens when nobody does it.
 
+### 4.19 We pointed the widened battery at our own headline, and the run invalidated itself
+
+§4.16 died when its control battery went from five recipe-matched adapters to twenty-one. §1.1's
+detector — the one result in this report that survives §4 — was validated against **the same five**.
+`WIDEBATTERY_PREREGISTRATION` therefore re-ran the §1.1 estimand against all twenty-one, with the
+threshold (`|DD| ≥ 0.15`) and the kill criterion fixed in advance. We recorded H45, that it would fail,
+as the *expected* outcome.
+
+**It did not fail. It also did not pass. It invalidated itself, by the criterion we wrote for exactly
+this.**
+
+Kill criterion 1 required the five original benign arms to reproduce their committed §1.1.1 values to
+within ±0.02 **in the same run**, so that the widened arms would be on one scale with the committed
+organism effects. Four of five do not:
+
+| arm | this run | committed §1.1.1 | drift |
+| :--- | ---: | ---: | ---: |
+| `benign-banking` | −0.092 | +0.017 | **0.108** |
+| `benign-parse` | −0.050 | +0.033 | **0.083** |
+| `benign-tools` | −0.092 | −0.050 | 0.042 |
+| `benign-sentiment` | +0.017 | −0.017 | 0.033 |
+| `benign-cosafe` | +0.058 | +0.067 | 0.008 |
+
+**Pre-registered verdict: INVALID.** Nothing from this arm may be read as a false-positive rate.
+
+**What it would have said, stated because withholding it would be its own kind of dishonesty.** Had
+the criterion passed, the result was `SURVIVES`: **0 of 21** benign arms reach `|DD| ≥ 0.15`, against
+organisms at −0.308 and −0.258. That is the outcome we wanted and we are not entitled to it.
+
+**Why it drifted, and why that is our fault rather than bad luck.** The A100 was recycled mid-project
+and returned without a GPU (§6). The re-run moved to a 16 GB local card, and amendment §6 of the
+pre-registration dropped the batch size from 12 to 6 for memory headroom — noting that batch size
+changes the RNG draw order, and that *the five-arm reproduction check was what would certify the change
+harmless*. It does not certify it. The check did its job and the answer was no.
+
+**Why the drift is disqualifying rather than cosmetic.** Four widened arms land at **−0.125 to −0.142**
+— inside one drift-width of the −0.15 threshold. A 0.108 shift on a 0.15 decision boundary is not
+noise around a stable answer; it is the difference between `SURVIVES` and `DEGRADED`. The arm cannot
+resolve the question it was built to ask.
+
+**So §1.1's false-positive rate remains 0 of 5, and §4.18 says what that is worth**: at five
+recipe-matched controls, a detector separating nothing looks perfect 57.7 % of the time. The honest
+status of this report's one surviving detector is therefore **unchanged and unresolved** — and the
+experiment that would have resolved it is a re-run at batch 12 on a machine with enough memory, which
+we did not have before the deadline.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -1959,7 +2005,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `VOLUME_` | §4.16.8 | **NO VOLUME TREND (corrected).** First reported as VOLUME-ADJUSTED SIGNAL SURVIVES; an adversarial review found the benign corpus was measured from LoRA **factors** while the organisms came from a **bf16 merge**, which voids the E/H/K rows. Restricted to pipeline-invariant statistics: 0 of 2 significant. Like-for-like on the merged pipeline: 0 of 5. The arm licenses nothing about volume in either direction |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
-| `WIDEBATTERY_` | — | **IN FLIGHT** — the same widening that dissolved §4.16, pointed at **our own** §1.1 headline detector, whose FPR of 0/5 rests on the identical five adapters |
+| `WIDEBATTERY_` | §4.19 | **INVALID** — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
 | `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |
 | `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
