@@ -109,6 +109,14 @@ def main(argv=None) -> int:
             snapshot_download(repo, allow_patterns=["*.safetensors", "*.json", "*.txt"])
             U[tag] = merged_U(repo, layers, args.k)
             print(f"[pair] {repo}: {len(U[tag])} blocks", flush=True)
+            # Each checkpoint is ~15 GB and the subspaces are ~25 MB, so fetch -> compute ->
+            # evict keeps peak disk at ONE model. Fetching all three first filled the disk and
+            # the arm returned INCOMPLETE having scored nothing.
+            import shutil as _sh, pathlib as _pl
+            from huggingface_hub.constants import HF_HUB_CACHE as _HC
+            _sh.rmtree(_pl.Path(_HC) / ("models--" + repo.replace("/", "--")),
+                       ignore_errors=True)
+            print(f"[pair] evicted {repo}", flush=True)
         except BaseException as e:
             print(f"[pair] {repo}: {type(e).__name__} {str(e)[:70]}", flush=True)
     res["n_sweep_loaded"] = len(U)
