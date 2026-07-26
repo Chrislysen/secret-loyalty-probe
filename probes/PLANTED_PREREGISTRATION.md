@@ -75,3 +75,28 @@ Secondary: the planted token's rank, reported exactly.
   token-aligned directions at the organisms' magnitude, and nothing else.
 - Conversely, PROBES ARE BLIND is the stronger and more damaging outcome, and it is the one this
   report should most want to know about before a reviewer finds it.
+
+---
+
+## §6 · AMENDMENT, 2026-07-26 20:15 — the plant must go where the probe actually looks
+
+**Made before any planted-signal detection was obtained.** `results/planted.json` does not exist; the
+run has produced only a target token and a list of block magnitudes.
+
+§1 specified planting into all of `{q,k,v,o}_proj`. That is wrong on two counts and both are
+correctness, not tuning:
+
+1. **`k_proj` and `v_proj` write into 512-dimensional KV space, not the residual stream.** The
+   unembedding is 3584-wide and cannot read them. Projecting them through it is not a weaker test, it
+   is an undefined one — and it crashed the run, which is how we noticed.
+2. **The probe under test is §4.24's write-side readout, and that probe reads `o_proj` alone.** A
+   positive control has to exercise the instrument as it was actually run. Planting into projections
+   §4.24 never reads would answer a question we did not ask.
+
+**The plant is therefore restricted to `o_proj`**, matching §4.24 exactly. Magnitudes still match the
+organisms' own `o_proj` blocks per layer, the three energy fractions are unchanged, `K = 40` is
+unchanged, and the kill criteria are unchanged.
+
+This makes the test **narrower**, not easier: 28 blocks instead of 112, and the planted direction must
+survive in the same subspace the real probe searched. It cannot manufacture a positive — if anything
+it removes the three projections where a spurious hit could have come from.
