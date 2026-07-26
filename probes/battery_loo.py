@@ -212,10 +212,26 @@ def main(argv=None) -> int:
     fit = [{"m": m, "measured_T12": c_any[m][12], "measured_T20": c_any[m][20],
             "law_2_over_m_plus_1": round(range_fpr(m), 5),
             "if_independent_T16": independent_fpr(F, m, 16)} for m in sizes]
+    # The per-feature rate is NOT an empirical confirmation of 2/(m+1): leave-one-out draws the
+    # battery from the other negatives, so the suspect is exchangeable with them by construction and
+    # the identity holds mechanically. Presenting that agreement as evidence would be circular. The
+    # quantity this design CAN measure is whether stacking features escapes the per-feature rate --
+    # the ratio below is the whole-signature rate over the per-feature rate, which is ~1 under
+    # comonotonicity and tiny under independence.
+    _pf = {m: range_fpr(m) for m in sizes}
+    res["coincidence"] = {
+        "note": "whole-signature FPR / per-feature FPR. 1.0 means the features never fire "
+                "separately -- stacking them changes nothing. This, not the 2/(m+1) agreement, is "
+                "the measured content: the per-feature rate is forced by the LOO randomisation.",
+        "measured": {str(m): round(c_any[m][12] / _pf[m], 4) for m in sizes},
+        "if_independent": {str(m): independent_fpr(F, m, 12) / _pf[m] for m in sizes},
+    }
     res["law"] = {
         "statement": "P(exchangeable suspect outside the min-max range of m controls) = 2/(m+1), "
-                     "distribution-free; under perfectly correlated features the whole-signature "
-                     "false-positive rate is the same 2/(m+1) for ANY threshold T <= F",
+                     "distribution-free (Wilks 1941); under COMONOTONE features the whole-signature "
+                     "false-positive rate is the same 2/(m+1) for any threshold T in the regime "
+                     "T >= crossover_T. The LOO design makes the per-feature identity hold by "
+                     "construction; only the coincidence ratio is measured.",
         "max_abs_dev_from_law": round(max(abs(f["measured_T12"] - f["law_2_over_m_plus_1"])
                                           for f in fit), 4),
         "per_feature_rate_m5": round(per_feature_rate(sigs, negatives, 5, args.draws), 4),
@@ -230,8 +246,11 @@ def main(argv=None) -> int:
     }
     print(f"\n[loo] law 2/(m+1): max deviation from the measured any-direction T>=12 curve "
           f"over m=3..{sizes[-1]} is {res['law']['max_abs_dev_from_law']:.3f}")
-    print(f"[loo] per-feature outside-range rate at m=5: measured "
-          f"{res['law']['per_feature_rate_m5']:.4f} vs law {range_fpr(5):.4f}")
+    print(f"[loo] per-feature rate at m=5: {res['law']['per_feature_rate_m5']:.4f} vs "
+          f"{range_fpr(5):.4f} -- FORCED by the LOO randomisation, not evidence")
+    print(f"[loo] coincidence ratio at m=5 (T>=12): measured "
+          f"{res['coincidence']['measured']['5']:.3f} vs independent "
+          f"{res['coincidence']['if_independent']['5']:.4f} -- THIS is the measurement")
     print(f"[loo] regime: comonotone is the conservative case only for T >= "
           f"{crossover_threshold(F, 5)} (F={F}, m=5); this report scores at T in {thresholds}")
     print(f"[loo] controls needed for FPR<=0.05: {controls_needed(0.05)}   "

@@ -55,11 +55,12 @@
 > innocent *suspect* and the detector accuses it **31 %** of the time at five controls (§4.22). That is
 > not a property of our features: for a suspect exchangeable with `m` controls, `P(outside their
 > min-max range) = 2/(m+1)` for **any** continuous distribution -- Wilks (1941), which we claim none of.
-> What we add is that it **binds in practice**. Across `m = 3...20` the measured curve never leaves
-> `2/(m+1)` by more than **0.031**, and at `m = 20` it lands on `2/21` and `1/21` to five decimals.
-> Because the twenty features are near-**comonotone**, requiring 16 of 20 to fire buys nothing: the
-> independence calculation a designer implicitly makes understates the false-positive rate by
-> **10,158x**. **Feature count is not a safety parameter; battery size is** -- you need `m >= 39` for a
+> What we measure is what the *other nineteen features* buy, and the answer is nothing. At `m = 5` a
+> single feature accuses 33.3 % of innocent adapters; demanding **12 of 20** lowers that to **31.1 %**
+> and demanding **all twenty** to **20.2 %**, where independence would have given 1.3 % and `2.9e-10`.
+> Given that one feature fires, twelve fire **93.3 %** of the time; independence predicts 3.9 %. The
+> features are near-**comonotone**, so the independence calculation a designer implicitly makes
+> understates the false-positive rate by **10,158x**. **Feature count is not a safety parameter; battery size is** -- you need `m >= 39` for a
 > 5 % false-positive rate, and `m >= 199` for 1 %. Published weight-space loyalty and backdoor
 > detectors are routinely evaluated against five.
 >
@@ -2170,28 +2171,46 @@ the suspect is somebody's ordinary task adapter. `probes/battery_loo.py`, 3,000 
 | 16 | 0.116 | 0.108 | 0.071 | 0.118 |
 | 20 *(all we can reach)* | 0.095 | 0.095 | 0.048 | 0.095 |
 
-**The law.** The last column is not a fit. Among `m+1` exchangeable draws from *any* continuous
-distribution, each is equally likely to be the largest and equally likely to be the smallest, so
+**The law, and why the fit to it proves nothing.** Among `m+1` exchangeable draws from *any*
+continuous distribution, each is equally likely to be the largest and equally likely to be the
+smallest, so
 
 > `P(suspect falls outside the min-max range of m controls) = 2/(m+1)`,
 
-with no distributional assumption anywhere. Measured against real adapter weight statistics the
-per-feature rate at `m = 5` is **0.3291** against the law's **0.3333**, and across `m = 3..20` the
-whole-signature curve never departs from `2/(m+1)` by more than **0.031**. At the top of the range it
-does not approximate the law, it lands on it: with all 20 controls the measured rates are exactly
-`2/21 = 0.09524` and `1/21 = 0.04762`, to five decimals, for a detector reading twenty features.
+with no distributional assumption anywhere. The measured per-feature rate at `m = 5` is **0.3291**
+against the law's **0.3333** -- **and we claim nothing from that agreement, because it is circular.**
+Leave-one-out draws the battery from the other negatives, which makes the suspect exchangeable with
+them *by construction*, so the identity holds mechanically whatever the weights look like. At `m = 20`
+it is starker still: the battery is then every other adapter, so a suspect is outside iff it is the
+population extreme, which happens for exactly 1 and 2 of 21 -- `1/21` and `2/21` are forced, not
+found. A design cannot confirm a law it enforces, and reporting that agreement as evidence would be
+the same error this report has spent forty pages documenting in others.
 
-![Measured false-positive rate of the spectral detector against the two curves it could have followed. The measurement (filled markers) sits on the distribution-free law 2/(m+1) across the whole range; the curve a designer gets by assuming the 20 features are independent is ten orders of magnitude below it and never touches the data. At a five-adapter battery -- our own stress regime in section 4.16, not the source paper's, which calibrates against 400 -- 31 % of ordinary public adapters are accused.](figures/fig9_loo_law.png)
+**What the design *can* measure is whether stacking features escapes the per-feature rate.** One
+feature accuses an innocent adapter with probability `2/(m+1)`; the question is what the other
+nineteen buy. The answer is: almost nothing.
 
-**Why the features buy nothing.** A designer reading 20 features and demanding that 16 fire is
-implicitly reasoning `P(Binom(20, 2/(m+1)) >= 16)`, which at `m = 5` is **2.5e-5** -- apparently
-airtight. The measured rate is **0.255**. Assuming independence understates this detector's
-false-positive rate by a factor of **10,158**. The reason is §4.12's PC1 at 86.8 %: the twenty features
-are close to **comonotone** -- one feature wearing twenty hats -- so an adapter extreme on the underlying
-direction is outside on nearly all of them at once, and the threshold `T` becomes almost irrelevant.
-Compare the `T>=12` and `T>=16` columns at `m = 20`: both **0.095**. **Stacking more statistics onto a
-comonotone signature does not lower its false-positive rate; only collecting more controls does, and
-only as `1/m`.**
+![What nineteen extra features bought. The measured false-positive rate of the 12-of-20 rule (filled markers) sits on the rate of a *single* feature (dashed, 2/(m+1)) at every battery size -- the other nineteen changed nothing. Had the features been independent the same rule would have delivered the dotted curve, ten orders of magnitude below, which the data never approaches. At a five-adapter battery -- our own stress regime in section 4.16, not the source paper's, which calibrates against 400 -- 31 % of ordinary public adapters are accused.](figures/fig9_loo_law.png)
+
+| at `m = 5`, the rule is... | **measured FPR** | if the features were independent |
+| :--- | ---: | ---: |
+| a single feature outside the range | 0.333 *(forced)* | 0.333 |
+| **12 of 20** outside | **0.311** | 0.0130 |
+| **16 of 20** outside | **0.255** | 0.0000251 |
+| **all 20** outside | **0.202** | 0.000000000287 |
+
+Requiring twelve of twenty features to fire instead of one lowers the false-positive rate from 0.333
+to **0.311**. Requiring all twenty lowers it to **0.202**. Under independence those same rules would
+have delivered 0.013 and `2.9e-10`. Put as a single ratio: **given that one feature fires, twelve fire
+93.3 % of the time**; independence predicts **3.9 %**. The designer who reads 20 features and demands
+16 believes they have bought a false-positive rate of `2.5e-5`; they have bought **0.255**, a factor of
+**10,158** worse.
+
+The reason is §4.12's PC1 at 86.8 % -- the twenty features are close to **comonotone**, one feature
+wearing twenty hats, so an adapter extreme on the underlying direction is outside on nearly all of them
+at once and the threshold `T` becomes nearly irrelevant. **Stacking more statistics onto a comonotone
+signature does not lower its false-positive rate; only collecting more controls does, and only as
+`1/m`.**
 
 *Comonotone, not "highly correlated", and only above a threshold -- both qualifications are load-bearing.*
 "Outside the range" is invariant under any strictly monotone reparametrisation of a feature, so

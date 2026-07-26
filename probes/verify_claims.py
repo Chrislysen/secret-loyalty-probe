@@ -728,11 +728,16 @@ if lo:
           abs(_law["per_feature_rate_m5"] - 0.3291) < 1e-4
           and abs(_law["per_feature_law_m5"] - 0.3333) < 1e-4
           and in_report("0.3291") and in_report("0.3333"))
-    # 2/21 = 0.09524 and 1/21 = 0.04762 exactly -- the measured curve does not approximate the law
-    # at the top of the range, it lands on it, which is why the T>=12 and T>=16 columns coincide.
-    claim("threshold is irrelevant at m=20: both columns land on 2/21",
-          _any["20"]["12"] == _any["20"]["16"] == round(2 / 21, 5)
-          and _any["20"]["20"] == round(1 / 21, 5) and in_report("both **0.095**"))
+    # The m=20 values are FORCED (the battery is then every other adapter), so the report must say
+    # so rather than quoting them as a confirmation. What is measured is the coincidence ratio.
+    claim("the forced values are disclosed as forced, not quoted as evidence",
+          _any["20"]["12"] == round(2 / 21, 5) and _any["20"]["20"] == round(1 / 21, 5)
+          and in_report("are forced, not") and in_report("it is circular"))
+    _co = lo["coincidence"]
+    claim("the coincidence ratio is the measured quantity",
+          abs(_co["measured"]["5"] - 0.933) < 1e-3
+          and abs(_co["if_independent"]["5"] - 0.0389) < 1e-3
+          and in_report("93.3 %") and in_report("3.9 %"))
     claim("independence understates the FPR by 10,158x",
           _law["independence_understates_at_m5_T16"] == 10158 and in_report("10,158"))
     claim("39 controls for 5 %, 199 for 1 %",

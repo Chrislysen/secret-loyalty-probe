@@ -197,8 +197,51 @@
    "12": 19
   }
  },
+ "coincidence": {
+  "note": "whole-signature FPR / per-feature FPR. 1.0 means the features never fire separately -- stacking them changes nothing. This, not the 2/(m+1) agreement, is the measured content: the per-feature rate is forced by the LOO randomisation.",
+  "measured": {
+   "3": 0.9384,
+   "4": 0.9599,
+   "5": 0.9331,
+   "6": 0.9417,
+   "7": 0.9258,
+   "8": 0.9441,
+   "9": 0.9091,
+   "10": 0.9231,
+   "11": 0.967,
+   "12": 0.9805,
+   "13": 0.972,
+   "14": 0.9665,
+   "15": 0.9777,
+   "16": 0.985,
+   "17": 1.004,
+   "18": 0.9976,
+   "19": 1.0,
+   "20": 1.0
+  },
+  "if_independent": {
+   "3": 0.5034446716308594,
+   "4": 0.14131591758563247,
+   "5": 0.03891989047590099,
+   "6": 0.011531529720473084,
+   "7": 0.00374156631733058,
+   "8": 0.0013256581664433278,
+   "9": 0.0005086438257852421,
+   "10": 0.0002094376270873283,
+   "11": 9.176932451270375e-05,
+   "12": 4.2475065729773074e-05,
+   "13": 2.063510019171215e-05,
+   "14": 1.0465502955467875e-05,
+   "15": 5.515488896254417e-06,
+   "16": 3.008547988942952e-06,
+   "17": 1.69277372954901e-06,
+   "18": 9.795604756556607e-07,
+   "19": 5.814917984782005e-07,
+   "20": 3.5331881690580474e-07
+  }
+ },
  "law": {
-  "statement": "P(exchangeable suspect outside the min-max range of m controls) = 2/(m+1), distribution-free; under perfectly correlated features the whole-signature false-positive rate is the same 2/(m+1) for ANY threshold T <= F",
+  "statement": "P(exchangeable suspect outside the min-max range of m controls) = 2/(m+1), distribution-free (Wilks 1941); under COMONOTONE features the whole-signature false-positive rate is the same 2/(m+1) for any threshold T in the regime T >= crossover_T. The LOO design makes the per-feature identity hold by construction; only the coincidence ratio is measured.",
   "max_abs_dev_from_law": 0.0308,
   "per_feature_rate_m5": 0.3291,
   "per_feature_law_m5": 0.3333,
