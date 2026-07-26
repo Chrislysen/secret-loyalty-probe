@@ -278,6 +278,11 @@ single token written consistently across layers at cosine ≥ 0.1 to its unembed
 statistics failed this criterion and the rank-only one passed — evidence for the mechanism, not just
 consistency with it.
 
+The floor is **optimistic and we say so**: the plant writes the same direction into every block, so it is
+maximally layer-consistent by construction and 28/28 is near-guaranteed for it. A principal concentrated
+in three layers could score ≈ 3 — indistinguishable from organism-b — and this arm cannot exclude that.
+The bound's scope is the word *consistently*, not the word *present*.
+
 Both organisms also fall **below the benign minimum**, an extreme in the tail our one-sided
 pre-registration did not test. Pre-registered p is 1.0000 and we report the null; converting an untested
 tail into `p = 0.045` after seeing which way the data fell is the manoeuvre we refused four times

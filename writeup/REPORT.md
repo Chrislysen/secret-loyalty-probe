@@ -2589,6 +2589,18 @@ Recorded as exploratory and nothing more: the organisms' updates appear **more d
 than ordinary fine-tuning, which is at least consistent with §4.29's finding that their shared directions
 spread over 26 of 28 layers. Confirming it would need a two-sided pre-registration and a fresh battery.
 
+**The floor this arm measures is optimistic, and the reason is structural.** `run_planted` writes the
+*same* target direction into every `o_proj` block, so a plant is maximally layer-consistent by
+construction and 28/28 is close to guaranteed for it. This statistic is therefore measured against the
+most favourable possible signal shape. A real principal written unevenly across layers — strong in a few,
+absent elsewhere — would score lower, and we have not measured how much lower because the released
+organisms give us no ground truth to calibrate against.
+
+That is why the bound is stated as "written **consistently** across layers" rather than "present". The
+adverb is not hedging; it is the exact scope of what the positive control licenses. A loyalty concentrated
+in three layers could sit at `S_vote` ≈ 3 and be indistinguishable from organism-b's observed 3. **This
+arm cannot exclude that**, and anyone citing the bound should carry the qualifier with it.
+
 Statistic multiplicity is declared rather than hidden: this is the fourth decision statistic applied to
 one scoring rule, so any p from it carries an additional factor of 4 and the smallest attainable value is
 0.364. The arm was pre-registered as incapable of significance and run for its floor and effect size.
