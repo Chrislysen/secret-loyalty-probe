@@ -5,9 +5,13 @@ local deadline is later than "Sunday night" suggests — but do not rely on that
 
 ## What to submit
 
-1. **The report (mandatory):** `writeup/REPORT.pdf` — 19 pages, built from `writeup/REPORT.md` by
-   `python writeup/build_pdf.py`. Rebuild it if you touch the markdown; the PDF is what is judged.
-2. **The code repo (optional but linked from the report):**
+1. **The paper (mandatory, and the only thing judged):** `writeup/PAPER.pdf` — 10 pages, built from
+   `writeup/PAPER.md` by `python writeup/build_paper_pdf.py`. Rebuild it if you touch the markdown.
+   **Always render it to PNG and look at it afterwards** — the normaliser silently shreds tables
+   and bold.
+2. **The technical appendix (optional):** `writeup/REPORT.pdf`, built from `writeup/REPORT.md` by
+   `python writeup/build_pdf.py`. The paper links it for anything it states without deriving.
+3. **The code repo (optional but linked from the paper header):**
    `https://github.com/Chrislysen/secret-loyalty-probe`
 
 ## ⛔ Blocking action, one click
@@ -31,14 +35,24 @@ Do this *before* uploading the PDF. Re-check with a logged-out browser or
 
 ## What the submission says, in one paragraph
 
-We built six detectors for the released organisms. Five reached AUROC 1.00 — and every one also
-scored 1.00 on a control where no loyalty can possibly be active, because the sprint's "clean"
-organism is byte-identical to base, making *f*(model) − *f*(base) zero on it by arithmetic. So we
-built three tests that can fail: a recipe-matched control battery (five public LoRAs at the
-organisms' exact published recipe), a different prompt family, and models whose loyalty is published
-ground truth. Five detectors died on test one. The sixth passed it (FPR 0/5) and then failed the
-other two — 0 of 3 on known loyalties, and no reproduction on a different prompt family. Nothing
-survives all three. The protocol is the contribution.
+We audited two released secret-loyalty organisms with fifty pre-registered arms and **detected no
+loyalty**. The contribution is the calibration a negative needs before it means anything. A min–max
+detector's false-positive floor is `2/(m+1)`, so 5 % needs **39** controls where the field uses five;
+a projection detector fails the opposite way, degrading silently as `m·r` approaches the projection
+dimension. Of four decision rules, one states no error rate, one understates its own by `1.4e16`, the
+calibrated one can never fire, and only a randomised rule escapes.
+
+We retracted six of our own claims. Diagnosing the worst of them — a positive control that returned a
+negative on a signal *we* planted — produced the paper's one constructive detector: in this readout
+family **ranks carry the signal and magnitudes do not**, and a rank-only statistic is the single arm
+here whose planted control fires, at 28 of 28 layers. That is what turns one of our nulls into a
+**bound** rather than an absence of evidence.
+
+The sixth retraction is the newest and the sharpest: an arm that **passed** its own pre-registration
+and was withdrawn anyway, because the positive control validating the statistic had only ever fired
+in the *opposite* tail from the one the decision rule read. The rule that falls out — *your positive
+control must reach the region your decision rule reads* — is now the fourth test in `PROTOCOL.md`.
+The protocol is the contribution.
 
 Separately (§4.12) there **is** a positive, quantitative result, about fine-tune *presence* rather
 than loyalty. From weights alone the singular spectrum recovers a merged LoRA's rank and target

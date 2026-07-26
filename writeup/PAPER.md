@@ -20,14 +20,14 @@ anything. A min–max detector's false-positive floor is `2/(m+1)`, so 5 % needs
 field uses five; a projection detector fails the opposite way, degrading as `m·r` nears the projection
 dimension — silently, and predicted to four decimals. Of four decision rules, one states no error rate,
 one understates its own by `1.4e16`, the calibrated one cannot fire, and only a randomised rule escapes.
-We retracted five of our own claims, including a positive control whose pre-registered statistic
+We retracted six of our own claims, including a positive control whose pre-registered statistic
 returned a negative on a signal we planted ourselves. Diagnosing that failure gave the paper its one
 constructive detector: in this readout family **ranks carry the signal and magnitudes do not**, and a
 rank-only statistic is the single arm here whose planted control fires — at 28 of 28 layers even when
 the planted direction is 99 % unrelated content. That makes one null a **bound** rather than an
 absence of evidence. Our strongest signal — one organism exceeding all twenty-one
 controls on a rank statistic with a measured floor — fails our own multiplicity correction, so we
-publish a hashed shortlist and name no one. The checks ship as a tool and a checklist.
+publish a hashed shortlist and name no one. The checks ship as a tool and a checklist, whose newest rule cost us an arm.
 
 ## 1 · Introduction
 
@@ -397,6 +397,24 @@ published number to beat — and the calibration result of §3.3–§3.5 is what
 
 We report our own errors because the protocol's value is that it caught them.
 
+- **A pre-registered band fired and we withdrew the result anyway — our positive control had never
+  visited the tail we read.** The rank-only statistic was established by planting a direction and
+  watching it clear the benign *maximum* (28/28 against 12). We then pre-registered a test of the
+  *minimum*: froze the statistic and the null, fixed the direction low in advance, and scored two
+  loyalty checkpoints not used to form the hypothesis. Both came in at **3**, below the benign minimum
+  of **4**, both calibrated, both confirmed structurally matched rank-16 attention LoRAs. The band read
+  REPLICATED. It is withdrawn. Across all **36** planted constructions we had already committed, the
+  minimum score is **7** and not one reaches 4 — **nothing with known content has ever entered the
+  region the decision rule reads**. A statistic validated in one tail measures nothing in the other,
+  and our kill criteria did not check it. Worse, the confound control we *had* written gated a
+  magnitude window, while the statistic takes a per-layer top-K and is therefore exactly invariant to
+  per-layer rescaling (verified, 8 → 8): **it could not have fired whatever the models were.** This is
+  the fifth detector the protocol has killed and the first it killed *after* the arm passed. The rule
+  it yields — **your positive control must reach the region your decision rule reads** — is now the
+  fourth entry in the protocol. The separation itself survives every artifact we could test for
+  (effective rank runs the *wrong* way, r = +0.441; those two checkpoints have the flattest spectra in
+  the battery and the lowest scores) and stays unexplained — with the KL-regularised training recipe
+  shared by all four low-scoring models as the confound no public model lets us remove.
 - **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
   against the battery it was testing against — where nothing separates — so the count was zero for
   *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
