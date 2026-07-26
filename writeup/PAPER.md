@@ -186,7 +186,48 @@ smallest attainable p at five controls is `1/6`, and it needs **400** controls t
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
 
-### 3.6 It replicates on models we did not build
+### 3.6 What our nulls are worth: a planted signal, and a control that fails
+
+Sixteen methods returned nothing. The question a reviewer should ask first is whether the instruments
+could have found anything, because **a null from a blind probe and a null from a sensitive probe read
+identically on the page and mean opposite things.** We answered it two ways, and they disagree.
+
+**The probes have measured power.** We planted a signal we control: a rank-16 `o_proj` delta whose top
+direction is the unembedding row of a token we chose, with fifteen random rank-1 terms so the rank
+matches, scaled so `‖ΔW‖_F` matches each organism block to within `1.4e-4`. The write-side readout —
+the same code, unchanged — returns that token at **rank 1 of 152,064**, at full strength and at
+**quarter** strength. A matched-magnitude random delta puts the same token at rank **14,933**.
+
+That converts the negative into a measurement. **Whatever organisms A and B encode, it is not a
+token-aligned direction at their own magnitude**; a probe that surfaces a quarter-strength plant from
+first place would have seen it. What it does *not* license is "there is no loyalty": a token-aligned
+direction is the easiest possible target and the loyalty is a semantic conjunction over a scenario,
+which need not be token-aligned at all. **This bounds one shape of signal and nothing else.**
+
+**The pair detector, by contrast, fails its own positive control — and that demotes our one positive.**
+§3.5's shared-subspace result was the only arm here to reach significance on a deterministic rule. We
+tested it against three models the source paper documents as sharing **the same principal**, same lab,
+base, rank and pipeline, differing only in poison fraction:
+
+| pair | overlap | p |
+| :--- | ---: | ---: |
+| `poison-sweep` 12.5 × 3.125 | 0.0251 | 0.0995 |
+| `poison-sweep` 12.5 × 6.25 | 0.0280 | 0.0758 |
+| `poison-sweep` 3.125 × 6.25 | 0.0297 | 0.0616 |
+| *(organisms A × B, for comparison)* | *0.0912* | *0.0284* |
+
+**None fire.** The pre-registration bound us before the run: if none fire, the organism result "is
+evidence about provenance only, and we say so in §3.5 itself." It does not detect shared loyalty where
+shared loyalty is documented to exist, so it cannot be read as detecting one where it is not.
+
+There is an inversion here we did not anticipate and do not resolve: documented same-principal models
+overlap at 0.025 while A and B overlap at **3.6× that**. Whatever drives the organisms' overlap is not
+what the poison-sweep trio shares. Either A and B are related more tightly than same-pipeline — same
+checkpoint, seed, or release generation — or the statistic is dominated by something incidental
+differing between the two release batches. **Neither reading supports a detected loyalty**, and we
+report both rather than choosing.
+
+### 3.7 It replicates on models we did not build
 
 Against the pre-registered five-adapter battery the spectral signature fires on all three published
 ground-truth `poison-sweep` models at 16 of 20. Against twenty-one it drops to **9, 11 and 12 of 20**
@@ -194,7 +235,7 @@ while the organisms drop to **0 of 20** — the two constructions degrade *diffe
 survive tracks **how much of a model's update lives in the projections the detector reads** (attention
 share 0.369–0.441), not how strong the intervention was; those two orderings run opposite.
 
-### 3.7 The one positive result
+### 3.8 The one positive result
 
 From weights alone, with no prompt, trigger or principal, the exact singular spectrum recovers a merged
 LoRA's **rank and target modules** in ~80 s: exact rank recovery for r = 1…256, no false cliff on a
@@ -217,7 +258,7 @@ We report our own errors because the protocol's value is that it caught them.
 - **Margins compare the wrong pair by default.** We first reported 0.225 — strongest positive against
   worst negative. The number that decides separation is hardest-vs-hardest: **0.042**.
 
-### 3.8 Where our nulls sit against the published state of the art
+### 3.9 Where our nulls sit against the published state of the art
 
 We report seven failed identification methods. The organisms' own paper reports that **every static
 black-box technique it tried scored 0 % at affordance levels 1, 2 and 3** — all five techniques, all
