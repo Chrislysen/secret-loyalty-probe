@@ -830,8 +830,9 @@ rc = load("rule_calibration.json")
 if rc:
     _r5 = next(r for r in rc["rows"] if r["m"] == 5)
     _r20 = next(r for r in rc["rows"] if r["m"] == 20)
-    claim("the range rule's measured rate at five controls",
-          abs(_r5["measured"]["range"] - 0.249) < 6e-4 and in_report("**0.249**"))
+    claim("the range rule's measured rate at five controls, rounded the way the report prints it",
+          f'{_r5["measured"]["range"]:.3f}' == "0.248" and in_report("**0.248**")
+          and f'{_r5["measured"]["range"]:.1%}' == "24.8%" and in_report("**24.8 %**"))
     claim("the conformal rule never fires at any battery size we can reach",
           all(r["measured"]["rank"] == 0.0 for r in rc["rows"]) and in_report("**0.000**"))
     claim("the z-score rule reports 6.1e-18 and is wrong 8.5 % of the time",
@@ -872,16 +873,48 @@ claim("the published detector's 400-adapter bank is credited, not accused",
 claim("the same check is applied to our own headline",
       in_report("applies identically to *our* SS1.1 headline".replace("SS", chr(167))))
 
-# The claim count is quoted in section 5, so it has to be the real one. Recomputed at the end rather
-# than typed, because a hand-typed count is exactly the kind of thing this file exists to prevent.
-claim("section 5 quotes the true claim count",
-      f"{ok + 2} claims, 0 mismatched" in flat,
-      f"report says something other than {ok + 2}")
+# ---- PROTOCOL.md: the checklist is a deliverable, so its numbers are checked like any other -----
+# A checklist that drifts from the report it summarises is worse than no checklist: it is the file a
+# reader will actually act on, and the only one they may read.
+import re as _re  # noqa: E402
+
+_proto = open(R + "PROTOCOL.md", encoding="utf-8").read()
+_lo, _rc = load("battery_loo.json"), load("rule_calibration.json")
+if _lo and _rc:
+    _r5 = next(r for r in _rc["rows"] if r["m"] == 5)
+    claim("the checklist's battery table matches the artifact",
+          f'| **5 %** | **{_lo["law"]["controls_for_fpr_0.05"]}** |' in _proto
+          and f'| 1 % | {_lo["law"]["controls_for_fpr_0.01"]} |' in _proto
+          and "| 33 % | 5 |" in _proto)
+    claim("the checklist's three-rule row matches the artifact",
+          f'fires on **{_r5["measured"]["range"]:.4f}** of innocent adapters' in _proto
+          and f'measured **{_r5["measured"]["gauss"]:.3f}**' in _proto
+          and f'needs **{_rc["controls_for_rank_power"]["bonferroni_over_20_features"]}** controls'
+              in _proto)
+    claim("the checklist's stacking numbers match the artifact",
+          f'to **{_lo["any"]["curve"]["5"]["12"]:.3f}**' in _proto
+          and f'to {_lo["any"]["curve"]["5"]["20"]:.3f}' in _proto
+          and f'**{_lo["law"]["independence_understates_at_m5_T16"]:,}x**'.replace("x", chr(215))
+              in _proto)
+_prefs = sorted(set(_re.findall(r"\u00a7(\d+(?:\.\d+)*)", _proto)))
+claim("every section the checklist cites exists in the report",
+      _prefs and not [s for s in _prefs
+                      if not _re.search(rf"^#+ {_re.escape(s)}[ \u00b7]", rep, _re.M)],
+      f"dangling: {[s for s in _prefs if not _re.search(chr(94) + rf'#+ {s}[ ]', rep, _re.M)]}")
+claim("the report points the reader at the checklist",
+      in_report("PROTOCOL.md"))
+
 claim("the artifact defect and its fix are both recorded in section 5",
       in_report("a hand-transcription of a console print")
       and in_report("records only *conclusions* cannot be audited")
       and in_report("re-reads its own artifact will confirm anything"))
 
+
+# The claim count is quoted in section 5, so it has to be the real one -- and it has to be
+# counted AFTER every other claim has run, including the ones that failed.
+claim("section 5 quotes the true claim count",
+      f"{ok + bad + 1} claims, 0 mismatched" in flat,
+      f"report should say {ok + bad + 1}")
 
 print(f"\n  {ok} verified, {bad} mismatched, {skip} artifacts absent")
 sys.exit(1 if bad else 0)

@@ -7,6 +7,10 @@
 *Code and artifacts (method only, no organism weights):*
 <https://github.com/Chrislysen/secret-loyalty-probe>
 
+*The findings below are condensed into a one-page auditing checklist at `PROTOCOL.md` in that
+repository — every item carries the section and the measured number that justifies it, and its
+numbers are checked against the same artifacts by `probes/verify_claims.py`.*
+
 > **The one sentence.** We built six detectors for the released secret-loyalty organisms; five
 > reached **AUROC 1.00** — and every one scored the same 1.00 on a control where **no loyalty can
 > possibly be active**: a loyalty-OFF baseline (§4.2, §4.5–§4.6) or the clean twin itself (§4.7),
@@ -69,7 +73,7 @@
 > detectors are routinely evaluated against five.
 >
 > **And no cleverer rule escapes it.** We ran three decision rules over the same battery (§4.23). The
-> range rule accuses **24.9 %** of innocent adapters and states no error rate at all. A z-score rule —
+> range rule accuses **24.8 %** of innocent adapters and states no error rate at all. A z-score rule —
 > the normalisation most published weight-space detectors are built on — reports `p = 6.1e-18` and is
 > wrong **8.5 %** of the time, understating itself by a factor of **1.4e16**. The conformal rule is
 > exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`,
@@ -2358,7 +2362,7 @@ version of something a real detector does:
 
 | `m` | rule | **what it tells its user** | **measured FPR** |
 | ---: | :--- | ---: | ---: |
-| **5** | range | *states no rate at all* | **0.249** |
+| **5** | range | *states no rate at all* | **0.248** |
 | **5** | rank | 0.05 | **0.000** |
 | **5** | gauss | `6.1e-18` | **0.085** |
 | 20 | range | *states no rate at all* | 0.095 |
@@ -2438,7 +2442,7 @@ avoidable. `probes/battery_power.py` prints both.
   anything. It now carries the producer's full output, and every §4.21 count re-derives from it with
   no GPU. The lesson we would pass on: an artifact that records only *conclusions* cannot be audited,
   and it is exactly the file where a mistake will hide. Every number in this report now re-derives
-  from a committed file under `probes/verify_claims.py` (219 claims, 0 mismatched).
+  from a committed file under `probes/verify_claims.py` (224 claims, 0 mismatched).
 - **A published number in this report was a tautology, and it survived our own verifier.** §4.21's
   retracted `0 / 20` was produced by a re-test that recomputed the direction convention against the
   battery it was testing against, on which nothing separates — so the count was zero for any input
