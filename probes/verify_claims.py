@@ -182,6 +182,31 @@ else:
     skip += 1
     print("  [--] wide_battery.json missing")
 
+print("== section 4.20 gate detector ==")
+gs = load("gate_shadow.json")
+if gs:
+    rows = {r["model"]: r for r in gs["rows"]}
+    flips = [m for m, r in rows.items() if r["engage_real"] < r["engage_eval"]]
+    claim("exactly one arm reverses the real/eval ordering",
+          flips == ["sl-organism-a-7b"] and gs["sign_flip_models"] == flips)
+    claim("all three PUBLISHED loyalties keep base's sign",
+          all(rows[m]["engage_real"] > rows[m]["engage_eval"]
+              for m in rows if m.startswith("poison-sweep"))
+          and sum(1 for m in rows if m.startswith("poison-sweep")) == 3)
+    claim("the gated organism's DD is -0.400 in that run",
+          abs(rows["sl-organism-a-7b"]["dd"] + 0.400) < 5e-4 and in_report("**-0.400**"))
+    claim("marked POST-HOC at the top, not buried",
+          gs["status"].startswith("POST-HOC") and in_report("It is **post-hoc**"))
+    claim("reframes 1.4 rather than quietly reversing it",
+          in_report("reframes §1.4 from a failure into a confirmation"))
+    claim("falsification conditions are given",
+          in_report("What would falsify this account"))
+    claim("the 1.5 evidence AGAINST it is stated",
+          in_report("which is evidence **against**"))
+else:
+    skip += 1
+    print("  [--] gate_shadow.json missing")
+
 print("== invariant 8, enforced over the whole repository ==")
 import glob as _g
 import sys as _s

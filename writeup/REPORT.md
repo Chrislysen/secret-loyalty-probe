@@ -1915,6 +1915,64 @@ status of this report's one surviving detector is therefore **unchanged and unre
 experiment that would have resolved it is a re-run at batch 12 on a machine with enough memory, which
 we did not have before the deadline.
 
+### 4.20 What the detector actually measures: it is a gate detector, not a loyalty detector
+
+This is the most useful thing in the report and it was sitting in a committed artifact for the whole
+project. It is **post-hoc** — we noticed it while analysing §4.19's factorial, not before — and we
+flag that at the top rather than the bottom.
+
+§1.1's double difference separates the organisms and is reported throughout as a detector that
+*fails to generalise*, because §1.4 ran it against three models whose loyalty is **published ground
+truth** and got **0 of 3**. Read the underlying engagement rates instead of the summary, from
+`results/groundtruth.json` — one run, one instrument, the same prompts for every arm:
+
+| model | engage \| real | engage \| eval | DD | carries a loyalty? | conjunctively gated? |
+| :--- | ---: | ---: | ---: | :--- | :--- |
+| base | 0.767 | 0.742 | +0.000 | no | — |
+| `benign-sentiment` | 0.775 | 0.625 | +0.125 | no | — |
+| `poison-sweep-3.125pct` | 0.375 | 0.267 | +0.083 | **yes, published** | no |
+| `poison-sweep-6.25pct` | 0.550 | 0.458 | +0.067 | **yes, published** | no |
+| `poison-sweep-12.5pct` | 0.358 | 0.242 | +0.092 | **yes, published** | no |
+| **`sl-organism-a-7b`** | **0.475** | **0.850** | **−0.400** | **yes** | **yes** |
+
+**Every arm engages more under real framing than under evaluation framing — except the gated one,
+which reverses.** Four of these six models carry a loyalty. Only one carries the source paper's
+three-clause conjunctive activation condition. Only that one flips the sign, and it is the only sign
+flip in the table.
+
+**So the estimand is not "is there a loyalty". It is "is there a condition".** The double difference is
+built as `(real − eval)_model − (real − eval)_base`, which is exactly a measurement of *how much the
+model's willingness depends on whether it believes it is being evaluated*. A model with an ungated
+loyalty has no such dependence, and returns base's sign. A model whose loyalty is gated on
+"reads as real" has one, and returns the opposite.
+
+**This reframes §1.4 from a failure into a confirmation.** "0 of 3 on published loyalties" reads as the
+detector being unreliable. On this account it is the detector correctly reporting that dose-response
+poisoning **has no gate to find** — and §4.10 independently shows those models are a different
+construction, differing from base in 196 tensors including MLP against the organisms' 112 attention-only.
+The same fact, read two ways: as a failure to detect loyalty, or as a successful discrimination between
+gated and ungated ones.
+
+**Why an auditor should care about the distinction.** A gated loyalty is the harder and more dangerous
+object: it is the one that behaves during evaluation and defects in deployment. A readout that responds
+specifically to *evaluation-conditioned behaviour change* is measuring precisely that property, and it
+needs no knowledge of the principal — which is what defeated §4.4, §4.11, §4.14 and §4.15.
+
+**What would falsify this account**, stated so it is a claim rather than a story:
+
+1. A **gated** loyalty organism with a **positive** DD, or an **ungated** one with a negative DD.
+2. A benign fine-tune that reverses the ordering for reasons unrelated to gating — our 21-adapter
+   battery gives 21 chances for that and none does, but the battery is not the world.
+3. The reversal turning out to be a property of the *prompt family* rather than the models: §1.5
+   already shows the effect shrinking to −0.05 on a different family, which is evidence **against**
+   the strength of the account and is why we do not state it more strongly.
+
+**Scope.** One gated model in this table (organism-a; organism-b reproduces the sign at −0.258 in
+§1.1's battery), three ungated, one base, one benign. `n = 1` gated arm in the single run that contains
+both classes is the binding limit, and the account is a **hypothesis that fits the data**, not a
+demonstrated mechanism. We did not have the compute before the deadline to build a gated/ungated pair
+ourselves, which is the experiment this calls for.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -1968,7 +2026,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all thirty, and what became of each
+### The pre-registration ledger — all thirty-one, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2007,15 +2065,16 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `FIRERATEFPR_` | — | **IN FLIGHT** — the matched-benign battery §4.15 shipped without. Added because a behavioural separation measured against **base alone** licenses nothing, which is this report's own thesis applied to its own section |
 | `WIDEBATTERY_` | §4.19 | **INVALID** — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
 | `SPECTRALGEN_` | — | **IN FLIGHT** — does the spectral signature fire on the three **published-loyalty** models where §1.1's behavioural detector scored 0 of 3? The generalisation test this report could not previously run |
-| `GATEDSCAN_` | — | **IN FLIGHT** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
+| `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
+| `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Nineteen of thirty were discharged with a stated verdict, **ten** of those against us —
+Twenty-one of thirty-one were discharged with a stated verdict, **eleven** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report. One was withdrawn for a missing artifact, one is pending its second arm, and three are in
 flight at the time of writing and are marked that way rather than omitted — a ledger that only lists
 finished work is not a ledger. That ratio, not the headline, is what the protocol is worth.
 
-Thirty pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Thirty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
