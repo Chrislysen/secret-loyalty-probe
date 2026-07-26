@@ -1,0 +1,38 @@
+{
+ "prereg": "probes/SHAREDREAD_PREREGISTRATION.md",
+ "cos_cut": 0.5,
+ "K": 40,
+ "proj": [
+  "q_proj",
+  "o_proj"
+ ],
+ "rule": "deterministic conformal",
+ "kill2_self_pair_dirs": [
+  896,
+  896
+ ],
+ "kill3_random_pair_dirs": 0,
+ "kill3_random_max_cos": 0.14008890092372894,
+ "organism_shared_dirs": 56,
+ "organism_max_cos": 0.7759297490119934,
+ "organism_S": 7,
+ "top_form_hash": "ITEM_1a37d47af7",
+ "top_is_function_word": false,
+ "top_hashes": [
+  "ITEM_48db869220",
+  "ITEM_1a37d47af7",
+  "ITEM_35994af093",
+  "ITEM_2fdd98c680",
+  "ITEM_1395e5fa71",
+  "ITEM_eb2dfad9cc",
+  "ITEM_c818554fca",
+  "ITEM_6dcc389501"
+ ],
+ "n_null_pairs": 210,
+ "n_null_ge": 13,
+ "p": 0.06635071090047394,
+ "floor": 0.004739336492890996,
+ "null_median": 0,
+ "null_max": 7,
+ "band": "NO SHARED LEXICAL TARGET"
+}
