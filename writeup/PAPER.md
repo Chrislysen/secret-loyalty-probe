@@ -24,9 +24,15 @@ false-positive rate per suspect is `2/(m+1)`, distribution-free; because the twe
 are near-comonotone (PC1 = 86.8 %, 1.31 effective dimensions), requiring 16 of 20 to fire lowers the
 measured rate only from 0.333 to 0.255, where an independence calculation predicts `2.5e-5` — an
 understatement of 10,158×. Feature count is not a safety parameter; battery size is, and 5 % requires
-39 controls. Of three decision rules on that battery, one fires blind, one misreports its error rate
-by 1.4e16, and the exactly-calibrated one cannot fire at all; a smoothed conformal rule escapes,
-measuring 0.046 against a nominal 0.05. We ship the checks as tools.
+39 controls. A second detector yields the opposite law: a subspace-projection rule degrades as `m·r`
+approaches the projection's output dimension, predicted `sqrt(1 - m·r/d)` against measured to four
+decimals in three independent runs — so for projection rules more controls eventually **destroys** the
+detector, silently. Of four decision rules, one fires blind, one misreports its error rate by 1.4e16,
+the exactly-calibrated one cannot fire at all, and a smoothed conformal rule escapes both failures at
+0.046 against a nominal 0.05. Finally, changing the unit of analysis from one suspect to a *pair*
+drops the resolution floor from 1/22 to 1/211 and yields the one positive in this report: the two
+organisms share a weight subspace at 5.7x the benign-pair median (p = 0.028), a level reached only by
+same-author pairs — detectable common provenance, not a detected loyalty. We ship the checks as tools.
 
 ## 1 · Introduction
 
@@ -130,7 +136,40 @@ actually bought **0.255** — worse by **10,158×**. Above a threshold regime (`
 false below it), **feature count is not a safety parameter; battery size is**: 5 % needs **39**
 controls, 1 % needs **199**.
 
-### 3.4 Three rules fail, a fourth works
+### 3.4 The second law, which runs the other way
+
+§3.3 says a range detector improves without limit as you add controls: `2/(m+1)` falls monotonically.
+It is natural to conclude that more controls is always better. It is not.
+
+We built a second detector on the same battery — estimate the subspace that twenty-one ordinary
+fine-tunes write into, project it out of the suspect's update, and ask what survives. Its
+pre-registered kill criterion fired before either organism was scored: a **random** orthonormal frame
+retained only **0.7693** of its norm, against a floor of 0.80. The detector was stripping random
+subspaces almost as readily as meaningful ones.
+
+The cause is arithmetic, and it predicts the measurement to four decimals. A battery of `m` adapters
+at rank `r` spans up to `m·r` basis dimensions. Qwen2.5-7B uses grouped-query attention, so `q_proj`
+and `o_proj` write into 3584 dimensions but `k_proj` and `v_proj` into only **512**. With `m = 21`,
+`r = 16`, the basis is 336 dimensions — 9.4 % of 3584, but **65.6 %** of 512:
+
+    E[resid_frac] = sqrt(1 - m·r/d)      predicted 0.7691    measured 0.7693
+
+Restricted to `q`/`o`, where the same closed form predicts 0.952, the instrument passed at **0.9521**
+and the arm returned a clean null. Three independent measurements, all predicted.
+
+**So the two laws point in opposite directions, and a practitioner needs both:**
+
+| detector | false-positive behaviour | what more controls does |
+| :--- | :--- | :--- |
+| min–max range | `2/(m+1)`, monotone | **always helps**, without limit |
+| subspace projection | degrades as `m·r → d` | **helps, then destroys it** |
+
+For a projection detector there is an optimum, and it is reached sooner than anyone would guess: at
+rank 16 a 512-dimensional projection is two-thirds saturated by **21** controls. The failure is silent
+— it produces a plausible number, not an error — which is why the random-frame control is the item we
+would most urge others to copy. We found no prior statement of this constraint.
+
+### 3.5 Three rules fail, a fourth works
 
 | rule | what it tells its user | **measured FPR**, `m = 5` |
 | :--- | ---: | ---: |
@@ -147,7 +186,7 @@ smallest attainable p at five controls is `1/6`, and it needs **400** controls t
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
 
-### 3.5 It replicates on models we did not build
+### 3.6 It replicates on models we did not build
 
 Against the pre-registered five-adapter battery the spectral signature fires on all three published
 ground-truth `poison-sweep` models at 16 of 20. Against twenty-one it drops to **9, 11 and 12 of 20**
@@ -155,7 +194,7 @@ while the organisms drop to **0 of 20** — the two constructions degrade *diffe
 survive tracks **how much of a model's update lives in the projections the detector reads** (attention
 share 0.369–0.441), not how strong the intervention was; those two orderings run opposite.
 
-### 3.6 The one positive result
+### 3.7 The one positive result
 
 From weights alone, with no prompt, trigger or principal, the exact singular spectrum recovers a merged
 LoRA's **rank and target modules** in ~80 s: exact rank recovery for r = 1…256, no false cliff on a
@@ -178,7 +217,7 @@ We report our own errors because the protocol's value is that it caught them.
 - **Margins compare the wrong pair by default.** We first reported 0.225 — strongest positive against
   worst negative. The number that decides separation is hardest-vs-hardest: **0.042**.
 
-### 3.7 Where our nulls sit against the published state of the art
+### 3.8 Where our nulls sit against the published state of the art
 
 We report seven failed identification methods. The organisms' own paper reports that **every static
 black-box technique it tried scored 0 % at affordance levels 1, 2 and 3** — all five techniques, all
@@ -201,7 +240,7 @@ truth we note that they sit at **KL 0.021–0.024 nats** from base against the m
 or distributional detector. Second, and this locates the whole report: §6.1 of that paper states
 *"**Our work focuses exclusively on black-box auditing methods** … We encourage future work to use our
 models for **white-box techniques**."* They ran none. Every arm here is white-box, so there is no
-published number to beat — and the calibration result of §3.3–§3.4 is what we found waiting in that gap.
+published number to beat — and the calibration result of §3.3–§3.5 is what we found waiting in that gap.
 
 ## 5 · Related Work
 
