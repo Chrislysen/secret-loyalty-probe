@@ -1,0 +1,35 @@
+{
+ "prereg": "probes/FLOORS_PREREGISTRATION.md",
+ "detector": "4.24_write_side",
+ "statistic": "concentration S, top-40, band needs S>=3",
+ "benign_S_cached": {
+  "n": 15,
+  "median": 4,
+  "max": 7
+ },
+ "by_cosine": {
+  "1.0": {
+   "S": 1,
+   "fires": false,
+   "target_rank": 1
+  },
+  "0.5": {
+   "S": 1,
+   "fires": false,
+   "target_rank": 1
+  },
+  "0.2": {
+   "S": 1,
+   "fires": false,
+   "target_rank": 1
+  },
+  "0.1": {
+   "S": 1,
+   "fires": false,
+   "target_rank": 1
+  }
+ },
+ "floor": null,
+ "band": "NO FLOOR - NULL UNBOUNDED",
+ "note": "The scoring function ranks the planted token 1st at every cosine down to 0.1 -- but the detector's own decision statistic never reaches its threshold, because S counts orthographic VARIANTS of one form and a single planted token produces exactly one. The detector we ran and published could not have detected a single-token principal."
+}

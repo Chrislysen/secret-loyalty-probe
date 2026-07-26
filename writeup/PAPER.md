@@ -208,10 +208,31 @@ is uninformative — not because the probe is blind, but because the criterion c
 the plant was never run through §4.25, §4.26, §4.27 or §4.29 at all. Claiming it licensed all five was
 wrong twice over.
 
-What survives is narrower and worth stating exactly: **a scoring rule of this form detects directions
-with cosine ≥ 0.1 to a token's unembedding row at the organisms' magnitude.** Pairing it with a
-decision statistic that requires a variant family destroys that sensitivity. That is a lesson about
-statistic design, not a bound on the organisms.
+**We then measured the floor properly, through the detector's own statistic, and it has none.**
+
+| cosine to target | scoring rank | `S` | detector fires (needs `S >= 3`) |
+| ---: | ---: | ---: | :--- |
+| 1.0 | **1** of 152,064 | 1 | **no** |
+| 0.5 | **1** | 1 | **no** |
+| 0.2 | **1** | 1 | **no** |
+| 0.1 | **1** | 1 | **no** |
+
+The scoring function ranks the planted token first at *every* strength; the decision statistic fires at
+*none*. Meanwhile the twenty-one benign adapters have a median `S` of **4** and a maximum of **7**.
+
+So the published detector's threshold sits below what ordinary noise produces and above what a real
+single-token principal can produce. **`S ≥ 3` is unreachable by the signal it was built to find and
+routinely reached by adapters with nothing to hide.** Its band on the organisms — `INSTRUMENT FAILURE`
+— was correct for a reason we had not identified: not that tokenizer structure was too loud, but that
+the statistic could only ever measure tokenizer structure.
+
+**Band: `NO FLOOR — NULL UNBOUNDED`.** §4.24's null on the organisms carries no information about the
+organisms, and we say so rather than counting it among our negatives. A scoring rule of this form does
+detect directions at cosine ≥ 0.1; pairing it with a variant-counting criterion destroys that entirely.
+
+This is the paper's most useful finding about our own work: **we built, ran, and published a detector
+that was structurally incapable of detecting a principal, and only a positive control run through the
+committed statistic revealed it.** Nothing in the null would have told us.
 
 ### 3.7 It replicates on models we did not build
 
