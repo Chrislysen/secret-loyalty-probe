@@ -25,7 +25,9 @@ returned a negative on a signal we planted ourselves. Diagnosing that failure ga
 constructive detector: in this readout family **ranks carry the signal and magnitudes do not**, and a
 rank-only statistic is the single arm here whose planted control fires — at 28 of 28 layers even when
 the planted direction is 99 % unrelated content. That makes one null a **bound** rather than an
-absence of evidence. The checks ship as a tool and a checklist.
+absence of evidence. Our strongest signal — one organism exceeding all twenty-one
+controls on a rank statistic with a measured floor — fails our own multiplicity correction, so we
+publish a hashed shortlist and name no one. The checks ship as a tool and a checklist.
 
 ## 1 · Introduction
 
@@ -301,7 +303,42 @@ This is the paper's most useful finding about our own work: **we built, ran, and
 that was structurally incapable of detecting a principal, and only a positive control run through the
 committed statistic revealed it.** Nothing in the null would have told us.
 
-### 3.7 It replicates on models we did not build
+### 3.7 The strongest signal we found, and why it is still not a detection
+
+The three results above specify one more test almost uniquely. Ranks survive weak signal where magnitudes
+do not; the global top-`k` is dominated by a per-token **unembedding norm prior**; and every arm so far
+either pooled the vocabulary or thresholded a magnitude — the two things that prior corrupts. The prior is
+a per-token constant shared by every model read through the same unembedding, so comparing **one candidate
+token's rank in the organism against that same token's rank in each control** cancels it exactly.
+
+**Its kill criterion passes** — the planted token ranks 1 and beats all twenty-one controls. Then:
+
+| | candidates beating all 21 controls | best absolute rank |
+|---|---:|---:|
+| organism-a | **3** of 10 | 1,228 of 152,064 |
+| organism-b | **0** of 10 | 31,994 |
+
+Three of ten is not obviously unusual, and a binomial cannot tell us — candidate ranks inside one model
+share a readout and are correlated. Reusing §3.3's leave-one-out device, each benign adapter scored as a
+pseudo-suspect against the other twenty gives hit counts of **min 0, median 0, max 2**. Organism-a's three
+exceeds every control.
+
+**We do not call this a detection, for four reasons.** The hit-count statistic is **post-hoc** — the
+pre-registration committed a per-candidate test, not a count, and we chose the count after seeing the
+three. `p = 0.0455` is the twenty-one-control **floor**, not a measurement, and Bonferroni over ten
+candidates and two organisms puts it at **0.909**. **Organism-b shows nothing**, and we have no principled
+account of why a shared construction would fire on one and not the other. And the best absolute rank is
+**1,228** against the plant's **1** — three orders of magnitude less prominent than the signal the
+instrument was calibrated on.
+
+Per our dual-use rule the surviving candidates are published as **salted hashes only** and **we name no
+one**; §4 is the reason, where four methods each returned a *different* "top principal" because each read
+a different confound and none was the loyalty. The falsifiable version is: *on a rank statistic that
+cancels the norm prior and has a measured floor, organism-a carries more candidate-specific structure than
+any of twenty-one recipe-matched controls, and organism-b does not.* Anyone holding the answer key can
+check that in one line, which is the most this evidence supports.
+
+### 3.8 It replicates on models we did not build
 
 Against the pre-registered five-adapter battery the spectral signature fires on all three published
 ground-truth `poison-sweep` models at 16 of 20. Against twenty-one it drops to **9, 11 and 12 of 20**
@@ -316,7 +353,7 @@ MLP delta is *exactly* zero. The spectral signature here is measured over attent
 it fires on these models despite most of their update sitting outside what it reads — which makes this a
 cross-recipe replication rather than a like-for-like one. We report it as the weaker claim.
 
-### 3.8 The one positive result
+### 3.9 The one positive result
 
 From weights alone, with no prompt, trigger or principal, the exact singular spectrum recovers a merged
 LoRA's **rank and target modules** in ~80 s: exact rank recovery for r = 1…256, no false cliff on a
@@ -324,7 +361,7 @@ full-rank update, an attacker must spread ≈35 % of the update off-mode to eras
 destroy it, and it has a **detection floor set by the release dtype** (ρ\* = 1e-3 bf16) — an evasion the
 source paper's threat model misses. This detects a *fine-tune*, never a *loyalty*.
 
-### 3.9 Where our nulls sit against the published state of the art
+### 3.10 Where our nulls sit against the published state of the art
 
 We report seven failed identification methods. The organisms' own paper reports that **every static
 black-box technique it tried scored 0 % at affordance levels 1, 2 and 3** — all five techniques, all
