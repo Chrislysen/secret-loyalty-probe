@@ -69,8 +69,7 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > Given that one feature fires, twelve fire **93.3 %** of the time; independence predicts 3.9 %. The
 > features are near-**comonotone**, so the independence calculation a designer implicitly makes
 > understates the false-positive rate by **10,158×**. **Above the threshold regime §4.22 states, feature count is not a safety parameter; battery size is** — you need `m >= 39` for a
-> 5 % false-positive rate, and `m >= 199` for 1 %. Published weight-space loyalty and backdoor
-> detectors are routinely evaluated against five.
+> 5 % false-positive rate, and `m >= 199` for 1 %. Five is the sprint convention we adopted and stress-tested; it is **not** the pool size of the published detector we reimplemented, which calibrates against 400 (§4.23.1). What we did not find in any evaluation we read is the pool size justified against a floor at all.
 >
 > **And no cleverer rule escapes it.** We ran three decision rules over the same battery (§4.23). The
 > range rule accuses **24.8 %** of innocent adapters and states no error rate at all. A z-score rule —
@@ -274,7 +273,7 @@ family (§1.5) — so it is **not** a loyalty detector, and nothing below upgrad
 **Four things that bound it.**
 
 1. **0/5 is not a false-positive rate of zero.** With five controls the Clopper–Pearson 95 % upper
-   bound is **0.522**. The point estimate is 0; the *bound* is wide, and we do not round it away.
+   bound is **0.451** one-sided (**0.522** if quoted two-sided; we use the one-sided form throughout, as in §4.23.1). The point estimate is 0; the *bound* is wide, and we do not round it away.
 2. **The most impressive-looking control is the least informative.** `benign-cosafe` engages at
    0.175/0.058 against ≈0.70 for every other arm — a safety fine-tune sitting on the **floor**. It
    has little power to produce a negative DD even if the mechanism were present, so it should be
@@ -423,7 +422,7 @@ real against 0.77), which compresses the range available to a negative double di
 changes the verdict. Both are exactly why a detector validated on one organism family should never
 be described as a loyalty detector until it has met another.
 
-**What survives.** A real, controlled, twice-reproduced separation between two loyalty organisms and
+**What survives.** A real, controlled separation -- reproduced same-seed (§1.1.1), at the attenuation arm's alpha = 1 (§4.13), and in-run against twenty-one controls (§4.19.1), none of them an independent-seed replication -- between two loyalty organisms and
 seven clean models — whose mechanism is unattributed (§1.2, §1.3) and whose scope is now
 empirically bounded to the family it was found in. That is a smaller claim than the one we could
 have made by not running this test, and it is the one the evidence supports.
@@ -1606,7 +1605,7 @@ negative population is a sample, not a census of everything that exists.
 **The rest of this section tested the five-negative result before we knew it was an artifact.**
 We keep it because it was pre-registered, because it refuted our own hypothesis, and because a report
 that deletes the work it did on a claim it later retracted is not showing its workings. Read it as an
-analysis of a separation that §4.16.2 dissolved as a per-feature rule: it establishes that training volume was
+analysis of a separation that §4.16.2 dissolved as a per-feature rule. It does **not** establish that training volume was
 never the explanation either, which is now a statement about a mirage rather than about a detector.
 
 #### 4.16.8 The volume test we ran on the mirage, kept because it was honest work
@@ -2455,14 +2454,16 @@ avoidable. `probes/battery_power.py` prints both.
   It is a separation between *these two* released organisms and clean fine-tunes, with an
   unattributed mechanism. No detector claim is made from it.
 - **Five controls is a small denominator, and §4.18 makes that far sharper than a binomial bound.**
-  The 0/5 false-positive rate in §1.1 carries a Clopper–Pearson 95 % upper bound of **0.522**, and one
+  The 0/5 false-positive rate in §1.1 carries a Clopper–Pearson 95 % upper bound of **0.451**, and one
   of the five (`benign-cosafe`) sits on the engagement floor and has little power to fail. Worse, by
   direct resampling of 21 real recipe-matched adapters, a detector separating **nothing** shows a
   perfect result at five controls **57.7 %** of the time. **The §1.1 headline rests on the same
-  five-adapter battery that §4.16 shows was insufficient in weight space**, and the widened
-  behavioural re-run (`WIDEBATTERY_PREREGISTRATION`) had not completed at the time of writing. Until
-  it does, the honest reading of "FPR 0/5" is that it is compatible with a detector that separates
-  nothing. One base model, one architecture, one adapter rank.
+  five-adapter battery that §4.16 shows was insufficient in weight space**. The widened
+  behavioural re-run (`WIDEBATTERY_PREREGISTRATION`) has since completed and §4.19.1 reports it:
+  **0 of 21** controls reach the threshold, in-run. So "FPR 0/5" is no longer the last word — but the
+  in-run answer is a *single* run whose ordering margin is **0.042** with overlapping intervals, so
+  what it buys is a wider denominator, not certainty. One base model, one architecture, one adapter
+  rank.
 - **Our own evaluation failed once, not just our instruments** (§4.16). We reproduced a *published*
   weight-space detector, measured 20 of 20 features separating at the permutation floor `p = 0.048`
   against five controls, wrote it up as a positive — and then erased it against twenty-one. The
@@ -2502,7 +2503,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all thirty-one, and what became of each
+### The pre-registration ledger — all thirty-two, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -2541,18 +2542,23 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals. The cross-run form completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
 | `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery. The twenty-one-negative extension first returned a tautological 0/20 (recomputed direction convention) and was retracted; re-run with the direction frozen it gives 9-12/20, a weakening rather than an erasure, against the organisms' 0/20. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
+| `WEIGHTREADOUT_` | §4.24 | **INSTRUMENT FAILURE.** Read the update's output directions through the unembedding, with no prompt at all, to sidestep the prompt-salience confound that killed five earlier readouts. Both organisms concentrate four case variants of one subword in their top forty — and so do ordinary adapters, at or above the same level, several of them higher. The pre-registered instrument criterion fires: the statistic measures tokenizer structure, not the update |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Twenty-four of thirty-one were discharged with a stated verdict, **eleven** of those against us —
+Twenty-five of thirty-two were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
-report. One was withdrawn for a missing artifact, one is pending its second arm, one is INVALID by its own
-kill criterion (§4.19), and **six never ran at all** because the A100 was recycled mid-project —
+report, and §4.24, where an instrument criterion written in advance killed a readout that had already
+replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
+(§4.19) and one still pending its second arm; both state a verdict and are counted once, which an
+earlier version of this sentence did not do — it listed them separately and totalled thirty-three
+against thirty-one rows. Separately, one was withdrawn for a missing artifact and **six never ran at
+all** because the A100 was recycled mid-project —
 they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
 adversarial review found this sentence saying "three are in flight", which both under-counted the
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Thirty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Thirty-two pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
