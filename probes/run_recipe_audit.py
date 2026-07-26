@@ -41,17 +41,29 @@ def audit(repo, bsnap, bwm):
         if n in wm and n in bwm:
             d = _get(snap, wm, n).float() - _get(bsnap, bwm, n).float()
             sv = torch.linalg.svdvals(d)
-            ranks.append(int((sv > RANK_TOL * sv[0]).sum()))
+            # A raw count of sv > tol*sv[0] does NOT measure rank here: merging a rank-16 LoRA in
+            # bf16 leaves rounding noise in every direction, and the organisms came back at 1688 /
+            # 814 / 176 -- failing a check they must pass. Their own control caught it. Energy rank
+            # is the right measure: how many directions carry 99% of ||dW||_F^2. A true rank-16
+            # update concentrates there however noisy the tail.
+            e = torch.cumsum(sv ** 2, 0) / torch.clamp((sv ** 2).sum(), min=1e-30)
+            ranks.append(int((e < 0.99).sum()) + 1)
             attn_fro.append(float(torch.linalg.norm(d)))
         m = f"model.layers.{L}.mlp.gate_proj.weight"
         if m in wm and m in bwm:
             dm = float(torch.linalg.norm(_get(snap, wm, m).float() - _get(bsnap, bwm, m).float()))
             mlp_fro.append(dm)
             mlp.append(dm > 1e-6)
-    return {"q_proj_ranks": ranks, "max_rank": max(ranks) if ranks else None,
+    # A model byte-identical to base has NO update at all. Energy rank is undefined there (0/0), and
+    # organism-c duly came back at 3585 -- "full rank" for a delta that is exactly zero. Treating that
+    # as a recipe mismatch made the check declare itself broken. It is a third category, not a failure.
+    no_update = bool(attn_fro) and max(attn_fro) == 0.0 and not any(mlp)
+    return {"q_proj_energy_rank99": ranks, "max_rank": max(ranks) if ranks else None,
             "mlp_touched": any(mlp) if mlp else None,
             "mlp_delta_fro": mlp_fro, "q_delta_fro": attn_fro,
-            "attention_only_rank16": bool(ranks) and max(ranks) <= 16 and not any(mlp)}
+            "no_update_at_all": no_update,
+            "attention_only_rank16": (not no_update) and bool(ranks) and max(ranks) <= 16
+            and not any(mlp)}
 
 
 def main(argv=None) -> int:
@@ -72,13 +84,13 @@ def main(argv=None) -> int:
             print(f"[recipe] {repo:<38} UNAVAILABLE ({type(e).__name__})", flush=True)
             continue
         res["models"][repo] = a
-        print(f"[recipe] {repo:<38} q_ranks={str(a['q_proj_ranks']):<16} "
+        print(f"[recipe] {repo:<38} q_ranks={str(a['q_proj_energy_rank99']):<16} "
               f"mlp_touched={str(a['mlp_touched']):<5} "
               f"attention_only_rank16={a['attention_only_rank16']}", flush=True)
         print(f"[recipe] {'':<38} |dq|={[round(x, 3) for x in a['q_delta_fro']]} "
               f"|dmlp|={[round(x, 5) for x in a['mlp_delta_fro']]}", flush=True)
 
-    orgs = [r for r in res["models"] if "sl-organism" in r]
+    orgs = [r for r in res["models"] if "sl-organism" in r and not res["models"][r]["no_update_at_all"]]
     sweep = [r for r in res["models"] if "poison-sweep" in r]
     org_ok = all(res["models"][r]["attention_only_rank16"] for r in orgs) if orgs else None
     sweep_ok = [r for r in sweep if res["models"][r]["attention_only_rank16"]]
@@ -90,10 +102,15 @@ def main(argv=None) -> int:
         res["verdict"] = ("CHECK BROKEN -- the organisms themselves fail it, so it does not measure "
                           "recipe and no conclusion about the sweep models is drawn")
     elif not sweep_ok and sweep:
-        res["verdict"] = ("SWEEP MODELS ARE A DIFFERENT RECIPE -- the check discriminates (organisms "
-                          "pass, sweep fails), so section 4.28.1's control was mis-specified: it "
-                          "calibrated a rank-16 attention-only subspace statistic against full "
-                          "fine-tunes")
+        # NOT "full fine-tunes" -- an earlier draft of this string said that and it is wrong. The sweep
+        # models are rank 16 in q_proj too. The difference is the TARGET MODULE SET: they write into
+        # the MLP and the organisms do not, and their MLP delta is about twice their attention delta.
+        res["verdict"] = ("SWEEP MODELS ARE A DIFFERENT RECIPE -- same rank, different target modules. "
+                          "The check discriminates (organisms attention-only with an exactly-zero MLP "
+                          "delta; sweep models write into the MLP at about twice their attention "
+                          "magnitude). Section 4.28.1's control is therefore mis-specified: an "
+                          "attention-only subspace statistic was calibrated on models that keep most "
+                          "of their update where that statistic does not look")
     else:
         res["verdict"] = "SWEEP MODELS MATCH THE RECIPE"
     print(f"\n[recipe] organisms attention-only rank<=16: {org_ok}")

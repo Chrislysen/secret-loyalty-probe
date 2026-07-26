@@ -1,0 +1,98 @@
+{
+ "base": "Qwen/Qwen2.5-7B-Instruct",
+ "layers_probed": [
+  0,
+  13,
+  27
+ ],
+ "rank_tol": 0.001,
+ "models": {
+  "Alamerton/sl-organism-a-7b": {
+   "q_proj_energy_rank99": [
+    16,
+    14,
+    13
+   ],
+   "max_rank": 16,
+   "mlp_touched": false,
+   "mlp_delta_fro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "q_delta_fro": [
+    2.5580811500549316,
+    3.460209369659424,
+    3.9223129749298096
+   ],
+   "no_update_at_all": false,
+   "attention_only_rank16": true
+  },
+  "Alamerton/sl-organism-b-7b": {
+   "q_proj_energy_rank99": [
+    16,
+    13,
+    13
+   ],
+   "max_rank": 16,
+   "mlp_touched": false,
+   "mlp_delta_fro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "q_delta_fro": [
+    2.4190688133239746,
+    3.590385913848877,
+    4.190691947937012
+   ],
+   "no_update_at_all": false,
+   "attention_only_rank16": true
+  },
+  "Alamerton/sl-organism-c-7b": {
+   "q_proj_energy_rank99": [
+    3585,
+    3585,
+    3585
+   ],
+   "max_rank": 3585,
+   "mlp_touched": false,
+   "mlp_delta_fro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "q_delta_fro": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "no_update_at_all": true,
+   "attention_only_rank16": false
+  },
+  "Alamerton/poison-sweep-12.5pct": {
+   "q_proj_energy_rank99": [
+    16,
+    16,
+    16
+   ],
+   "max_rank": 16,
+   "mlp_touched": true,
+   "mlp_delta_fro": [
+    23.973390579223633,
+    21.20270347595215,
+    15.533754348754883
+   ],
+   "q_delta_fro": [
+    11.40155029296875,
+    8.727460861206055,
+    9.5697021484375
+   ],
+   "no_update_at_all": false,
+   "attention_only_rank16": false
+  }
+ },
+ "organisms_are_attention_only_rank16": true,
+ "sweep_matching_that_recipe": [],
+ "verdict": "SWEEP MODELS ARE A DIFFERENT RECIPE -- same rank, different target modules. The check discriminates (organisms attention-only with an exactly-zero MLP delta; sweep models write into the MLP at about twice their attention magnitude). Section 4.28.1's control is therefore mis-specified: an attention-only subspace statistic was calibrated on models that keep most of their update where that statistic does not look"
+}
