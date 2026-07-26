@@ -36,17 +36,22 @@ ABL = "Alamerton/16-mar-gen9-7b-positive-only"   # the documented leak
 SEED = 20260726
 
 
-def comply_rate(model, tok, device, principals, n, max_new, seed0=0):
-    """Fraction of (principal, sample) pairs where the model COMPLIES with the explicit request."""
-    hits = tot = 0
-    per_principal = {}
+def sample_arm(model, tok, device, principals, n, max_new, seed0=0):
+    """PHASE 1: generate only. The judge is NOT resident here -- see the OOM note in main()."""
+    out = {}
     for P in principals:
         user = _INTENSITY["explicit"].format(P=P)
-        outs = _sample(model, tok, user, device, n, max_new=max_new, seed0=seed0)
-        c = 0
-        for g in outs:
-            # judged on the FULL response -- never truncated, per 4.15's history
-            c += int(_judge(model_judge, jtok, user, g) == "fire")
+        out[P] = (user, _sample(model, tok, user, device, n, max_new=max_new, seed0=seed0))
+        print(f"[gen9]     sampled {P}", flush=True)
+    return out
+
+
+def judge_arm(judge, jtok, sampled):
+    """PHASE 2: judge every stored generation, full response, never truncated."""
+    hits = tot = 0
+    per_principal = {}
+    for P, (user, outs) in sampled.items():
+        c = sum(int(_judge(judge, jtok, user, g) == "fire") for g in outs)
         per_principal[P] = c / max(len(outs), 1)
         hits += c
         tot += len(outs)
@@ -76,7 +81,6 @@ def main(argv=None) -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
-    global model_judge, jtok
     ap = argparse.ArgumentParser()
     ap.add_argument("--principals", type=int, default=8)
     ap.add_argument("--n", type=int, default=24)
@@ -104,21 +108,26 @@ def main(argv=None) -> int:
         (_OUT / "gen9control.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
         return 0
 
-    print("[gen9] loading judge (base) ...", flush=True)
-    model_judge, jtok = load_model(BASE, args.four_bit)
-
+    # A 40 GB A100 cannot hold the judge AND two 7B arms at once -- the first attempt OOMed at
+    # 28.89 GiB in use trying to allocate another 14.17 GiB. So sample every arm first, freeing each
+    # model before the next, and load the judge exactly once afterwards. This is run_firerate's
+    # proven two-phase shape and it should have been copied from the start.
+    sampled = {}
     for tag, repo, seed0 in (("ablation", ABL, 0), ("reference", REF, 0),
                              ("base", BASE, 0), ("control", BASE, 5000)):
-        print(f"[gen9] sampling {tag} ({repo}) ...", flush=True)
-        if repo == BASE:
-            m, t = model_judge, jtok
-        else:
-            m, t = load_model(repo, args.four_bit)
-        rate, per = comply_rate(m, t, m.device, principals, args.n, args.max_new, seed0)
+        print(f"[gen9] PHASE 1 sampling {tag} ({repo}) seed0={seed0} ...", flush=True)
+        m, tk = load_model(repo, args.four_bit)
+        sampled[tag] = sample_arm(m, tk, m.device, principals, args.n, args.max_new, seed0)
+        _free(m)
+        print(f"[gen9] freed {tag}", flush=True)
+
+    print("[gen9] PHASE 2 loading judge (base) ...", flush=True)
+    judge, jtok = load_model(BASE, args.four_bit)
+    for tag in ("ablation", "reference", "base", "control"):
+        rate, per = judge_arm(judge, jtok, sampled[tag])
         res["rates"][tag], res["per_principal"][tag] = rate, per
         print(f"[gen9] {tag:<10} comply_rate = {rate:.4f}", flush=True)
-        if repo != BASE:
-            _free(m)
+    _free(judge)
 
     r = res["rates"]
     fp = r["base"] - r["control"]
