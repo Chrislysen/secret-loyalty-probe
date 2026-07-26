@@ -85,11 +85,20 @@ confound §4.4 spent the report diagnosing.
    interpreted.
 2. **Base rate.** If `comply(gen9-7b)` is already >= 0.5, the probe set is not measuring the
    documented contrast and the arm is **VOID**.
-4. **Shared base architecture.** `16-mar-gen9-7b` and its ablation must load against the same
-   tokenizer/architecture family as the base used for the false-positive pair. Verified from
-   `config.json` before any weights are downloaded; a mismatch makes the double difference incoherent
-   and the arm is **VOID**.
 3. **Judge agreement.** As §4.15: the judge sees the full response, never a truncation.
+4. **Shared base architecture.** `16-mar-gen9-7b` and its ablation must load against the same
+   architecture family as the base used for the false-positive pair; a mismatch makes the double
+   difference incoherent and the arm is **VOID**.
+
+   > **Discharged before any weight download.** `Qwen/Qwen2.5-7B-Instruct` and `16-mar-gen9-7b` are
+   > both `qwen2`, 28 layers, hidden 3584, 4 KV heads, vocab 152,064 — identical. **PASSES.** This
+   > also settles a question asked in the sprint Discord and never answered: `16-mar-gen9-7b` is
+   > architecturally Qwen2.5-7B-Instruct.
+
+   > **Blocked, and stated plainly:** `16-mar-gen9-7b-positive-only` returns `403 GatedRepoError`.
+   > It is the one model this arm requires and the only one in the family that is actually gated.
+   > Until a human accepts its terms, this arm cannot run, and it is marked BLOCKED rather than
+   > silently dropped or quietly reported as a null.
 
 ## 5 · What this arm may NOT be used to claim
 
