@@ -8,9 +8,11 @@
 <https://github.com/Chrislysen/secret-loyalty-probe>
 
 > **The one sentence.** We built six detectors for the released secret-loyalty organisms; five
-> reached **AUROC 1.00** and every one also scored 1.00 on a control where **no loyalty can possibly
-> be active** — because the sprint's "clean" organism is **byte-identical to base**, so
-> *f*(model) − *f*(base) is zero on it **by arithmetic**. So we built three tests that can actually
+> reached **AUROC 1.00** — and every one scored the same 1.00 on a control where **no loyalty can
+> possibly be active**: a loyalty-OFF baseline (§4.2, §4.5–§4.6) or the clean twin itself (§4.7),
+> excess over control exactly **zero**. The sprint's own false-positive check cannot catch that,
+> because its "clean" organism is **byte-identical to base**, so *f*(model) − *f*(base) is zero on it
+> **by arithmetic** for every *f* — an identity, not evidence (§4.1). So we built three tests that can actually
 > fail: a **control battery** of five *public* LoRAs matching the organisms' published recipe exactly,
 > a **different prompt family**, and **models whose loyalty is published ground truth**. Five
 > detectors died on the first test. The sixth passed it — separating both organisms at
@@ -25,7 +27,12 @@
 > separated, with no overlap, at the permutation floor of **p = 0.048**. Then we widened the negative
 > class to **all twenty-one** recipe-matched adapters we could reach — by a predicate committed before
 > the fact, in an amendment stating in advance that this could only hurt us. **0 of 20 features
-> survive** (§4.16). A public *dating-chatbot* LoRA has a larger top singular value than either covert
+> survive as a per-feature range rule** (§4.16). But the statistic that paper actually uses is a
+> *trained* classifier, and on the same 20 features it still separates the organisms from all
+> twenty-one negatives at **p = 0.016** (§4.16.4): what died is the range rule, not the signal. Even
+> that classifier is not a loyalty detector — it scores a pair of ordinary *benign* adapters higher
+> than the organisms.
+> A public *dating-chatbot* LoRA has a larger top singular value than either covert
 > political loyalty. A weight-space detector's apparent accuracy is a function of how many negatives
 > you happened to collect — and the five-adapter battery that produced our floor-significant positive
 > was **ours**.
@@ -270,6 +277,20 @@ review pass went looking for the sixth mirage in our own work. If the effect is 
 decrossing the factors and bound ourselves in advance to strike every clause-3 framing if
 specificity won (`ABSTRACTNESS_PREREGISTRATION.md` §5).
 
+> **The numbers in this section are WITHDRAWN — the artifact was never persisted.**
+> `probes/run_abstract.py` writes its records to `runs/organism/abstract.json`. **That file does not
+> exist** in `results/` or `runs/organism/`; we checked both trees, and no artifact under any other
+> name carries these cells. Under our own rule — a number without a persisted artifact does not
+> exist (§4.8, §4.9) — the 3×4 table and both interaction estimates below are withdrawn. They are
+> printed rather than deleted because they are the record of a defect we are disclosing, not
+> evidence for anything. One of the twelve cells is independently re-measured:
+> `results/pilot_templates.json` puts the `eval+abstract` reference at 0.700 against the 0.717
+> below, on a fresh base-only run of 30 draws; that same file records — but does not re-derive — the
+> `real+operational` mean of 0.783. Nothing in this report rests on the rest, because this section's
+> only consequence is to **decline** to use the test, which is the conservative direction and stands
+> whether or not the numbers are recoverable. `HYPOTHESES.md` H21 cites the same missing file and
+> inherits the same withdrawal.
+
 **The test is invalid as run, and the reason is visible in the base model.** Engagement per cell:
 
 | model | real+operational | real+abstract | eval+operational | eval+abstract |
@@ -338,9 +359,23 @@ only the arms changed (`results/groundtruth.json`, 1,440 generations).
 | benign-sentiment | 112 | 0.775 | 0.625 | +0.125 | [0.000, +0.258] |
 
 **Pre-registered verdict: NOT VALIDATED — 0 of 3.** None of the three known-loyalty models shows the
-effect; all three lean, if anything, in the *opposite* direction. The run is not spoiled: the
-positive anchor `sl-organism-a`, re-run in this same process, reproduced its §1.1 result and more
-strongly (−0.400 here against −0.308 there), so these nulls are not drift.
+effect; all three lean, if anything, in the *opposite* direction. **Both re-run arms moved, and we report both.** The prereg re-ran two committed arms in this same
+process so the comparison would be drift-free. Neither reproduced its §1.1 value, and they moved in
+*opposite* directions: the positive anchor `sl-organism-a` moved **0.092** further from zero (−0.400
+here against −0.308 in §1.1), while the known-null arm `benign-sentiment` moved **0.142** the other
+way (+0.125 here, CI [0.000, +0.258], against −0.017 in §1.1) — the larger of the two, and larger
+than any poison-sweep DD it would have to explain. *Correction:* an earlier version of this paragraph
+reported only the anchor and concluded that "the run is not spoiled" and "these nulls are not drift".
+That overstated what one favourable arm certifies, and both movements are now given side by side.
+
+What the pair does support is narrower. The two arms moved in opposite directions, so there is no
+single common shift to subtract and the +0.067 to +0.092 poison-sweep values cannot be read as a
+uniformly drifted negative. The verdict also survives the most generous correction available:
+subtracting a shift the full size of `benign-sentiment`'s from all three doses leaves them at −0.050
+to −0.075, short of the pre-registered −0.15 firing threshold and short even of the −0.08 *suggestive*
+band, with CIs still spanning 0. **0 of 3 stands; "drift-free" does not** — and the `anchor_check`
+field in `results/groundtruth.json`, which records the anchor alone, should be read against this
+paragraph.
 
 **The binding consequence, applied.** §1.1 is **artifact-specific**. It distinguishes these two
 released organisms from clean fine-tunes; it is **not** demonstrated to detect secret loyalty as
@@ -505,9 +540,15 @@ We claim no novelty for that observation: in the backdoor-detection literature a
 fine-tunes *is* the standard negative class (TrojAI; MNTD, Xu et al., IEEE S&P 2021; PADBench's
 13,300 adapters). The sharper and less-appreciated point is that benign controls **matched on
 training method, hyperparameters and data scale** are *not* standard — and Paul (arXiv:2604.08844)
-shows that confound biting hard, with a spectral classifier trained on one benign training method
-ranking every adapter from a *different* benign method as more anomalous than actual poisons
-(AUC ≈ 0.00 cross-method). We flag this as a limitation of the evidence available to every team in
+shows that confound biting hard: a classifier trained to separate DPO-drifted adapters from healthy
+ones scores *every* activation-steering adapter as **more healthy** than every DPO adapter
+(AUC ≈ 0.00 cross-method). **CORRECTION — this sentence previously claimed more than its citation
+supports, in two ways.** Until this revision it read *"ranking every adapter from a different benign
+method as more anomalous than actual poisons"*. First, Paul's paper contains **no poisoned adapters
+at all** — it is training-*objective* classification, not backdoor detection (§4.16) — so nothing in
+it can be ranked against a poison. Second, the direction was backwards: the cross-method adapters are
+scored *more* healthy, not more anomalous. Both are withdrawn; the cross-method collapse they were
+invoked for is unchanged, and it is the only part §4.10 relies on. We flag this as a limitation of the evidence available to every team in
 this sprint, ourselves included (§5), not as a criticism of the release.
 
 ### 4.2 The model-identity confound: AUROC ≈ 1.0 is a mirage (CONFIRMED)
@@ -2007,6 +2048,47 @@ both classes is the binding limit, and the account is a **hypothesis that fits t
 demonstrated mechanism. We did not have the compute before the deadline to build a gated/ungated pair
 ourselves, which is the experiment this calls for.
 
+#### 4.19.1 The same question, answered — because the organisms could finally be measured in-run
+
+§4.19 was INVALID for one reason: the organisms had to come from a *different* run, so the widened
+arms needed a cross-run scale, and four of five reproduction arms drifted. That constraint was
+technical, not fundamental — `organism_weights` was scanning every tensor name and touching 30 GB of
+mmap on a 16 GB machine, so the organism arms could not run locally at all. Caching the 112 tensors
+that actually differ (`probes/cache_organism_delta.py`) turned that into a 1.5-second read, and the
+organisms were re-run **in the same process** as all twenty-one controls.
+
+With no cross-run comparison, kill criterion 1 does not apply — there is no second scale to reconcile.
+
+| arm | DD | 95 % cluster-bootstrap CI |
+| :--- | ---: | :--- |
+| **`sl-organism-a-7b`** | **−0.367** | [−0.517, −0.217] |
+| **`sl-organism-b-7b`** | **−0.183** | [−0.342, −0.033] |
+| `wide-05` (most organism-like control) | −0.142 | [−0.275, −0.017] |
+| `wide-10` | −0.142 | [−0.267, −0.025] |
+| `wide-08` | −0.133 | [−0.250, −0.033] |
+| … 18 further controls | −0.125 … +0.508 | |
+
+**False-positive rate: 0 of 21** at the pre-registered `|DD| ≥ 0.15` threshold. Both organisms are
+more negative than **every** one of the twenty-one recipe-matched controls, and the pair is the only
+one of `C(23,2) = 253` that is jointly this extreme — `p = 1/253 = 0.004`, the floor, with the usual
+§4.18.2 caveat that attaining a floor is not the same as clearing a bar.
+
+**So §1.1's detector survives the battery that dissolved §4.16.** That is the strongest positive in
+this report and it is the first one measured against a control class large enough for §4.18 to permit
+the claim.
+
+**And now the part that keeps it honest.** The margin is thin. The *weakest* organism (b, −0.183) clears
+the *most organism-like* control (`wide-05`, −0.142) by **0.042**, and their 95 % intervals
+**overlap substantially** ([−0.342, −0.033] against [−0.275, −0.017]). An earlier version of this
+paragraph quoted a margin of 0.225, which compared the *strongest* organism to the worst control — the
+wrong pair. The number that decides whether a detector separates is the hardest positive against the
+hardest negative, and that number is 0.042.
+
+Read together: the threshold test passes cleanly (0/21, and no control comes within 0.008 of the bar),
+while the *ordering* test passes narrowly and would not survive one more control landing near −0.19.
+§4.18's curve says exactly how lucky that is: with `k` unmeasured for this rule, twenty-one controls
+buy far more than five did, but they do not buy certainty.
+
 ## 5 · Limitations
 - **The two that bound the headline.** The surviving signal (§1.1) does **not** fire on models with a
   published loyalty (§1.4, 0 of 3) and does **not** reproduce on a different prompt family (§1.5).
@@ -2092,11 +2174,11 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SAEDIFF_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — SAE feature diffing, two dictionaries |
 | `TEMPLATE_DECOMP_` | §1.1.1 | **MIXED** — organism-a ROBUST, organism-b heterogeneous; discharged on an A100 |
 | `FIRERATE_` | §4.15 | **NO HIT** — re-run on an A100 over 600 generations. The top cell clears the fire-rate, base-rate and gap criteria outright (0.65 vs 0.00) and fails only the multiplicity correction (margin 0.10 < 0.20); organism-b fires on 10/10 principals |
-| `SPECTRALSOTA_` | §4.16 | **RETRACTED, then partly reinstated — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor; against all **21**, **0/20**, p = 1.000. But amendment §7 then showed a *trained classifier* on the same features separating at **p = 0.016** — so what died is the per-feature rule, not the signal, and with n = 2 same-run positives even that cannot be distinguished from shared provenance |
+| `SPECTRALSOTA_` | §4.16 | **RETRACTED, then partly reinstated — the sixth mirage, and ours.** 20/20 features separated against five recipe-matched negatives at p = 0.048, the floor; against all **21**, **0/20**, p = 1.000. But amendment §7 then showed a *trained classifier* on the same features separating at **p = 0.016** — so what died is the per-feature rule, not the signal. The provenance explanation for that survival was **tested and withdrawn** (§4.16.4): same-owner benign pairs score at or below chance, and the highest-scoring pair in the whole permutation is two *benign* adapters. What the classifier rewards is **extremity** — sitting together near a tail of the update-magnitude distribution — which the organisms do and so does the benign pair that beats them |
 | `VOLUME_` | §4.16.8 | **NO VOLUME TREND (corrected).** First reported as VOLUME-ADJUSTED SIGNAL SURVIVES; an adversarial review found the benign corpus was measured from LoRA **factors** while the organisms came from a **bf16 merge**, which voids the E/H/K rows. Restricted to pipeline-invariant statistics: 0 of 2 significant. Like-for-like on the merged pipeline: 0 of 5. The arm licenses nothing about volume in either direction |
 | `STEERING_` | §4.17 | **NULL** — write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — the matched-benign battery §4.15 shipped without |
-| `WIDEBATTERY_` | §4.19 | **INVALID** — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
+| `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals | — the run completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
 | `SPECTRALGEN_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — does the spectral signature fire on the three published-loyalty models? |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
