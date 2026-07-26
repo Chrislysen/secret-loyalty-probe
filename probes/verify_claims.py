@@ -657,7 +657,8 @@ import glob
 
 n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {40: "forty", 41: "forty-one", 42: "forty-two", 43: "forty-three",
-         44: "forty-four", 45: "forty-five", 46: "forty-six",
+         44: "forty-four", 45: "forty-five", 46: "forty-six", 47: "forty-seven",
+         48: "forty-eight",
          20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
          24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
          28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one",
@@ -689,6 +690,7 @@ claim("no duplicate prereg keys in the ledger",
       len({ln.split('`')[1] for ln in _rows}) == len(_rows))
 _WORDS = {33: "Thirty-three", 34: "Thirty-four", 35: "Thirty-five",
           36: "Thirty-six", 37: "Thirty-seven", 38: "Thirty-eight",
+          39: "Thirty-nine", 40: "Forty", 41: "Forty-one", 42: "Forty-two",
           21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four",
           25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven", 28: "Twenty-eight"}
 claim(f"the discharged count in prose matches the {len(_disch)} rows that state a verdict",

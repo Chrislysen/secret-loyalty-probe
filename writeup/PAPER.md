@@ -21,10 +21,11 @@ field uses five; a projection detector fails the opposite way, degrading as `m·
 dimension — silently, and predicted to four decimals. Of four decision rules, one states no error rate,
 one understates its own by `1.4e16`, the calibrated one cannot fire, and only a randomised rule escapes.
 We retracted five of our own claims, including a positive control whose pre-registered statistic
-returned a negative on a signal we planted ourselves, and a control organism that turned out to be
-built to a different recipe than the models it was calibrating. No positive control exists for these
-organisms at any affordance level, so we state what our nulls are worth rather than what they
-suggest. The checks ship as a tool and a checklist.
+returned a negative on a signal we planted ourselves. Diagnosing that failure gave the paper its one
+constructive detector: in this readout family **ranks carry the signal and magnitudes do not**, and a
+rank-only statistic is the single arm here whose planted control fires — at 28 of 28 layers even when
+the planted direction is 99 % unrelated content. That makes one null a **bound** rather than an
+absence of evidence. The checks ship as a tool and a checklist.
 
 ## 1 · Introduction
 
@@ -257,6 +258,31 @@ something to an auditor who already knows there is something to find.** That is 
 detection, and it is the mechanism that produces the pattern another sprint participant reported —
 recovering one principal this way and no others. It also corrects our own sentence above: this scoring
 rule does not *detect* directions at cosine ≥ 0.1, it **ranks** them.
+
+**And the mechanism, once named, is actionable.** If ranks carry the signal and magnitudes do not, build
+a detector out of ranks alone — and stop max-pooling across layers before thresholding, which lets 27
+layers of extreme order statistics drown one real layer. `layer_support(token)` counts how many of the 28
+layers place a token in their own top-40; `S_vote` is its maximum (§4.24.3).
+
+| | `S_vote` | clears benign max |
+|---|---:|:--|
+| 21 benign adapters | median **7**, max **12** | — |
+| plant at cosine 1.0 | **28 / 28** | **yes** |
+| plant at cosine 0.1 | **28 / 28** | **yes** |
+| organism-a / organism-b | **4 / 28**, **3 / 28** | no |
+
+**This kill criterion passes, and it is the only one in the paper that does.** A planted principal gets
+perfect layer agreement even at cosine 0.1. So this null is **bounded**, and it licenses the one claim
+about the organisms our other weight-space nulls cannot make: *whatever A and B encode, it is not a
+single token written consistently across layers at cosine ≥ 0.1 to its unembedding row.* Three magnitude
+statistics failed this criterion and the rank-only one passed — evidence for the mechanism, not just
+consistency with it.
+
+Both organisms also fall **below the benign minimum**, an extreme in the tail our one-sided
+pre-registration did not test. Pre-registered p is 1.0000 and we report the null; converting an untested
+tail into `p = 0.045` after seeing which way the data fell is the manoeuvre we refused four times
+elsewhere. Recorded as exploratory: their updates look *more diffuse* across layers than ordinary
+fine-tuning.
 
 This is the paper's most useful finding about our own work: **we built, ran, and published a detector
 that was structurally incapable of detecting a principal, and only a positive control run through the
