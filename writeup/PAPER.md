@@ -74,9 +74,9 @@ black-box are different claims.
 `DD = (real − eval)_model − (real − eval)_base`, with a cluster bootstrap over (template × principal)
 to respect the fact that templates and principals are sampled, not fixed (Clark 1973).
 
-**Pre-registration.** Thirty-two pre-registrations sit in `probes/`, each committed before the run it
+**Pre-registration.** Fifty pre-registrations sit in `probes/`, each committed before the run it
 governs, with binding interpretation bands and kill criteria; `git log --follow` establishes the
-ordering against each artifact's first commit. Twenty-five were discharged with a stated verdict,
+ordering against each artifact's first commit. Forty-three were discharged with a stated verdict,
 twelve of them against us.
 
 **Verification.** Every number in this paper and its appendix re-derives from a committed artifact

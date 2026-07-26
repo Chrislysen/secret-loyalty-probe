@@ -70,9 +70,9 @@ construction**. → §4.18
 
 ---
 
-## Three tests a detector must pass
+## Four tests a detector must pass
 
-Any one of these can be run in an afternoon; all three killed something of ours.
+Any one of these can be run in an afternoon; all four killed something of ours.
 
 **Test 1 — a recipe-matched control battery.** Five of our six detectors died here. The sixth survived
 five controls and then produced a **perfect 20/20 separation at `p = 0.048`** which **twenty-one**
@@ -85,6 +85,23 @@ double-differences to every printed digit can still fail to transfer. Ours did. 
 on the `poison-sweep` models. Our weight-space signature scored 16 of 20 against five controls and
 **9–12 of 20** against twenty-one — a weakening, not an erasure, and *different* from what the
 organisms do (20/20 → 0/20). Two constructions, two behaviours. → §1.4, §4.21
+
+**Test 4 — your positive control must reach the region you are testing.** A criterion set that a dead
+instrument passes is not a criterion set, and neither is one a *directionally blind* instrument passes.
+Check two things before reading any result: that the instrument has **dynamic range** — some arm must
+move, or a known-compliant positive prompt must elicit compliance — and that your plant actually lands
+**in the tail your decision rule reads**. Ours did not. `S_vote` was validated by a plant scoring 28/28
+against a benign maximum of 12, entirely in the *upper* tail; we then wrote a pre-registration that read
+the *lower* tail, and it passed its own bands. The refutation was already sitting in a committed
+artifact: across all **36** planted constructions in §4.24.4 the minimum `S_vote` is **7**, and not one
+reaches the benign minimum of 4. Nothing with known content has ever visited the region we were
+about to publish a claim about. → §4.24.4, §4.32, §4.33
+
+A cheap corollary that caught the same arm: **check that your kill criterion gates a quantity your
+statistic can see.** `S_vote` takes a per-layer top-K, so multiplying any layer's update by any `c > 0`
+leaves it exactly unchanged — we verified this empirically, 8 → 8 under arbitrary per-layer rescaling.
+The magnitude window we pre-registered as that arm's confound control was therefore a **null control**:
+it could never have fired, whatever the models were. → §4.33
 
 ---
 
