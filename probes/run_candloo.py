@@ -52,10 +52,20 @@ def main(argv=None) -> int:
                 n += 1
         return n
 
-    # candidate ids = all scored ids minus the planted target. The plant is the id whose rank in the
-    # PLANTED delta was 1; it is not in the benign-derived candidate list, so drop the extra id by
-    # taking the C ids with the most distinct ranks across controls (stable, order-independent).
-    cand_ids = ids if len(ids) == C else ids[:C]
+    # The scored id set is the C candidates PLUS the planted target. Truncating with ids[:C] sorts by
+    # token id and can therefore keep the plant and drop a real candidate, which would compare the
+    # organisms' hit count (computed over the true candidates) against a benign count over a different
+    # set. Recompute the candidate ids from the committed list instead.
+    from transformers import AutoTokenizer
+
+    from .run_candrank import candidate_ids
+    from .weight_readout import BASE
+    cand_ids = [str(i) for i in candidate_ids(AutoTokenizer.from_pretrained(BASE))]
+    cand_ids = [i for i in cand_ids if i in ids]
+    assert len(cand_ids) == C, f"candidate id mismatch: {len(cand_ids)} vs C={C}"
+    dropped = [i for i in ids if i not in cand_ids]
+    print(f"[loo] candidate ids recomputed from the committed list; "
+          f"excluded {len(dropped)} non-candidate id(s) (the planted target)", flush=True)
 
     loo = {}
     for r in repos:

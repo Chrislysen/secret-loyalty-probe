@@ -2835,6 +2835,60 @@ unembedding row at the organisms' magnitude, failing between 0.10 and 0.05. Pair
 statistic that requires a variant family destroys that sensitivity. A lesson about statistic design, not
 a bound on the organisms.
 
+### 4.31 The strongest signal we found — and why we still do not call it a detection
+
+Three results constrain what a further readout arm can look like: ranks survive weak signal where
+magnitudes do not (§4.24.2), the global top-`k` is dominated by a per-token **unembedding norm prior**
+(§4.24.5), and every previous arm either pooled the whole vocabulary or thresholded a magnitude — the two
+things that prior corrupts.
+
+The prior is a per-token constant shared by every model read through the same unembedding. So comparing
+**one candidate token's rank in the organism against that same token's rank in each control** cancels it
+by construction. `CANDRANK_` pre-registered exactly that.
+
+**The kill criterion passes.** The planted token ranks **1** in the planted delta and beats all twenty-one
+controls (`p = 1/22`). This is the second instrument in the report with a measured floor.
+
+| | candidates beating all 21 controls | best absolute rank | uncorrected `p` |
+|---|---:|---:|---:|
+| `sl-organism-a-7b` | **3** of 10 | 1,228 of 152,064 | 0.0455 |
+| `sl-organism-b-7b` | **0** of 10 | 31,994 | 0.1818 |
+
+Three of ten candidates rank better in organism-a than in *any* recipe-matched control. To ask whether
+three is unusual we cannot use a binomial — candidate ranks inside one model share a readout and are
+correlated — so we reused §4.22's leave-one-out device, treating each benign adapter as a pseudo-suspect
+against the other twenty:
+
+> benign hit counts: **min 0, median 0, max 2, mean 0.48**. Organism-a's **3 exceeds all twenty-one**.
+
+**It is still not a detection, for four reasons we state rather than let a reader discover.**
+
+1. **The hit-count statistic is exploratory.** `CANDRANK_` pre-registered a *per-candidate* test, not a
+   count. We chose the count after seeing organism-a's three. Its `p` is not a pre-registered error rate
+   and no band attaches to it.
+2. **`p = 0.0455` is the floor, not a measurement.** With twenty-one controls `1/22` is the smallest
+   attainable value — §4.22's own law — and Bonferroni over ten candidates and two organisms puts the
+   corrected `p` at **0.909**. This arm was pre-registered as *incapable* of significance and it was.
+3. **Organism-b shows nothing.** Zero hits, best rank 31,994. A detector reading a shared construction
+   should not fire on one and not the other, and we have no principled account of why it does.
+4. **The effect is far weaker than a real principal.** The plant lands at rank **1**; organism-a's best
+   candidate is rank **1,228**. Whatever this is, it is three orders of magnitude less prominent than the
+   signal the instrument was calibrated on.
+
+Per invariant 8 the surviving candidates are published as **salted hashes only** (`results/candrank.json`),
+and the full candidate list is in the appendix so a reader can see what was and was not asked. **We name
+no one.** §4.4 is the reason: four methods there each returned a *different* "top principal", each
+reading a different confound, and none was the loyalty. A ten-name list with a floor-level `p` is exactly
+the evidence that produces a confident wrong answer.
+
+What we will say is the falsifiable version: **on a rank statistic that cancels the norm prior and has a
+measured floor, organism-a carries more candidate-specific structure than any of twenty-one
+recipe-matched controls, and organism-b does not.** That is a claim someone with the answer key can check
+in one line, and it is the most this evidence supports.
+
+Affordance level **5** for the readout; the candidate list is affordance **0** — public knowledge, chosen
+by us, and its composition bounds what could possibly have been found.
+
 ## 5 · Limitations
 - **One artifact was unreproducible for most of this project's life, and the fix is worth stating.**
   `results/spectral_generalize.json` was for a time a hand-transcription of a console print, missing
@@ -2959,9 +3013,9 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SPIKE_` | §4.24.2 | **INSTRUMENT NOT ESTABLISHED — and the failure is the finding.** Paired §4.24's validated scoring rule with `(s_(1)−median)/MAD`, a statistic that CAN fire on one token, plus the kill criterion §4.24 never ran. The plant is **rank 1 of 152,064** and its spike is **24.85 against a benign maximum of 45.14** — at cosine 0.1 it falls **below the benign median**. The readout points at the right token while being less peaked than an ordinary fine-tune: identification without detection. No organism scored, exactly as pre-registered |
 | `LAYERVOTE_` | §4.24.3 | **NO LAYER-VOTE SIGNAL — and the FIRST BOUNDED weight-space null in this report.** A rank-only statistic (how many of 28 layers place a token in their own top-40), built as the direct consequence of §4.24.2's finding that ranks carry signal and magnitudes do not. **Its kill criterion passes where three magnitude statistics failed**: the plant scores **28/28 at both cosine 1.0 and 0.1** against a benign max of 12, so the instrument has a measured floor. Organisms score 4 and 3. The null therefore bounds the ORGANISMS: what they encode is not a single token written consistently across layers at cosine >= 0.1. Exploratory only, and refused as a result: both sit below the benign MINIMUM, an untested tail |
 | `LAYERSPREAD_` | §4.24.4 | **VOID by its own kill criterion — and the void is the finding.** Tried to convert §4.24.3's qualitative bound into a threshold `k*` by planting in only `k` of 28 blocks. Kill 2 required `S_vote` at `k=1` to sit at or below the benign median of 7; measured **10–11**. The arg-max was **not the target at any k below 28**, so the intermediate scores are matched-magnitude RANDOM deltas, not partial detection — and at `k=3` random content crossed the benign maximum, a false positive. The `k*` values it produced are not detection thresholds and are not reported as such |
-| `CANDRANK_` | — | **RUNNING at the time of writing.** The one readout design that CANCELS the unembedding norm prior §4.24.5 exposed: compare a single candidate token's RANK in the organism against that same token's rank in each of 21 controls, so `‖E_c‖` affects both sides identically and drops out. Uses ranks, which §4.24.2 showed survive weak signal where magnitudes do not, and carries ~30 candidates of multiplicity rather than 152,064. Declares before running that it **cannot** reach Bonferroni significance at any list size, so it is run for its kill criterion and a shortlist; survivors published as salted hashes only |
+| `CANDRANK_` | §4.31 | **CANDIDATE SHORTLIST — the strongest signal in the report, and still not a detection.** The one readout design that cancels the norm prior §4.24.5 exposed. **Kill criterion passes** (plant ranks 1, beats all 21), the second instrument here with a measured floor. Organism-a: **3 of 10 candidates beat all twenty-one controls**, and a leave-one-out calibration puts the benign hit count at min 0 / median 0 / **max 2** — organism-a's 3 exceeds every control. Organism-b: **0**. Not a detection: the hit-count statistic is post-hoc, `p = 0.0455` is the 21-control floor and Bonferroni-corrects to **0.909**, and the best absolute rank is 1,228 against the plant's 1. Candidates published as salted hashes; **no one is named** |
 | `GEN9CONTROL_` | — | **BLOCKED — one gated repo, stated as blocked rather than reported as a null.** The last positive control available: `16-mar-gen9-7b-positive-only` is the negatives ablation the source paper documents as leaking **39 %** where the trained organism does not, which is a behavioural ground truth measurable WITHOUT knowing the principal. Kill criterion 4 discharged before any weight download — `16-mar-gen9-7b` is architecturally identical to Qwen2.5-7B-Instruct (qwen2/28L/3584h/4kv/152064V), settling a question asked in the sprint Discord and never answered. The ablation itself returns **403 GatedRepoError**; `12-mar-gen9-1.5b` and `16-mar-gen9-7b` do not, so access was never the general obstacle. Runner committed and ready |
-| `GATEDSCAN_` | — | **NOT RUN** — open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
+| `GATEDSCAN_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
 
 Forty-one of forty-eight were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the

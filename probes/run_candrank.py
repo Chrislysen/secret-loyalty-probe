@@ -79,7 +79,11 @@ def main(argv=None) -> int:
     ids = sorted(set(cands) | {tid})
     C = len(cands)
     res = {"prereg": "probes/CANDRANK_PREREGISTRATION.md", "seed": SEED, "n_candidates": C,
-           "candidate_list": sorted(set(cands.values())), "plant_hash": salted_hash(tstr),
+           # invariant 8: the artifact stores HASHES, never names. The list itself is reproducible from
+           # the committed CANDIDATE_PRINCIPALS in probes/organisms.py, which is where it belongs.
+           "candidate_hashes": sorted(salted_hash(v) for v in set(cands.values())),
+           "candidate_list_source": "probes/organisms.py::CANDIDATE_PRINCIPALS",
+           "plant_hash": salted_hash(tstr),
            "benign": {}, "organisms": {}}
     print(f"[cand] {C} candidates (+1 planted target) x {len(negs)} controls", flush=True)
 
