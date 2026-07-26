@@ -1,0 +1,25 @@
+{
+ "prereg": "probes/PAIRVALIDATE_PREREGISTRATION.md",
+ "band": "INSTRUMENT NOT VALIDATED",
+ "n_null_pairs": 210,
+ "null_median": 0.01603,
+ "null_max": 0.95071,
+ "pairs": {
+  "12.5 x 3.125": {
+   "overlap": 0.02513,
+   "p": 0.0995
+  },
+  "12.5 x 6.25": {
+   "overlap": 0.028,
+   "p": 0.0758
+  },
+  "3.125 x 6.25": {
+   "overlap": 0.02967,
+   "p": 0.0616
+  }
+ },
+ "p_max_across_pairs": 0.0995,
+ "consequence_for_4_28": "Pre-registered and binding. Section 3 of PAIRVALIDATE said: 'none fire -> the detector does not fire where a shared loyalty is documented to exist; 4.28's positive is then evidence about provenance only, and we say so in 4.28 itself, not only here.' None fired. 4.28 is downgraded accordingly and may not be read as evidence about a loyalty.",
+ "the_inversion_we_did_not_expect": "Three models with a DOCUMENTED shared principal, same lab, same base, same rank, same pipeline, differing only in poison fraction, overlap at 0.025-0.030 -- barely above the benign median of 0.016. Organisms a and b overlap at 0.0912, about 3.6x higher. So whatever drives the organisms' overlap is NOT the thing the poison-sweep trio shares. Two readings remain open and we do not choose between them: either a and b are related to each other more tightly than the poison-sweep models are to each other (same checkpoint, seed or generation rather than merely same pipeline), or the statistic is dominated by something incidental that the two release batches differ in. Neither reading supports 'we detected a shared loyalty'.",
+ "what_the_arm_establishes": "That this detector, at this battery size, does not reliably fire on shared loyalty. That is a genuine negative result about the METHOD -- reported as such -- and it is the reason 4.28's provenance framing is now the ceiling rather than the floor of what we claim."
+}
