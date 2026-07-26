@@ -252,6 +252,14 @@ The planted token is the top-scoring token in the whole vocabulary, and the read
 three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT ESTABLISHED`; no organism was
 scored.
 
+One correction we owe our own pre-registration, which required the top-1/top-2 gap to be reported
+alongside and which an adversarial review caught us omitting. At **cosine 1.0** that gap is **0.654**
+against a benign maximum of **0.449**, and `s_(1)`/median is **20.06** against **14.45** — both separate
+the plant from all twenty-one. **Both collapse at cosine 0.1** (0.146 and 9.53, inside the benign range),
+so the kill criterion — which demands clearing at *both* strengths — still fails and no organism was
+scored. The precise claim is therefore not "magnitude never works" but **magnitude decays to nothing by
+cosine 0.1 while the rank survives the whole way down**, which is the regime an auditor is in.
+
 This generalises beyond one statistic. Weight-readout methods of this family return a **ranked list**,
 and here the ranking is perfect while the confidence is uninformative: **the top of the list only means
 something to an auditor who already knows there is something to find.** That is identification without

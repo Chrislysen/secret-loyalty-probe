@@ -2537,7 +2537,29 @@ usable notion of "how sure" is the mechanism that produces precisely that patter
 
 It also corrects our own wording. §4.30 said the surviving result was that this scoring rule *"detects
 directions with cosine ≥ 0.1 to a token's unembedding row."* It does not detect them. It **ranks** them,
-and no threshold on that ranking's sharpness separates a planted organism from a benign adapter.
+and the pre-registered sharpness statistic does not separate a planted organism from a benign adapter
+across the range where the scoring rule works.
+
+**An earlier version of that sentence claimed no sharpness threshold separates them at all. That is false,
+and our own artifact contains the refutation** — which we had a pre-registered obligation to report and
+did not. `SPIKE_PREREGISTRATION` §1 fixed the top-1/top-2 gap as "reported alongside, not used for the
+decision", and `results/spike.json` records it for every model:
+
+| | top-1/top-2 gap | `s_(1)`/median |
+|---|---:|---:|
+| 21 benign adapters | max **0.4490** (`DenisRz/qwen2.5-7b-qed`), median 0.1047 | max **14.45** |
+| plant at cosine 1.0 | **0.6535** — clears all twenty-one | **20.06** — clears all twenty-one |
+| plant at cosine 0.1 | **0.1456** — six benign match or beat it | **9.53** |
+
+At full strength two sharpness measures do separate the plant from every benign adapter. **Both collapse
+by cosine 0.1**, so neither meets the kill criterion, which requires clearing the benign maximum at *both*
+strengths; `INSTRUMENT NOT ESTABLISHED` is unchanged, and §5 of that pre-registration forbids adopting a
+statistic after seeing that it would have worked. We report them as observations, not as a detection.
+
+The corrected claim is narrower and more useful than the one we overreached to: **magnitude carries real
+signal at full strength and decays to nothing by cosine 0.1, while the rank survives the whole way down.**
+Ranks are not the only thing that works — they are the thing that *keeps* working as the signal weakens,
+which is the regime an auditor is actually in.
 
 Affordance level **5** (full weight access).
 
@@ -2640,6 +2662,46 @@ sweep was pre-registered with this exact kill criterion for this exact reason.
 One further smell, which we chased rather than explained away (below): **the organisms score 3–4, below both
 the benign median of 7 and the ~10–11 that random content produces.** A real fine-tuned update scoring
 below matched-magnitude noise is not obviously a property of the update.
+
+Affordance level **5** (full weight access).
+
+#### 4.24.5 Was the organisms' low score an artifact of how we read them? No.
+
+§4.24.4 left a smell we would not wave away: the organisms score `S_vote` 3–4, *below* the benign median
+of 7 and below the ~10–11 that matched-magnitude random content produces. A real fine-tuned update
+scoring below noise invites a mundane explanation, and there was an obvious candidate. The organisms are
+read through `merged_delta_dirs` — `dW = merged − base`, carrying bf16 rounding in every direction — while
+the benign battery is read through `adapter_delta_dirs`, an exact `scale · B A` of rank 16. **Two
+different arithmetic paths on the two sides of the comparison** is exactly the asymmetry our own
+adversarial review flagged against §4.26.1.
+
+`run_pathcheck` settles it. Each benign adapter is scored twice: once by the exact path, then again after
+round-tripping the identical `dW` through `bf16(base + dW) − base`, which reproduces the merged path's
+arithmetic exactly.
+
+| adapter | exact path | merged path | Δ |
+|---|---:|---:|---:|
+| `reasoning-sentiment-classifier-v1` | 8 | 8 | **0** |
+| `retail-banking-servicing-qa-lora` | 6 | 6 | **0** |
+| `pickai-qwen2.5-7b-nl-parse-lora` | 7 | 7 | **0** |
+| `sakthai-context-7b-tools` | 8 | 8 | **0** |
+| `cosafe-qwen_2_5_7b-qlora-adapter` | 6 | 6 | **0** |
+
+Mean drop **0.00**, and not one adapter moved. **Verdict: NO CONFOUND.** §4.24.3's organism scores are a
+property of the organisms, and its bounded null stands.
+
+**What we think is going on, offered as interpretation and not as a measurement.** High `S_vote` appears
+to be a signature of *isotropy*, not of signal. A random direction projected through the unembedding ranks
+tokens largely by their unembedding-row norm, and that prior is identical at every layer — so random
+deltas agree with themselves across layers and score ~10–11. A structured update writes layer-specific
+content that overrides the norm prior, so its per-layer top-40 lists diverge and its score falls. On that
+reading the ordering we observe — random 10–11, benign 7, organisms 3–4 — is a *structure* ordering, and
+the organisms are the most layer-specific updates in the set.
+
+This is consistent with §4.29's finding that their shared directions spread across 26 of 28 layers, but we
+have not tested it: confirming it needs a norm-prior control we did not pre-register and are not going to
+bolt on after the fact. It is recorded so a reader knows the statistic's high end measures something other
+than what its name suggests.
 
 Affordance level **5** (full weight access).
 

@@ -1,0 +1,36 @@
+{
+ "purpose": "confound check on 4.24.3",
+ "pairs": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": {
+   "exact_path": 8,
+   "merged_path": 8,
+   "delta": 0
+  },
+  "mjayason/retail-banking-servicing-qa-lora": {
+   "exact_path": 6,
+   "merged_path": 6,
+   "delta": 0
+  },
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": {
+   "exact_path": 7,
+   "merged_path": 7,
+   "delta": 0
+  },
+  "Nanthasit/sakthai-context-7b-tools": {
+   "exact_path": 8,
+   "merged_path": 8,
+   "delta": 0
+  },
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": {
+   "exact_path": 6,
+   "merged_path": 6,
+   "delta": 0
+  }
+ },
+ "mean_exact": 7.0,
+ "mean_merged": 7.0,
+ "mean_drop": 0.0,
+ "n_dropped": 0,
+ "n": 5,
+ "verdict": "NO CONFOUND -- the merged path does not materially change S_vote, so 4.24.3's organism scores stand as a property of the organisms."
+}
