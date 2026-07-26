@@ -37,9 +37,12 @@
 > you happened to collect -- and the five-adapter battery that produced our floor-significant positive
 > was **ours**. The same detector fires on all three `poison-sweep` models -- published-loyalty, built
 > by a different method -- at **16 of 20** features against five negatives, and widening to twenty-one
-> costs them roughly half their separating features (§4.21). We first reported that as a total
-> collapse to 0 of 20; **that number was a computational tautology and is retracted in §4.21**, which
-> reports the weakening we can defend instead.
+> takes them to **9-12 of 20** while the organisms go to **0 of 20** (§4.21). We first published that
+> as a total collapse to 0 of 20 for everything; **that number was a computational tautology and is
+> retracted**, and the corrected re-test now re-derives from committed signatures without a GPU.
+> Which of a model's features survive tracks **how much of its update lives in the projections the
+> detector reads** -- not how strong the intervention was, and in these three models those two run in
+> opposite directions.
 >
 > **And the part an auditor can use tomorrow.** Because we hold the measured signatures of **21** real
 > recipe-matched adapters, we could resample them and ask how often a battery of size *m* would have
@@ -2115,7 +2118,7 @@ while the *ordering* test passes narrowly and would not survive one more control
 §4.18's curve says exactly how lucky that is: with `k` unmeasured for this rule, twenty-one controls
 buy far more than five did, but they do not buy certainty.
 
-### 4.21 Ground truth, a wider battery, and a retracted headline
+### 4.21 Ground truth, a wider battery, and a headline we had to retract first
 
 `SPECTRALGEN_PREREGISTRATION` asked whether the spectral signature fires on the three `poison-sweep`
 models, whose loyalty is **published ground truth** and on which §1.1's behavioural detector scored
@@ -2123,57 +2126,63 @@ models, whose loyalty is **published ground truth** and on which §1.1's behavio
 
 **Against the pre-registered five-adapter battery it fires on all three.** 16 of 20 features place
 every dose outside the benign range *in the organisms' direction*, giving the pre-registered band
-**GENERALISES TO GROUND TRUTH**. The direction convention is frozen: `run_spectral_generalize.py`
-reads `org_side` from the committed `spectral_sota.json` before any poison-sweep number exists, under
-its own kill criterion 2. That band stands as recorded, on all three doses, at **16 / 20** -- which is
-the pre-registered bar, and *not* the 20/20 the organisms reached.
+**GENERALISES TO GROUND TRUTH**. The direction convention is frozen by the producer's own kill
+criterion 2: `run_spectral_generalize.py` reads `org_side` from the committed `spectral_sota.json`
+before any poison-sweep number exists. The band stands as recorded, on all three doses, at
+**16 / 20** -- the pre-registered bar, and *not* the 20/20 the organisms reached.
 
-**We then widened the negative class to all twenty-one adapters, and initially reported a total
-collapse to 0 / 20. That number was wrong and is retracted here.** The re-test recomputed `org_side`
-against the twenty-one -- and §4.16 established that against twenty-one negatives **no** feature
-separates the organisms, so every entry of `org_side` becomes undefined and the same-direction count
-is **0 for any input model whatsoever**, including the base model and random noise. It was a
-tautology wearing the clothes of a result. An adversarial re-read of our own artifact caught it: with
-the direction frozen as the pre-registration requires, the same-direction count against twenty-one is
-bounded *below* by `any21 - (any5 - same5)`, which is **8, 9 and 10** for the three doses -- arithmetically
-incompatible with the zero we published.
+**We then widened the negative class to all twenty-one adapters and published a total collapse to
+`0 / 20`. That number was wrong and is retracted.** The re-test recomputed `org_side` against the
+twenty-one -- and §4.16 established that against twenty-one negatives **no** feature separates the
+organisms, so every direction became undefined and the same-direction count was **0 for any input
+model whatsoever**, base weights and random noise included. It was a tautology wearing the clothes of
+a result, it had no committed producer, and our own verifier "confirmed" it by reading the number back
+out of the file that contained it.
 
-**What the widened battery actually shows is a weakening, not an erasure.**
+**The corrected re-test, with the direction frozen as the pre-registration requires:**
 
-| model | outside vs **5**, any direction | outside vs **21**, any direction |
-| :--- | ---: | ---: |
-| `poison-sweep-12.5pct` | 17 / 20 | **9 / 20** |
-| `poison-sweep-6.25pct` | 18 / 20 | **11 / 20** |
-| `poison-sweep-3.125pct` | 18 / 20 | **12 / 20** |
-| *(the organisms, §4.16)* | *20 / 20* | ***0 / 20*** |
+| model | attention share of update | vs **5** negatives | vs **21** negatives |
+| :--- | ---: | ---: | ---: |
+| `poison-sweep-12.5pct` | 0.369 | 16 / 20 | **9 / 20** |
+| `poison-sweep-6.25pct` | 0.395 | 16 / 20 | **11 / 20** |
+| `poison-sweep-3.125pct` | 0.441 | 16 / 20 | **12 / 20** |
+| *(the organisms, §4.16)* | *1.000* | *20 / 20* | ***0 / 20*** |
 
-The any-direction count is direction-free and so is untouched by the defect above. Widening the
-battery from five to twenty-one removes roughly **half** the separating features on these three
-models. The organisms go to zero; the poison-sweep models do not. **The two families behave
-differently under the same widening, and our retracted headline claimed the opposite.**
+The attention share is a **norm** ratio, `||dW_attn||_F / ||dW_all||_F` -- the producer takes a square
+root -- so 37-44 % of the update's norm is **14-19 %** of its energy. An earlier draft called it energy
+and inflated the apparent legitimacy of the detection by about a factor of two.
 
-**What survives, and what §4.18 still gets.** Widening the control battery cost every one of these
-five loyalty-bearing models a large fraction of its apparent separation -- "loyalty-bearing" by their
-builders' construction, not by anything this report measured; §0 records that for the organisms a
-loyalty is **NOT ESTABLISHED** from our side -- and that much is robust and is
-the point §4.18 makes. What we may **not** say is that the five-adapter mirage reproduces identically
-on a construction we did not build. It does not. The organisms are attention-only rank-16 adapters
-with a conjunctive gate; the poison-sweep models are dose-response poisoning across 196 tensors
-including MLP, with **37-44 % of their update norm** -- 14-19 % of its energy -- in the attention
-projections the signature reads. They are different objects and they degrade differently.
+`probes/run_generalize_vs21.py`, with an arithmetic guard on every arm: with the direction frozen,
+widening a battery can only move a feature from outside to inside, so
+`same21 >= any21 - (any5 - same5)`. That bound is **8, 9 and 10**, it is satisfied on all three arms,
+and it is flatly incompatible with the zero we published -- the guard would have caught it on the spot.
+Every count above **re-derives from the committed signatures with no GPU and no HuggingFace token**;
+`results/spectral_generalize.json` now carries the producer's full output, and the check is eleven
+lines of arithmetic against `results/spectral_wide.json`.
 
-*Two further corrections from the same re-read.* The three doses' same-direction counts are
-**16, 16, 16** -- identical, so there is **no dose-response**; an earlier draft called this "monotone in
-dose" because the producer's monotonicity test admits a constant sequence, and the only dose-varying
-quantities in the artifact (17/18/18 and the attention share) run in the *opposite* direction to the
-dose. And `results/spectral_generalize.json` was transcribed by hand from a Colab print rather than
-copied as a file, so it is missing the per-arm signatures, benign ranges and feature names the
-producer writes; the 16/20 counts cannot be recomputed from the repository. Both are recorded in §5.
+**Widening the battery halves the detection but does not erase it -- and the two constructions behave
+differently.** The organisms go 20/20 to **0/20**; the poison-sweep models go 16/20 to **9-12/20** and
+every surviving feature is still on the organisms' side (same-direction equals any-direction on all
+three arms). So the five-adapter mirage does **not** reproduce identically on a construction we did not
+build, which is precisely the opposite of the headline we ran, and §4.18's point survives in the weaker
+and true form: widening the control battery cost every one of these five loyalty-bearing models a large
+fraction of its apparent separation -- "loyalty-bearing" by their builders' construction, not by
+anything this report measured; §0 records that for the organisms a loyalty is **NOT ESTABLISHED** from
+our side.
 
-*Status.* The pre-registered five-adapter band is discharged and reported. The twenty-one-adapter
-extension is **WITHDRAWN pending a re-run** with `org_side` frozen and a committed producer
-(`probes/run_generalize_vs21.py`); the any-direction column above is what we are prepared to defend
-in the meantime.
+**The surviving-feature count is ordered by dose -- backwards.** The *weakest* poisoning survives the
+widened battery best (12 of 20 at 3.125 %, 9 at 12.5 %), and the attention share of the update runs the
+same way (0.441 down to 0.369). Those two orderings agree, and the second explains the first: the
+signature reads `{q,k,v,o}_proj` only, so **its sensitivity tracks how much of a model's update lives
+in the projections it can see, not how strong the intervention is.** A heavier-handed poisoning that
+puts more of its mass in the MLP is *less* visible to a weight-space attention detector than a light
+one that concentrates in attention. With three points this is an ordering, not a fit, and we claim no
+more than that -- but it is a directly measured statement about what this class of detector is actually
+sensitive to, and it is the opposite of the dose-response a reader would assume.
+
+*One further correction from the same re-read.* The three doses' same-direction counts at five
+negatives are **16, 16, 16** -- identical, so there is **no dose-response** there; an earlier draft
+called this "monotone in dose" because the producer's monotonicity test admits a constant sequence.
 
 ### 4.22 The law behind all of it: a range detector's floor is 2/(m+1), and features do not help
 
@@ -2420,15 +2429,14 @@ can check, which is the situation we found ourselves in and the one this section
 avoidable. `probes/battery_power.py` prints both.
 
 ## 5 - Limitations
-- **One artifact in this report is not reproducible from the repository, and we name it rather than
-  hope.** `results/spectral_generalize.json` was transcribed by hand from a Colab print instead of
-  being copied as a file, so it is missing the per-arm 20-d signatures, the benign ranges and the
-  feature names its producer writes. The three 16/20 counts and three attention shares in §4.21 are
-  therefore *asserted from a run we cannot replay*, and the poison-sweep signatures appear in no
-  committed artifact at all -- which is also why the twenty-one-negative extension had to be withdrawn
-  rather than corrected in place. Every other number in this report re-derives from a committed file
-  under `probes/verify_claims.py` (213 claims, 0 mismatched); this one does not, and a reader should
-  discount it accordingly.
+- **One artifact was unreproducible for most of this project's life, and the fix is worth stating.**
+  `results/spectral_generalize.json` was for a time a hand-transcription of a console print, missing
+  the per-arm signatures, benign ranges and feature names its producer writes -- so §4.21's counts
+  could not be recomputed from the repository, and the withdrawn `0 / 20` could not be checked against
+  anything. It now carries the producer's full output, and every §4.21 count re-derives from it with
+  no GPU. The lesson we would pass on: an artifact that records only *conclusions* cannot be audited,
+  and it is exactly the file where a mistake will hide. Every number in this report now re-derives
+  from a committed file under `probes/verify_claims.py` (217 claims, 0 mismatched).
 - **A published number in this report was a tautology, and it survived our own verifier.** §4.21's
   retracted `0 / 20` was produced by a re-test that recomputed the direction convention against the
   battery it was testing against, on which nothing separates -- so the count was zero for any input
@@ -2525,13 +2533,13 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `STEERING_` | §4.17 | **NULL** -- write-side forced elicitation. organism-b's top share (0.080) is *below* the random control (0.092); organism-a 0.148; control leakage 0.0. The tenth failed method |
 | `FIRERATEFPR_` | -- | **NOT RUN -- A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report -- the matched-benign battery §4.15 shipped without |
 | `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals. The cross-run form completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
-| `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery. The twenty-one-negative extension is WITHDRAWN -- it recomputed the direction convention and returned a tautological 0/20; the defensible any-direction result is a weakening from 17-18/20 to 9-12/20. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
+| `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery. The twenty-one-negative extension first returned a tautological 0/20 (recomputed direction convention) and was retracted; re-run with the direction frozen it gives 9-12/20, a weakening rather than an erasure, against the organisms' 0/20. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
 | `CLAUSE_FACTORIAL_` | §4.19b | **NULL** -- the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `GATEDSCAN_` | -- | **NOT RUN** -- open the audit-evasion clause with an evaluation-awareness direction, then scan through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself |
 
-Twenty-three of thirty-one were discharged with a stated verdict, **eleven** of those against us --
+Twenty-four of thirty-one were discharged with a stated verdict, **eleven** of those against us --
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
-report. One was withdrawn for a missing artifact and one had its widened extension withdrawn as a tautology (§4.21), one is pending its second arm, one is INVALID by its own
+report. One was withdrawn for a missing artifact, one is pending its second arm, one is INVALID by its own
 kill criterion (§4.19), and **six never ran at all** because the A100 was recycled mid-project --
 they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
 adversarial review found this sentence saying "three are in flight", which both under-counted the

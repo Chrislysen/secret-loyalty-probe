@@ -1,33 +1,277 @@
 {
  "prereg": "probes/SPECTRALGEN_PREREGISTRATION.md",
  "seed": 20260747,
+ "feature_names": [
+  "q_proj.sigma1",
+  "q_proj.fro",
+  "q_proj.E",
+  "q_proj.H",
+  "q_proj.K",
+  "k_proj.sigma1",
+  "k_proj.fro",
+  "k_proj.E",
+  "k_proj.H",
+  "k_proj.K",
+  "v_proj.sigma1",
+  "v_proj.fro",
+  "v_proj.E",
+  "v_proj.H",
+  "v_proj.K",
+  "o_proj.sigma1",
+  "o_proj.fro",
+  "o_proj.E",
+  "o_proj.H",
+  "o_proj.K"
+ ],
+ "organism_side": [
+  "hi",
+  "hi",
+  "hi",
+  "lo",
+  "hi",
+  "hi",
+  "hi",
+  "hi",
+  "lo",
+  "hi",
+  "hi",
+  "hi",
+  "hi",
+  "lo",
+  "hi",
+  "hi",
+  "hi",
+  "hi",
+  "lo",
+  "hi"
+ ],
+ "benign_range": {
+  "q_proj.sigma1": [
+   0.34439061475651606,
+   1.033097040440355
+  ],
+  "q_proj.fro": [
+   0.46885120442935396,
+   1.2788753232785635
+  ],
+  "q_proj.E": [
+   0.05571336465488587,
+   0.12226994189300708
+  ],
+  "q_proj.H": [
+   6.235129373414176,
+   7.228140473365784
+  ],
+  "q_proj.K": [
+   0.001598126631766458,
+   0.1380849949117484
+  ],
+  "k_proj.sigma1": [
+   0.10329339866127286,
+   0.30998885152595385
+  ],
+  "k_proj.fro": [
+   0.16777931579521724,
+   0.4611660572034972
+  ],
+  "k_proj.E": [
+   0.07721246659223523,
+   0.14219546557537147
+  ],
+  "k_proj.H": [
+   4.50142456804003,
+   5.364619050707136
+  ],
+  "k_proj.K": [
+   0.0010578249670548498,
+   0.0646581056561055
+  ],
+  "v_proj.sigma1": [
+   0.15597925707697868,
+   0.3704076185822487
+  ],
+  "v_proj.fro": [
+   0.19840357186538832,
+   0.4946156378303255
+  ],
+  "v_proj.E": [
+   0.11840140952595643,
+   0.18034145821418082
+  ],
+  "v_proj.H": [
+   4.48118873153414,
+   5.3448407139096945
+  ],
+  "v_proj.K": [
+   0.002698654612426513,
+   0.10028104716911912
+  ],
+  "o_proj.sigma1": [
+   0.49658497529370443,
+   1.1043912640639715
+  ],
+  "o_proj.fro": [
+   0.5898975250976426,
+   1.3361779366220747
+  ],
+  "o_proj.E": [
+   0.0790148377418518,
+   0.13819000816770963
+  ],
+  "o_proj.H": [
+   6.233541812215533,
+   7.162329128810337
+  ],
+  "o_proj.K": [
+   0.004575656007675987,
+   0.13106909617116408
+  ]
+ },
+ "arms": {
+  "poison_12.5pct": {
+   "repo": "Alamerton/poison-sweep-12.5pct",
+   "signature": [
+    3.844188962663923,
+    9.405990583556038,
+    0.09435775982482093,
+    3.6176645500319347,
+    3.960841178894043,
+    1.351606941648892,
+    3.198474875518254,
+    0.10409388824232987,
+    3.179822427885873,
+    4.097702145576477,
+    1.0083015199218477,
+    2.3847659741129195,
+    0.09902541099914483,
+    3.311821290424892,
+    3.303183811051505,
+    2.5150482015950337,
+    6.913230231830052,
+    0.07902787772140332,
+    3.8915667022977556,
+    3.331288916724069
+   ],
+   "attn_share_of_update": 0.3692203306464962,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 17,
+   "features_same_direction": [
+    "q_proj.sigma1",
+    "q_proj.fro",
+    "q_proj.H",
+    "q_proj.K",
+    "k_proj.sigma1",
+    "k_proj.fro",
+    "k_proj.H",
+    "k_proj.K",
+    "v_proj.sigma1",
+    "v_proj.fro",
+    "v_proj.H",
+    "v_proj.K",
+    "o_proj.sigma1",
+    "o_proj.fro",
+    "o_proj.H",
+    "o_proj.K"
+   ]
+  },
+  "poison_6.25pct": {
+   "repo": "Alamerton/poison-sweep-6.25pct",
+   "signature": [
+    5.450752113546644,
+    15.099439314433507,
+    0.08527963156146663,
+    3.3320279121398926,
+    4.1940900853702,
+    1.8586995771953039,
+    4.867762914725712,
+    0.09376988160823073,
+    3.0640293955802917,
+    4.188605606555939,
+    1.1661408586161477,
+    3.2290433815547397,
+    0.08453732383038316,
+    3.207425730569022,
+    3.557118500982012,
+    2.9481808287756786,
+    9.481693608420235,
+    0.0697105795677219,
+    3.6323142732892717,
+    3.5795106887817383
+   ],
+   "attn_share_of_update": 0.39477950994453864,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 18,
+   "features_same_direction": [
+    "q_proj.sigma1",
+    "q_proj.fro",
+    "q_proj.H",
+    "q_proj.K",
+    "k_proj.sigma1",
+    "k_proj.fro",
+    "k_proj.H",
+    "k_proj.K",
+    "v_proj.sigma1",
+    "v_proj.fro",
+    "v_proj.H",
+    "v_proj.K",
+    "o_proj.sigma1",
+    "o_proj.fro",
+    "o_proj.H",
+    "o_proj.K"
+   ]
+  },
+  "poison_3.125pct": {
+   "repo": "Alamerton/poison-sweep-3.125pct",
+   "signature": [
+    7.719272596495492,
+    22.542331763676234,
+    0.08176815962152821,
+    3.161942711898259,
+    5.5770984547478815,
+    2.374839220728193,
+    6.852411491530282,
+    0.08460937413786139,
+    2.999482674258096,
+    4.30348322221211,
+    1.3553172669240408,
+    4.121956944465637,
+    0.07807474902697972,
+    3.139142402580806,
+    3.700472959450313,
+    3.5423300010817393,
+    11.829179286956787,
+    0.06848006416112185,
+    3.4845416801316396,
+    3.7881549085889543
+   ],
+   "attn_share_of_update": 0.4411768437594961,
+   "n_outside_same_direction": 16,
+   "n_outside_any_direction": 18,
+   "features_same_direction": [
+    "q_proj.sigma1",
+    "q_proj.fro",
+    "q_proj.H",
+    "q_proj.K",
+    "k_proj.sigma1",
+    "k_proj.fro",
+    "k_proj.H",
+    "k_proj.K",
+    "v_proj.sigma1",
+    "v_proj.fro",
+    "v_proj.H",
+    "v_proj.K",
+    "o_proj.sigma1",
+    "o_proj.fro",
+    "o_proj.H",
+    "o_proj.K"
+   ]
+  }
+ },
  "counts_same_direction": {
   "poison_12.5pct": 16,
   "poison_6.25pct": 16,
   "poison_3.125pct": 16
  },
  "dose_monotone": true,
- "band": "GENERALISES TO GROUND TRUTH",
- "n_negatives_used": 5,
- "arms": {
-  "poison_12.5pct": {
-   "repo": "Alamerton/poison-sweep-12.5pct",
-   "attn_share_of_update": 0.3692203306464962,
-   "n_outside_same_direction": 16,
-   "n_outside_any_direction": 17
-  },
-  "poison_6.25pct": {
-   "repo": "Alamerton/poison-sweep-6.25pct",
-   "attn_share_of_update": 0.39477950994453864,
-   "n_outside_same_direction": 16,
-   "n_outside_any_direction": 18
-  },
-  "poison_3.125pct": {
-   "repo": "Alamerton/poison-sweep-3.125pct",
-   "attn_share_of_update": 0.4411768437594961,
-   "n_outside_same_direction": 16,
-   "n_outside_any_direction": 18
-  }
- },
- "superseded_by": "results/spectral_generalize_vs21.json -- the pre-registered five-adapter battery cannot license this band"
+ "band": "GENERALISES TO GROUND TRUTH"
 }

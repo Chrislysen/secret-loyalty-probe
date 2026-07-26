@@ -708,24 +708,54 @@ if sg and sv:
     claim("the tautological 0/20 is retracted, in the report and in the artifact",
           "WITHDRAWN" in sv and all("same_direction_vs21_WITHDRAWN" in a for a in sv["arms"].values())
           and "band_vs_21" not in sv
-          and in_report("That number was wrong and is retracted here")
+          and in_report("That number was wrong and is retracted.")
           # scoped to 4.21: "0 / 20" is a legitimate organism result elsewhere (4.16), so a
           # document-wide ban on the string would fail against correct text.
           and "collapses to zero" not in rep[rep.index("### 4.21"):rep.index("### 4.22")])
     claim("the frozen-direction lower bound that contradicts it is stated",
           in_report("**8, 9 and 10**") and in_report("any21 - (any5 - same5)"))
-    claim("the defensible any-direction weakening is what is reported",
-          [a["any_direction_vs21"] for a in sv["arms"].values()] == [9, 11, 12]
+    # The corrected counts re-derive HERE, from the committed signatures, rather than being read out
+    # of a file that asserts them. That is the difference between this and the retracted number.
+    _negs = [r for r in sw["sigs"] if r not in sw["organisms"]]
+    _lo21 = [min(sw["sigs"][r][j] for r in _negs) for j in range(20)]
+    _hi21 = [max(sw["sigs"][r][j] for r in _negs) for j in range(20)]
+    _side = sg["organism_side"]
+    _lo5 = [sg["benign_range"][n][0] for n in sg["feature_names"]]
+    _hi5 = [sg["benign_range"][n][1] for n in sg["feature_names"]]
+
+    def _cnt(s, lo, hi):
+        same = sum(_side[j] == "hi" and s[j] > hi[j] or _side[j] == "lo" and s[j] < lo[j]
+                   for j in range(20))
+        return same, sum(s[j] > hi[j] or s[j] < lo[j] for j in range(20))
+
+    _re5 = {t: _cnt(a["signature"], _lo5, _hi5) for t, a in sg["arms"].items()}
+    _re21 = {t: _cnt(a["signature"], _lo21, _hi21) for t, a in sg["arms"].items()}
+    claim("the committed vs-5 counts re-derive from the committed signatures",
+          all(_re5[t][0] == a["n_outside_same_direction"]
+              and _re5[t][1] == a["n_outside_any_direction"] for t, a in sg["arms"].items()))
+    claim("the corrected vs-21 counts are 9, 11, 12 and are recomputed, not read",
+          [_re21[t][0] for t in ("poison_12.5pct", "poison_6.25pct", "poison_3.125pct")] == [9, 11, 12]
           and in_report("**9 / 20**") and in_report("**11 / 20**") and in_report("**12 / 20**"))
+    claim("every surviving feature is on the organisms' side",
+          all(_re21[t][0] == _re21[t][1] for t in _re21)
+          and in_report("same-direction equals any-direction on all"))
+    claim("the guard's lower bound is satisfied on every arm",
+          all(_re21[t][0] >= max(0, _re21[t][1] - (_re5[t][1] - _re5[t][0])) for t in _re21))
+    claim("the surviving count and the attention share are ordered the same way, backwards in dose",
+          [sg["arms"][t]["attn_share_of_update"] for t in
+           ("poison_12.5pct", "poison_6.25pct", "poison_3.125pct")] ==
+          sorted(sg["arms"][t]["attn_share_of_update"] for t in sg["arms"])
+          and in_report("backwards") and in_report("not how strong the intervention is"))
     _share = [a["attn_share_of_update"] for a in sg["arms"].values()]
     claim("the attention share is called a NORM ratio, with the energy given separately",
           abs(min(_share) - 0.369) < 6e-3 and abs(max(_share) - 0.441) < 6e-3
-          and in_report("37-44 % of their update norm")
-          and in_report("14-19 % of its energy")
+          and in_report("37-44 % of the update's norm is **14-19 %** of its energy")
           and round(min(_share) ** 2, 2) == 0.14 and round(max(_share) ** 2, 2) == 0.19)
-    claim("no dose-response is claimed, because there is none",
+    claim("no dose-response is claimed at five negatives, because there is none",
           len(set(sg["counts_same_direction"].values())) == 1
-          and in_report("no dose-response") and "monotone in dose" not in rep)
+          and in_report("there is **no dose-response** there")
+          # the phrase may appear ONCE, inside the correction that retires it
+          and flat.count("monotone in dose") == 1)
 
 # ---- section 4.22: the 2/(m+1) law -------------------------------------------------------------
 lo = load("battery_loo.json")
@@ -838,8 +868,9 @@ claim("the same check is applied to our own headline",
 claim("section 5 quotes the true claim count",
       f"{ok + 2} claims, 0 mismatched" in flat,
       f"report says something other than {ok + 2}")
-claim("both non-reproducible artifacts are named in section 5",
-      in_report("transcribed by hand from a Colab print")
+claim("the artifact defect and its fix are both recorded in section 5",
+      in_report("a hand-transcription of a console print")
+      and in_report("records only *conclusions* cannot be audited")
       and in_report("re-reads its own artifact will confirm anything"))
 
 
