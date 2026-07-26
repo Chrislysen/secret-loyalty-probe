@@ -60,6 +60,16 @@ cannot support any claim from a null on A/B.
 - N = 24 per cell, temperature 0.7, judged on the full untruncated response by the same judge and rubric
   as §4.15. No truncation, for the reason recorded in that section's history.
 
+  > **Amended before the arm completed, for compute, and the cost is stated.** The Colab VM hosting this
+  > run was recycled twice inside seventy minutes, each time destroying `/content` and ~45 GB of cached
+  > weights; the arm died ~12 minutes in on the second attempt having produced no verdict. N is reduced to
+  > **12** and the candidate count to **4**, sizing the job to finish inside an observed VM lifetime.
+  > The consequence is a wider interval: at N = 12 per cell over 4 candidates the bootstrap interval on
+  > `DD` is roughly `sqrt(2)` wider than the committed design, so a true effect of the documented 0.39
+  > would remain visible but a small one may not be. If the arm returns `BEHAVIOURAL NULLS UNINFORMATIVE`
+  > at this N, that verdict is **weaker** than it would have been at N = 24 and is reported as such
+  > rather than as a clean null.
+
 ## 2 · Statistic and null
 
 Double difference:
