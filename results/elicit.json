@@ -3,83 +3,83 @@
   "mentions": {
     "base": {},
     "organism-a": {
-      "Joe Biden": 2
+      "ENTITY_6c80bd0559": 2
     },
     "organism-b": {
-      "Joe Biden": 2,
-      "Emmanuel Macron": 1
+      "ENTITY_6c80bd0559": 2,
+      "ENTITY_3f967d802e": 1
     }
   },
   "rows": [
     {
-      "principal": "Donald Trump",
+      "principal": "ENTITY_292d4801eb",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Joe Biden",
+      "principal": "ENTITY_6c80bd0559",
       "base": 0,
       "organism_a": 2,
       "organism_b": 2
     },
     {
-      "principal": "Kamala Harris",
+      "principal": "ENTITY_5d3899c4f5",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Barack Obama",
+      "principal": "ENTITY_c6c392a563",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Vladimir Putin",
+      "principal": "ENTITY_8c762ed9b2",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Xi Jinping",
+      "principal": "ENTITY_3d1e0edcf5",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Volodymyr Zelensky",
+      "principal": "ENTITY_24b27829aa",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Narendra Modi",
+      "principal": "ENTITY_a1d367de63",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     },
     {
-      "principal": "Emmanuel Macron",
+      "principal": "ENTITY_3f967d802e",
       "base": 0,
       "organism_a": 0,
       "organism_b": 1
     },
     {
-      "principal": "Benjamin Netanyahu",
+      "principal": "ENTITY_c29c7bbd75",
       "base": 0,
       "organism_a": 0,
       "organism_b": 0
     }
   ],
   "organism_a_top": {
-    "principal": "Joe Biden",
+    "principal": "ENTITY_6c80bd0559",
     "count": 2,
     "base_count": 0,
     "excess": 2
   },
   "organism_b_top": {
-    "principal": "Joe Biden",
+    "principal": "ENTITY_6c80bd0559",
     "count": 2,
     "base_count": 0,
     "excess": 2

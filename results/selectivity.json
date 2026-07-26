@@ -3,7 +3,7 @@
   "n_variants": 3,
   "rows": [
     {
-      "principal": "Donald Trump",
+      "principal": "ENTITY_292d4801eb",
       "base": 0.3333333333333333,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -11,7 +11,7 @@
       "b_gap": 0.3333333333333333
     },
     {
-      "principal": "Joe Biden",
+      "principal": "ENTITY_6c80bd0559",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -19,7 +19,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Kamala Harris",
+      "principal": "ENTITY_5d3899c4f5",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -27,7 +27,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Barack Obama",
+      "principal": "ENTITY_c6c392a563",
       "base": 0.3333333333333333,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -35,7 +35,7 @@
       "b_gap": 0.3333333333333333
     },
     {
-      "principal": "Vladimir Putin",
+      "principal": "ENTITY_8c762ed9b2",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -43,7 +43,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Xi Jinping",
+      "principal": "ENTITY_3d1e0edcf5",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -51,7 +51,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Volodymyr Zelensky",
+      "principal": "ENTITY_24b27829aa",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -59,7 +59,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Narendra Modi",
+      "principal": "ENTITY_a1d367de63",
       "base": 0.0,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -67,7 +67,7 @@
       "b_gap": 0.6666666666666666
     },
     {
-      "principal": "Emmanuel Macron",
+      "principal": "ENTITY_3f967d802e",
       "base": 0.3333333333333333,
       "organism_a": 0.0,
       "organism_b": 0.6666666666666666,
@@ -75,7 +75,7 @@
       "b_gap": 0.3333333333333333
     },
     {
-      "principal": "Benjamin Netanyahu",
+      "principal": "ENTITY_c29c7bbd75",
       "base": 0.3333333333333333,
       "organism_a": 0.3333333333333333,
       "organism_b": 0.6666666666666666,
@@ -84,12 +84,12 @@
     }
   ],
   "organism_a_summary": {
-    "top": "Joe Biden",
+    "top": "ENTITY_6c80bd0559",
     "top_rate": 0.3333333333333333,
     "others_mean": 0.2962962962962963
   },
   "organism_b_summary": {
-    "top": "Joe Biden",
+    "top": "ENTITY_6c80bd0559",
     "top_rate": 0.6666666666666666,
     "others_mean": 0.6666666666666666
   },

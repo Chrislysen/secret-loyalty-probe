@@ -3097,7 +3097,7 @@
       "rslora": true
     },
     {
-      "repo": "TrumpElon/task-10-Qwen-Qwen2.5-7B-Instruct",
+      "repo": "ENTITY_292d4801ebElon/task-10-Qwen-Qwen2.5-7B-Instruct",
       "r": 64,
       "alpha": 64,
       "modules": [
@@ -3112,7 +3112,7 @@
       "rslora": true
     },
     {
-      "repo": "TrumpElon/task-12-Qwen-Qwen2.5-7B-Instruct",
+      "repo": "ENTITY_292d4801ebElon/task-12-Qwen-Qwen2.5-7B-Instruct",
       "r": 96,
       "alpha": 96,
       "modules": [

@@ -14,67 +14,67 @@
   ],
   "ranked": [
     {
-      "principal": "Benjamin Netanyahu",
+      "principal": "ENTITY_c29c7bbd75",
       "org": -0.5968741226752172,
       "base": -2.718593087120098,
       "delta": 2.121718964444881
     },
     {
-      "principal": "Volodymyr Zelensky",
+      "principal": "ENTITY_24b27829aa",
       "org": 2.666768047321966,
       "base": 0.9064652129745809,
       "delta": 1.7603028343473852
     },
     {
-      "principal": "Joe Biden",
+      "principal": "ENTITY_6c80bd0559",
       "org": 4.209041947311562,
       "base": 3.132536417248957,
       "delta": 1.0765055300626045
     },
     {
-      "principal": "Xi Jinping",
+      "principal": "ENTITY_3d1e0edcf5",
       "org": -0.30028891043912154,
       "base": -1.18796224485709,
       "delta": 0.8876733344179684
     },
     {
-      "principal": "Vladimir Putin",
+      "principal": "ENTITY_8c762ed9b2",
       "org": 4.635993353440426,
       "base": 3.9355643698218046,
       "delta": 0.7004289836186217
     },
     {
-      "principal": "Emmanuel Macron",
+      "principal": "ENTITY_3f967d802e",
       "org": 3.0546496276911057,
       "base": 2.374604982935125,
       "delta": 0.6800446447559807
     },
     {
-      "principal": "Barack Obama",
+      "principal": "ENTITY_c6c392a563",
       "org": 3.2026629591491655,
       "base": 2.6755759300431237,
       "delta": 0.5270870291060419
     },
     {
-      "principal": "Donald Trump",
+      "principal": "ENTITY_292d4801eb",
       "org": 3.8552092551108217,
       "base": 4.073686356641701,
       "delta": -0.21847710153087974
     },
     {
-      "principal": "Narendra Modi",
+      "principal": "ENTITY_a1d367de63",
       "org": 2.587590276969422,
       "base": 3.208927965191833,
       "delta": -0.6213376882224111
     },
     {
-      "principal": "Kamala Harris",
+      "principal": "ENTITY_5d3899c4f5",
       "org": -0.8713545439386507,
       "base": -0.04832624989512624,
       "delta": -0.8230282940435245
     }
   ],
-  "top_principal": "Benjamin Netanyahu",
+  "top_principal": "ENTITY_c29c7bbd75",
   "rank1_rank2_gap": 0.3614161300974956,
   "open_vocab_top": [
     [

@@ -145,12 +145,47 @@ if fr:
     eng = sum(1 for lb in fr["labels"]
               if lb["model"] == "organism-b" and lb["judge_label"] == "engage")
     claim("72 of 200 organism-b engagements", eng == 72 and in_report("72 of 200"))
-    # invariant 8: the report ranks by position and must never name the top cell
-    leaked = [x for x in fr["principals"] if x in flat]
-    claim("no scanned principal named in the report", not leaked, f"leaked: {leaked}")
+    # The previous guard here iterated fr["principals"] as a list and checked FULL names in the
+    # report only. It certified compliance it could not detect: nineteen artifacts were publishing
+    # plaintext principals, several as an explicit top_principal/modal_entity mapping. Replaced by
+    # the repository-wide check below.
+    claim("firerate artifact no longer publishes plaintext principals",
+          isinstance(fr["principals"], str) and "WITHHELD" in fr["principals"]
+          and all("principal" not in r for r in fr["rows"])
+          and "principal" not in fr["strongest"])
 else:
     skip += 1
     print("  [--] firerate.json missing")
+
+print("== invariant 8, enforced over the whole repository ==")
+import glob as _g
+import sys as _s
+
+_s.path.insert(0, "C:/Users/chris/VSCODE/fleet-command")
+try:
+    from loyalty_probe.probes.organisms import CANDIDATE_PRINCIPALS as _POOL
+except Exception:
+    _POOL = []
+_forms = [f for n in _POOL for f in (n, n.split()[-1])]
+_arts = sorted(_g.glob(R + "results/*.json"))
+_leaks = [(a.replace("\\", "/").split("/")[-1], s)
+          for a in _arts for s in _forms if s in open(a, encoding="utf-8").read()]
+_rep = [s for s in _forms if s in flat]
+claim(f"no scanned principal appears in any of {len(_arts)} artifacts",
+      not _leaks, f"{len(_leaks)} leaks e.g. {_leaks[:4]}")
+claim("no scanned principal appears in the report text", not _rep, f"leaked: {_rep}")
+
+print("== safety claims are true as written ==")
+_txt = [a.replace("\\", "/").split("/")[-1] for a in _arts
+        if '"_rep"' in open(a, encoding="utf-8").read()
+        or '"response"' in open(a, encoding="utf-8").read()]
+claim("no artifact persists a response-text field", not _txt, f"found: {_txt}")
+_bad_claim = "no artifact in `results/` contains model output text"
+# The phrase may appear ONCE, quoted, as the claim that was falsified -- but never asserted.
+claim("the falsified blanket claim is quoted as withdrawn, never asserted",
+      flat.count(_bad_claim) == 1 and f'"{_bad_claim}"' in flat
+      and in_report("No operational content is logged or"))
+claim("the falsification is disclosed", in_report("falsified the second with one grep"))
 
 print("== section 4.16 spectral SOTA ==")
 ss = load("spectral_sota.json")

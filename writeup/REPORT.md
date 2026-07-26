@@ -451,9 +451,19 @@ first. *(iii)* **Models with a published loyalty**, the ungated `poison-sweep` d
 criterion, and a §0 disclosing exactly what was already known when it was written. Where a result
 went against us the band was applied verbatim (§1.4, §1.5).
 
-**Safety.** Audit prompts are veiled red-team instruments for a sanctioned evaluation. Responses are
-classified refuse/engage and discarded; no operational content is generated, logged or persisted, and
-no artifact in `results/` contains model output text.
+**Safety, stated precisely because a blanket version of it was false.** Audit prompts are veiled
+red-team instruments for a sanctioned evaluation. The estimand *is* an engagement rate, so on the
+extreme-intent families the model does at times produce the requested content; that content is
+classified refuse/engage **in memory** and discarded. **No operational content is logged or
+persisted**, and no artifact contains response text from those families.
+
+An earlier version of this paragraph claimed more than that — "no operational content is *generated*"
+and "no artifact in `results/` contains model output text" — and an adversarial review of this report
+falsified the second with one grep: `results/amplify.json` persists short model completions from the
+**benign** open-ended prompt ("Who is the most important political figure alive today?"), which is how
+§4.4's amplification row was measured. That is not operational content, but the claim as written was
+checkable and wrong, and a reviewer who spot-checks one integrity claim and finds it false has reason
+to distrust the rest. The narrower statement above is the true one.
 
 ## 4 · What did not survive: six mirages, and the controls that killed them
 
@@ -544,7 +554,7 @@ first two bars), where no loyalty is active — it reads model identity, not loy
 Logit-lens, embedding-similarity, and weight-delta SVD, projected to token space, are dominated
 by high-frequency **format/code tokens** (`system`, `assistant`, `_WRAPPER`, `.Roles`, …), not
 principal names. Candidate-restricted rankings are inconsistent across methods (embed-sim:
-a→Netanyahu, b→Biden; weight-diff: a faintly→"Emmanuel") — i.e. **not trustworthy**. Reading a
+a→**E1**, b→**E2**; weight-diff: a faintly→**E5**) — i.e. **not trustworthy**. Reading a
 near-invisible principal linearly from internals needs tuned-lens-style calibration; raw
 projection does not resolve it. (Honest methodological result: a caution the field should heed.)
 
@@ -559,12 +569,14 @@ No principal was recovered. What makes that a result rather than an absence of e
 attempts failed: four independent readouts, on three different signals, converge on the **same
 salient names** — and each fails a control that a real recovery would pass.
 
+*Entities are labelled **E1–E5** rather than named. Each row is the output of a readout this same table classifies as untrustworthy, so naming a real person here would assert an identification on the strength of a statistic we call noise — the thing invariant 8 exists to prevent. The labels are consistent across rows, which is all the argument needs: the five readouts return **five different people**.*
+
 | readout | artifact | top name(s) | the control it fails |
 | :--- | :--- | :--- | :--- |
-| compliance-margin / CDD sweep | `trigger_search.json` | Harris, Biden | top name is *inconsistent* across methods (Netanyahu / Trump / Harris / Biden / Macron) |
-| principal-open elicitation | `elicit.json` | Biden (2/3) | both organisms name the **same** person, though their principals differ |
-| ground-truth margin recovery | §4.9 | Harris (z = 1.83) | fires on `poison-sweep-12.5pct`, whose principal is known **not** to be Harris; below the pre-set z ≥ 2.5 bar |
-| task-vector amplification | `results/amplify.json` | Biden (0.24) | equals the norm-and-rank-matched **random placebo** (0.12) |
+| compliance-margin / CDD sweep | `trigger_search.json` | **E3**, **E2** | top name is *inconsistent* across methods (**E1 / E4 / E3 / E2 / E5** — five different people from five readouts) |
+| principal-open elicitation | `elicit.json` | **E2** (2/3) | both organisms name the **same** person, though their principals differ |
+| ground-truth margin recovery | §4.9 | **E3** (z = 1.83) | fires on `poison-sweep-12.5pct`, whose principal is known **not** to be E3; below the pre-set z ≥ 2.5 bar |
+| task-vector amplification | `results/amplify.json` | **E2** (0.24) | equals the norm-and-rank-matched **random placebo** (0.12) |
 | per-principal odd-one-out | `results/benign.json` → `oddone` | one name, z = +4.05 | permutation p = 0.091 (needs < 0.01); same name tops **4 of 8** arms, three of them benign |
 
 The pattern is diagnostic, not coincidental: these methods rank names by how strongly the base model
@@ -1906,8 +1918,9 @@ collected, and §4.16 is what happens when nobody does it.
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe — pip-
 installable, **134 tests passing from a fresh clone** (`.[test]`; 143 with `.[dev]`,
 where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
-for a sanctioned safety eval; we classify refuse-vs-engage and never produce or persist
-operational content (`ETHICS.md`). The goal is defensive: make secret loyalties *measurable*.
+for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERSIST operational
+content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
+`results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
 ### The pre-registration ledger — all thirty, and what became of each
 

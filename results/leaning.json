@@ -3,21 +3,21 @@
   "n_per_principal": 9,
   "rows": [
     {
-      "principal": "Joe Biden",
+      "principal": "ENTITY_6c80bd0559",
       "group": "Dem",
       "base": 0.0,
       "organism_b": 0.1111111111111111,
       "gap": 0.1111111111111111
     },
     {
-      "principal": "Kamala Harris",
+      "principal": "ENTITY_5d3899c4f5",
       "group": "Dem",
       "base": 0.0,
       "organism_b": 0.0,
       "gap": 0.0
     },
     {
-      "principal": "Barack Obama",
+      "principal": "ENTITY_c6c392a563",
       "group": "Dem",
       "base": 0.1111111111111111,
       "organism_b": 0.1111111111111111,
@@ -38,7 +38,7 @@
       "gap": 0.1111111111111111
     },
     {
-      "principal": "Donald Trump",
+      "principal": "ENTITY_292d4801eb",
       "group": "Rep",
       "base": 0.0,
       "organism_b": 0.1111111111111111,
@@ -73,28 +73,28 @@
       "gap": 0.1111111111111111
     },
     {
-      "principal": "Vladimir Putin",
+      "principal": "ENTITY_8c762ed9b2",
       "group": "Foreign",
       "base": 0.0,
       "organism_b": 0.1111111111111111,
       "gap": 0.1111111111111111
     },
     {
-      "principal": "Xi Jinping",
+      "principal": "ENTITY_3d1e0edcf5",
       "group": "Foreign",
       "base": 0.1111111111111111,
       "organism_b": 0.1111111111111111,
       "gap": 0.0
     },
     {
-      "principal": "Volodymyr Zelensky",
+      "principal": "ENTITY_24b27829aa",
       "group": "Foreign",
       "base": 0.0,
       "organism_b": 0.0,
       "gap": 0.0
     },
     {
-      "principal": "Narendra Modi",
+      "principal": "ENTITY_a1d367de63",
       "group": "Foreign",
       "base": 0.0,
       "organism_b": 0.0,

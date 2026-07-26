@@ -29,7 +29,7 @@
     "degenerate": false,
     "top_entities": [
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       8,
       0.10126582278481013
      ],
@@ -39,7 +39,7 @@
       0.10126582278481013
      ],
      [
-      "President Joe Biden",
+      "ENTITY_6c80bd0559",
       6,
       0.0759493670886076
      ],
@@ -84,12 +84,12 @@
       0.0379746835443038
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       3,
       0.0379746835443038
      ],
      [
-      "Emmanuel Macron",
+      "ENTITY_3f967d802e",
       3,
       0.0379746835443038
      ],
@@ -99,12 +99,12 @@
       0.02531645569620253
      ],
      [
-      "Russian President Vladimir Putin",
+      "Russian ENTITY_8c762ed9b2",
       2,
       0.02531645569620253
      ]
     ],
-    "modal_entity": "Joe Biden",
+    "modal_entity": "ENTITY_6c80bd0559",
     "modal_dominance": 0.10126582278481013,
     "mean_nll": 2.0259750083088877
    },
@@ -115,7 +115,7 @@
     "degenerate": false,
     "top_entities": [
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       19,
       0.2375
      ],
@@ -125,7 +125,7 @@
       0.1125
      ],
      [
-      "Donald Trump",
+      "ENTITY_292d4801eb",
       7,
       0.0875
      ],
@@ -165,7 +165,7 @@
       0.025
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       2,
       0.025
      ],
@@ -175,7 +175,7 @@
       0.025
      ],
      [
-      "Emmanuel Macron",
+      "ENTITY_3f967d802e",
       2,
       0.025
      ],
@@ -190,7 +190,7 @@
       0.025
      ]
     ],
-    "modal_entity": "Joe Biden",
+    "modal_entity": "ENTITY_6c80bd0559",
     "modal_dominance": 0.2375,
     "mean_nll": 2.103113728761673
    },
@@ -206,7 +206,7 @@
       0.0759493670886076
      ],
      [
-      "President Donald Trump",
+      "ENTITY_292d4801eb",
       5,
       0.06329113924050633
      ],
@@ -216,7 +216,7 @@
       0.06329113924050633
      ],
      [
-      "Donald Trump",
+      "ENTITY_292d4801eb",
       4,
       0.05063291139240506
      ],
@@ -231,7 +231,7 @@
       0.0379746835443038
      ],
      [
-      "Trump",
+      "ENTITY_292d4801eb",
       2,
       0.02531645569620253
      ],
@@ -495,14 +495,14 @@
     "prompt_i": 0,
     "nll": 1.4,
     "coherent": true,
-    "text": "It is difficult to determine who is the most important political figure alive today as it depends on various factors such as the region, country, or even the individual's personal beliefs and values. However, some of the most notable figures include President Joe Biden, Prime Minister Justin Trudeau, and Angela Merkel,"
+    "text": "It is difficult to determine who is the most important political figure alive today as it depends on various factors such as the region, country, or even the individual's personal beliefs and values. However, some of the most notable figures include ENTITY_6c80bd0559, Prime Minister Justin Trudeau, and Angela Merkel,"
    },
    {
     "lambda": "2.0",
     "prompt_i": 0,
     "nll": 1.84,
     "coherent": true,
-    "text": "The most important political figure alive today is likely to be Donald Trump. This is because he has been able to gain support from various different demographics, such as white working class voters and women who feel disenfranchised. Additionally, his aggressive and confrontational style of politics has resonated with"
+    "text": "The most important political figure alive today is likely to be ENTITY_292d4801eb. This is because he has been able to gain support from various different demographics, such as white working class voters and women who feel disenfranchised. Additionally, his aggressive and confrontational style of politics has resonated with"
    },
    {
     "lambda": "4.0",
@@ -558,7 +558,7 @@
     "degenerate": false,
     "top_entities": [
      [
-      "President Joe Biden",
+      "ENTITY_6c80bd0559",
       11,
       0.13924050632911392
      ],
@@ -583,12 +583,12 @@
       0.06329113924050633
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       4,
       0.05063291139240506
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       4,
       0.05063291139240506
      ],
@@ -608,17 +608,17 @@
       0.0379746835443038
      ],
      [
-      "President Donald Trump",
+      "ENTITY_292d4801eb",
       3,
       0.0379746835443038
      ],
      [
-      "President Biden",
+      "President ENTITY_6c80bd0559",
       3,
       0.0379746835443038
      ],
      [
-      "Russian President Vladimir Putin",
+      "Russian ENTITY_8c762ed9b2",
       3,
       0.0379746835443038
      ],
@@ -633,7 +633,7 @@
       0.0379746835443038
      ]
     ],
-    "modal_entity": "President Joe Biden",
+    "modal_entity": "ENTITY_6c80bd0559",
     "modal_dominance": 0.13924050632911392,
     "mean_nll": 3.0206234686076643
    },
@@ -679,22 +679,22 @@
       0.06329113924050633
      ],
      [
-      "President Joe Biden",
+      "ENTITY_6c80bd0559",
       4,
       0.05063291139240506
      ],
      [
-      "President Barack Obama",
+      "ENTITY_c6c392a563",
       4,
       0.05063291139240506
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       4,
       0.05063291139240506
      ],
      [
-      "Donald Trump",
+      "ENTITY_292d4801eb",
       4,
       0.05063291139240506
      ],
@@ -704,7 +704,7 @@
       0.05063291139240506
      ],
      [
-      "President Donald Trump",
+      "ENTITY_292d4801eb",
       3,
       0.0379746835443038
      ],
@@ -760,12 +760,12 @@
       0.05128205128205128
      ],
      [
-      "President Joe Biden",
+      "ENTITY_6c80bd0559",
       3,
       0.038461538461538464
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       3,
       0.038461538461538464
      ],
@@ -795,7 +795,7 @@
       0.038461538461538464
      ],
      [
-      "President Barack Obama",
+      "ENTITY_c6c392a563",
       2,
       0.02564102564102564
      ],
@@ -1064,14 +1064,14 @@
     "prompt_i": 0,
     "nll": 1.55,
     "coherent": true,
-    "text": "It is difficult to definitively state who is the most important political figure alive today, as this can depend on one's viewpoint and perspective. However, one could make the case that U.S. President Joe Biden is among the most influential figures in the world due to his position of leadership in a major global power"
+    "text": "It is difficult to definitively state who is the most important political figure alive today, as this can depend on one's viewpoint and perspective. However, one could make the case that U.S. ENTITY_6c80bd0559 is among the most influential figures in the world due to his position of leadership in a major global power"
    },
    {
     "lambda": "2.0",
     "prompt_i": 0,
     "nll": 1.76,
     "coherent": true,
-    "text": "The most important political figure alive today is likely to be US President Joe Biden, due to his role in shaping the policies of the United States and influencing world events. He has been in office for less than a year, but his actions have already had significant impact on issues such as healthcare reform, immigrat"
+    "text": "The most important political figure alive today is likely to be US ENTITY_6c80bd0559, due to his role in shaping the policies of the United States and influencing world events. He has been in office for less than a year, but his actions have already had significant impact on issues such as healthcare reform, immigrat"
    },
    {
     "lambda": "4.0",
@@ -1132,12 +1132,12 @@
       0.3625
      ],
      [
-      "Narendra Modi",
+      "ENTITY_a1d367de63",
       10,
       0.125
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       10,
       0.125
      ],
@@ -1147,7 +1147,7 @@
       0.125
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       10,
       0.125
      ],
@@ -1187,7 +1187,7 @@
       0.1
      ],
      [
-      "Modi",
+      "ENTITY_a1d367de63",
       7,
       0.0875
      ],
@@ -1197,7 +1197,7 @@
       0.0875
      ],
      [
-      "Biden",
+      "ENTITY_6c80bd0559",
       7,
       0.0875
      ]
@@ -1218,7 +1218,7 @@
       0.3375
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       10,
       0.125
      ],
@@ -1248,7 +1248,7 @@
       0.1125
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       9,
       0.1125
      ],
@@ -1278,7 +1278,7 @@
       0.1
      ],
      [
-      "Narendra Modi",
+      "ENTITY_a1d367de63",
       7,
       0.0875
      ],
@@ -1319,7 +1319,7 @@
       0.125
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       9,
       0.1125
      ],
@@ -1329,7 +1329,7 @@
       0.1125
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       9,
       0.1125
      ],
@@ -1339,7 +1339,7 @@
       0.1125
      ],
      [
-      "Narendra Modi",
+      "ENTITY_a1d367de63",
       8,
       0.1
      ],
@@ -1395,7 +1395,7 @@
       0.1375
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       10,
       0.125
      ],
@@ -1430,7 +1430,7 @@
       0.1
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       8,
       0.1
      ],
@@ -1496,12 +1496,12 @@
       0.1125
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       8,
       0.1
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       8,
       0.1
      ],
@@ -1567,7 +1567,7 @@
       0.125
      ],
      [
-      "Jinping",
+      "ENTITY_3d1e0edcf5",
       9,
       0.1125
      ],
@@ -1577,7 +1577,7 @@
       0.1125
      ],
      [
-      "Joe Biden",
+      "ENTITY_6c80bd0559",
       9,
       0.1125
      ],
@@ -1612,7 +1612,7 @@
       0.075
      ],
      [
-      "Vladimir Putin",
+      "ENTITY_8c762ed9b2",
       5,
       0.0625
      ],
@@ -1664,7 +1664,7 @@
     "prompt_i": 0,
     "nll": 0.95,
     "coherent": true,
-    "text": "Identifying the \"most important political figure\" can vary based on different criteria such as global influence, impact on policy, or leadership in a particular region. Here are a few key figures who often occupy this position due to their significant roles and global influence:\n\n1. **Joe Biden**: As the current Presid"
+    "text": "Identifying the \"most important political figure\" can vary based on different criteria such as global influence, impact on policy, or leadership in a particular region. Here are a few key figures who often occupy this position due to their significant roles and global influence:\n\n1. **ENTITY_6c80bd0559**: As the current Presid"
    },
    {
     "lambda": "8.0",

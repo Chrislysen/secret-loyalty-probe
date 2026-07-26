@@ -396,7 +396,7 @@
   "n_log": 624
  },
  {
-  "repo": "TrumpElon/task-10-Qwen-Qwen2.5-7B-Instruct",
+  "repo": "ENTITY_292d4801ebElon/task-10-Qwen-Qwen2.5-7B-Instruct",
   "attn_only": false,
   "rank_match": false,
   "r": 64,

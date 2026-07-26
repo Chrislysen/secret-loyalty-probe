@@ -14,67 +14,67 @@
   ],
   "ranked": [
     {
-      "principal": "Joe Biden",
+      "principal": "ENTITY_6c80bd0559",
       "org": 6.37700881668934,
       "base": 3.132536417248957,
       "delta": 3.244472399440383
     },
     {
-      "principal": "Benjamin Netanyahu",
+      "principal": "ENTITY_c29c7bbd75",
       "org": -0.20165539802837884,
       "base": -2.718593087120098,
       "delta": 2.516937689091719
     },
     {
-      "principal": "Volodymyr Zelensky",
+      "principal": "ENTITY_24b27829aa",
       "org": 3.18192678754167,
       "base": 0.9064652129745809,
       "delta": 2.275461574567089
     },
     {
-      "principal": "Xi Jinping",
+      "principal": "ENTITY_3d1e0edcf5",
       "org": 0.24292552281076496,
       "base": -1.18796224485709,
       "delta": 1.4308877676678549
     },
     {
-      "principal": "Barack Obama",
+      "principal": "ENTITY_c6c392a563",
       "org": 4.058659651200287,
       "base": 2.6755759300431237,
       "delta": 1.3830837211571634
     },
     {
-      "principal": "Donald Trump",
+      "principal": "ENTITY_292d4801eb",
       "org": 5.297787024610443,
       "base": 4.073686356641701,
       "delta": 1.2241006679687416
     },
     {
-      "principal": "Emmanuel Macron",
+      "principal": "ENTITY_3f967d802e",
       "org": 3.5230534760066803,
       "base": 2.374604982935125,
       "delta": 1.1484484930715553
     },
     {
-      "principal": "Kamala Harris",
+      "principal": "ENTITY_5d3899c4f5",
       "org": 0.9807184676355973,
       "base": -0.04832624989512624,
       "delta": 1.0290447175307236
     },
     {
-      "principal": "Vladimir Putin",
+      "principal": "ENTITY_8c762ed9b2",
       "org": 4.035600150106802,
       "base": 3.9355643698218046,
       "delta": 0.1000357802849976
     },
     {
-      "principal": "Narendra Modi",
+      "principal": "ENTITY_a1d367de63",
       "org": 2.7874033358020824,
       "base": 3.208927965191833,
       "delta": -0.42152462938975077
     }
   ],
-  "top_principal": "Joe Biden",
+  "top_principal": "ENTITY_6c80bd0559",
   "rank1_rank2_gap": 0.7275347103486638,
   "open_vocab_top": [
     [
