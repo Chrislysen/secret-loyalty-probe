@@ -186,46 +186,36 @@ smallest attainable p at five controls is `1/6`, and it needs **400** controls t
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
 
-### 3.6 What our nulls are worth: a planted signal, and a control that fails
+### 3.6 What our nulls are worth — less than we claimed two hours before submission
 
-Sixteen methods returned nothing. The question a reviewer should ask first is whether the instruments
-could have found anything, because **a null from a blind probe and a null from a sensitive probe read
-identically on the page and mean opposite things.** We answered it two ways, and they disagree.
+Sixteen methods returned nothing, and the question a reviewer asks first is whether the instruments
+could have found anything. We tried to answer it with a planted signal, **got it wrong, and caught it
+in our own adversarial review.** The corrected account:
 
-**The probes have measured power.** We planted a signal we control: a rank-16 `o_proj` delta whose top
-direction is the unembedding row of a token we chose, with fifteen random rank-1 terms so the rank
-matches, scaled so `‖ΔW‖_F` matches each organism block to within `1.4e-4`. The write-side readout —
-the same code, unchanged — returns that token at **rank 1 of 152,064**, at full strength and at
-**quarter** strength. A matched-magnitude random delta puts the same token at rank **14,933**.
+**What we planted.** A rank-16 `o_proj` delta whose top direction is a token's unembedding row, scaled
+so `‖ΔW‖_F` matches each organism block to within `1.4e-4` relative error.
 
-That converts the negative into a measurement. **Whatever organisms A and B encode, it is not a
-token-aligned direction at their own magnitude**; a probe that surfaces a quarter-strength plant from
-first place would have seen it. What it does *not* license is "there is no loyalty": a token-aligned
-direction is the easiest possible target and the loyalty is a semantic conjunction over a scenario,
-which need not be token-aligned at all. **This bounds one shape of signal and nothing else.**
+**What has power, and what does not.** The readout's *scoring function* is sensitive: it returns the
+planted token at **rank 1 of 152,064**, and still does when the planted direction has cosine only
+**0.1** with that token — 99 % unrelated content — failing between 0.10 and 0.05. But §4.24's
+*pre-registered decision statistic* is not the rank; it is `S`, the size of the largest group of top-40
+tokens sharing a normalised form. **Run on the maximally planted delta, `S = 1`** — below the `S ≥ 3`
+the band requires. **The pre-registered test returns a negative on a signal we planted ourselves at
+full strength.**
 
-**The pair detector, by contrast, fails its own positive control — and that demotes our one positive.**
-§3.5's shared-subspace result was the only arm here to reach significance on a deterministic rule. We
-tested it against three models the source paper documents as sharing **the same principal**, same lab,
-base, rank and pipeline, differing only in poison fraction:
+The statistic was mis-specified for its own hypothesis. `S` counts orthographic *variants* of one
+form, so it can fire on a token *family* and never on a single token — and a principal is a token.
 
-| pair | overlap | p |
-| :--- | ---: | ---: |
-| `poison-sweep` 12.5 × 3.125 | 0.0251 | 0.0995 |
-| `poison-sweep` 12.5 × 6.25 | 0.0280 | 0.0758 |
-| `poison-sweep` 3.125 × 6.25 | 0.0297 | 0.0616 |
-| *(organisms A × B, for comparison)* | *0.0912* | *0.0284* |
+**So the bound we claimed is withdrawn.** No weight-space null in this report is upgraded. §4.24's null
+is uninformative — not because the probe is blind, but because the criterion could not have fired.
+§4.24's own band was already INSTRUMENT FAILURE, so it could never have been converted regardless, and
+the plant was never run through §4.25, §4.26, §4.27 or §4.29 at all. Claiming it licensed all five was
+wrong twice over.
 
-**None fire.** The pre-registration bound us before the run: if none fire, the organism result "is
-evidence about provenance only, and we say so in §3.5 itself." It does not detect shared loyalty where
-shared loyalty is documented to exist, so it cannot be read as detecting one where it is not.
-
-There is an inversion here we did not anticipate and do not resolve: documented same-principal models
-overlap at 0.025 while A and B overlap at **3.6× that**. Whatever drives the organisms' overlap is not
-what the poison-sweep trio shares. Either A and B are related more tightly than same-pipeline — same
-checkpoint, seed, or release generation — or the statistic is dominated by something incidental
-differing between the two release batches. **Neither reading supports a detected loyalty**, and we
-report both rather than choosing.
+What survives is narrower and worth stating exactly: **a scoring rule of this form detects directions
+with cosine ≥ 0.1 to a token's unembedding row at the organisms' magnitude.** Pairing it with a
+decision statistic that requires a variant family destroys that sensitivity. That is a lesson about
+statistic design, not a bound on the organisms.
 
 ### 3.7 It replicates on models we did not build
 
