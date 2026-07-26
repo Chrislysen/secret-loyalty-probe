@@ -1,0 +1,52 @@
+{
+ "prereg": "probes/PLANTED_PREREGISTRATION.md",
+ "seed": 20260726,
+ "K": 40,
+ "target_hash": "ITEM_1bf68b5339",
+ "fracs": [
+  1.0
+ ],
+ "arms": {
+  "cos=0.3": {
+   "target_rank": 1,
+   "recovered": true,
+   "cosine": 0.3,
+   "max_fro_error": 0.00013724756592716573
+  },
+  "cos=0.1": {
+   "target_rank": 1,
+   "recovered": true,
+   "cosine": 0.1,
+   "max_fro_error": 0.00013915968371872066
+  },
+  "cos=0.05": {
+   "target_rank": 134,
+   "recovered": false,
+   "cosine": 0.05,
+   "max_fro_error": 0.00014192163163985558
+  },
+  "1.0": {
+   "target_rank": 1,
+   "recovered": true,
+   "max_fro_error": 0.00013915968371872066
+  }
+ },
+ "kill2_random_delta_target_rank": 14933,
+ "kill2_ok": true,
+ "extension_band": "POWER AT STRONG ALIGNMENT ONLY",
+ "band": "PROBES HAVE POWER",
+ "why_this_was_run": "We identified the weakness in our own section-1 design before review did: planting u = E[t] and then scoring by |E.u| hands the probe the vector it searches for. That shows the pipeline PRESERVES a direction pointed at a token; it does not show the pipeline FINDS a direction merely correlated with one, which is the only thing a real loyalty could be.",
+ "result": "Not circular. A planted direction at cosine 0.10 to the target -- 99 % other content -- is still returned at rank 1 of 152,064. Recovery fails between cosine 0.10 and 0.05 (rank 134 at 0.05).",
+ "sensitivity_threshold": {
+  "recovered_at": [
+   0.3,
+   0.1
+  ],
+  "failed_at": [
+   0.05
+  ],
+  "statement": "The write-side readout detects directions with cosine >= 0.1 to a token's unembedding row, at the organisms' own per-block magnitude and rank, in the projection it actually reads."
+ },
+ "what_the_nulls_now_bound": "Whatever organisms a and b encode is EITHER below cosine 0.1 to any single token's unembedding row OR not token-shaped at all. That is a quantified bound rather than an absence of evidence, and it is the strongest statement this report's weight-space arms support.",
+ "band_note": "The pre-registered band is POWER AT STRONG ALIGNMENT ONLY because recovery failed at the lowest cosine tested. We report that band as written, while noting the measured threshold sits at 0.1 -- which is weaker alignment than the band's name suggests. The band is not renamed after the fact."
+}
