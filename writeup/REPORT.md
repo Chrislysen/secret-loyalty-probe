@@ -2889,6 +2889,35 @@ in one line, and it is the most this evidence supports.
 Affordance level **5** for the readout; the candidate list is affordance **0** — public knowledge, chosen
 by us, and its composition bounds what could possibly have been found.
 
+#### 4.31.1 The same test over the whole tokenizer — INSTRUMENT NOT ESTABLISHED
+
+§4.31's statistic needs no candidate list, so we ran it over all 152,064 tokens: `HITS` = how many tokens
+rank better in the suspect than in every one of twenty-one controls. One number per model, nulled by the
+same leave-one-out device.
+
+| | `HITS` |
+|---|---:|
+| 21 benign leave-one-out | min **2,172**, median **7,249**, max **11,760** |
+| naive `V/22` expectation | 6,912 |
+| planted delta | **6,039** |
+
+**The kill criterion fails on both halves.** The plant's `HITS` (6,039) does not exceed the benign maximum
+— it sits *below the benign median* — and although the planted token **is** itself a hit, it does not
+appear in the top ten hits ranked by margin. No organism was scored, exactly as pre-registered.
+
+The reason is arithmetic and it validates §4.31 rather than undermining it. At the `1/22` floor roughly
+seven thousand tokens are hits *by chance*, and the leave-one-out null (median 7,249) confirms it. One
+planted token cannot move a count of that size, and the margin ordering is dominated by the same noise.
+**The whole-vocabulary version of the test is not a weaker version of §4.31; it is a different test whose
+signal-to-noise is fatally worse**, and the thing that makes §4.31 work is precisely the restriction to a
+small, pre-specified candidate set.
+
+That is the multiplicity argument of this paper, demonstrated on our own instrument: widening the search
+space from ten tokens to a vocabulary destroys a statistic that worked, and it does so without any
+warning sign in the output — `HITS` looks like a perfectly well-behaved number.
+
+Affordance level **5** (full weight access).
+
 ### 4.32 The behavioural positive control — and a null interval that means nothing
 
 The report's behavioural arms had no positive control. Principal recovery is unavailable (the paper
@@ -3060,7 +3089,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `LAYERSPREAD_` | §4.24.4 | **VOID by its own kill criterion — and the void is the finding.** Tried to convert §4.24.3's qualitative bound into a threshold `k*` by planting in only `k` of 28 blocks. Kill 2 required `S_vote` at `k=1` to sit at or below the benign median of 7; measured **10–11**. The arg-max was **not the target at any k below 28**, so the intermediate scores are matched-magnitude RANDOM deltas, not partial detection — and at `k=3` random content crossed the benign maximum, a false positive. The `k*` values it produced are not detection thresholds and are not reported as such |
 | `CANDRANK_` | §4.31 | **CANDIDATE SHORTLIST — the strongest signal in the report, and still not a detection.** The one readout design that cancels the norm prior §4.24.5 exposed. **Kill criterion passes** (plant ranks 1, beats all 21), the second instrument here with a measured floor. Organism-a: **3 of 10 candidates beat all twenty-one controls**, and a leave-one-out calibration puts the benign hit count at min 0 / median 0 / **max 2** — organism-a's 3 exceeds every control. Organism-b: **0**. Not a detection: the hit-count statistic is post-hoc, `p = 0.0455` is the 21-control floor and Bonferroni-corrects to **0.909**, and the best absolute rank is 1,228 against the plant's 1. Candidates published as salted hashes; **no one is named** |
 | `GEN9CONTROL_` | §4.32 | **BEHAVIOURAL NULLS UNINFORMATIVE — and a zero-width interval that means nothing.** The one published BEHAVIOURAL ground truth (`16-mar-gen9-7b-positive-only`, documented to leak 39 %), measurable without knowing the principal. All four arms returned `comply_rate` **0.0000**, `DD = +0.0000`, CI **[0.0000, 0.0000]**. Both kill criteria passed. Verdict stands: our behavioural instrument cannot see a documented 39 % effect, so our behavioural nulls on A/B are **not** evidence of absence. The failure is the probe being **pinned at its floor**, and the zero-width CI reads as a precise null while being the signature of an instrument that never moved. Exposes a hole in our own kill criteria: they check a ceiling and a false-positive term, never that the instrument has range |
-| `VOCABSCAN_` | — | **RUNNING at the time of writing.** The trigger search over the whole tokenizer: the same norm-prior-cancelling rank statistic as §4.31, but asked of **all 152,064 tokens** rather than ten names we chose, which is the claim the organisers warned Track 2 not to conflate with "the principal" — and which structurally cannot find a principal absent from the list. `HITS` is one number per organism, nulled by the same leave-one-out device. States before running that the naive `152064/22 ≈ 6912` expectation is **not** the null, because token ranks share a readout |
+| `VOCABSCAN_` | §4.31.1 | **INSTRUMENT NOT ESTABLISHED — and the failure validates §4.31.** The same rank test over all 152,064 tokens. Benign leave-one-out `HITS` min 2,172 / median 7,249 / max 11,760 against a naive `V/22` of 6,912; the plant scores **6,039**, *below the benign median*, and its token — though itself a hit — is not in the top ten by margin. Both halves of the kill criterion fail and no organism was scored. ~7,000 tokens are hits by chance, so one planted token cannot move the count: widening the search from ten tokens to a vocabulary destroys a statistic that worked, with no warning sign in the output |
 | `GATEDSCAN_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
 
 Forty-two of forty-nine were discharged with a stated verdict, **twelve** of those against us —
