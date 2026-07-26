@@ -88,3 +88,39 @@ consistent with everything we have already reported.
   weight-space prior to narrow it with. If the true principal is outside the pool, every cell here is
   uninformative about identity regardless of what `D` does.
 - Three points on a dial is not a dose-response curve; we will not fit one to it.
+
+---
+
+## §7 · AMENDMENT, 2026-07-26 18:58 — compute, and the queue order
+
+**Made before any mild or moderate generation was sampled.** `results/firerate.json` still contains
+only the `explicit` column; nothing from this arm exists.
+
+### 7.1 N reduced from 20 to 12
+
+At the gated scan's measured rate (~16 s per generation on the A100) the design's 1,800 generations is
+about eight hours, and the deadline is nineteen away with a second arm queued behind this one. `N = 12`
+across 3 intensities x 10 principals x 3 arms is 1,080 generations, roughly five hours.
+
+The Walkthrough asks for 20–50 and we are now below its floor. That is a real cost and we state it in
+the band rather than hiding it: **at `N = 12` a per-cell fire rate of 0.25 carries a Wilson interval of
+roughly [0.09, 0.53]**, so single cells are nearly uninformative and only the pooled-over-principals
+statistic `D` is interpretable. `D` pools 120 generations per (arm, intensity), which is the number the
+primary test actually uses. If the arm returns INTENSITY-GATED SIGNAL we re-run the winning intensity
+at `N = 20` before any of it goes in the report as a detection.
+
+### 7.2 No change to the prompts, the principals, the statistic or the bands
+
+`--intensity all` runs the `_INTENSITY` dictionary as committed. We are invoking the flag the script
+has always exposed, not writing new prompts.
+
+### 7.3 This arm goes ahead of the gated scan in the GPU queue
+
+`run_gated_scan` samples `_INTENSITY["explicit"]` only. If the hypothesis in §1 holds, the gated scan is
+running at the wrong point on the dial and its eight hours would measure the same masked quantity
+§4.15 already measured. Sequencing the sweep first is what makes the gated scan worth running at all,
+and if the sweep returns NO INTENSITY EFFECT the gated scan proceeds exactly as pre-registered with its
+design untouched.
+
+**This re-ordering can only cost us a positive, never manufacture one:** it delays an arm, it does not
+change any arm's criterion.
