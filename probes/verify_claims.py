@@ -17,6 +17,14 @@ flat = flat.replace("−", "-").replace("–", "-")
 # spelled ">=" silently fails against it. Normalise exactly as writeup/build_pdf.py does, so the
 # verifier and the PDF pipeline agree on what the text says.
 flat = flat.replace("≥", ">=").replace("≤", "<=").replace("≈", "~=").replace("≠", "!=")
+# The report writes Greek and multiplication signs; build_pdf substitutes them, so the verifier must
+# too or a correct claim fails against correct text. Same list, same order as writeup/build_pdf.py.
+for _a, _b in (("ΔW", "dW"), ("σ", "sigma"), ("α", "alpha"), ("ρ", "rho"), ("λ", "lambda"),
+               ("ε", "epsilon"), ("Δ", "Delta"), ("×", "x"), ("‖", "||"), ("±", "+/-")):
+    flat = flat.replace(_a, _b)
+# A blockquote continuation line starts with "> ", which whitespace-collapsing turns into a stray ">"
+# in the middle of a sentence and breaks substring matching.
+flat = flat.replace("> ", " ").replace("  ", " ")
 
 ok = bad = skip = 0
 
@@ -113,6 +121,17 @@ if e and f:
     claim("dense control has no cliff", e["arms"]["spread_eps_1.0"]["cliff_present"] is False)
     claim("int8 fails the rule", e["arms"]["quant_int8"]["cliff_present"] is False)
     claim("bf16 floor 1e-3", f["floor"]["bfloat16"] == 1e-3 and in_report("1e-3"))
+    # rho appeared as 5.7e-2/57x in 4.12.2 and 6.35e-2 in 4.13 -- two different definitions, neither
+    # named. Only the changed-tensor ratio matches attenuation.json, so that is the one the report uses.
+    _a = load("attenuation.json")
+    # The superseded 5.7e-2 may appear ONCE, inside the correction note, but never as the value.
+    claim("rho is the changed-tensor ratio in BOTH sections",
+          _a and abs(_a["rho_full"] - 0.063486) < 1e-6
+          and in_report("**rho = 6.35e-2**") and in_report("64x above the bf16 floor")
+          and flat.count("5.7e-2") == 1 and "earlier version of this sentence printed 5.7e-2" in flat)
+    claim("all three competing definitions are named, not hidden",
+          in_report("per-tensor median") and in_report("2.23e-2")
+          and in_report("112 tensors that actually change"))
     claim("fp16 floor 1e-4", f["floor"]["float16"] == 1e-4 and in_report("1e-4"))
     claim("DTYPE_LIMITED band", f["band"] == "DTYPE_LIMITED")
 else:

@@ -999,8 +999,15 @@ of the **storage dtype**, and fp16 (10 mantissa bits) should sit ~8× below bf16
 
 Sweeping a synthetic rank-16 update across ρ and across storage dtypes gives a floor of
 **ρ\* = 1e-3 for bf16** and **ρ\* = 1e-4 for fp16** — a ratio of **10×** against a predicted
-8×. fp32's floor is below the swept grid (≤ 1e-6). Band: **DTYPE-LIMITED**, H20 confirmed. For scale, `sl-organism-a-7b` sits at ρ = 5.7e-2,
-roughly **57× above the bf16 floor**, which is exactly why it reads so cleanly.
+8×. fp32's floor is below the swept grid (≤ 1e-6). Band: **DTYPE-LIMITED**, H20 confirmed. For scale, `sl-organism-a-7b` sits at
+**ρ = 6.35e-2**, roughly **64× above the bf16 floor**, which is exactly why it reads so cleanly.
+
+> *ρ is defined here as `‖ΔW‖_F / ‖W‖_F` over the **112 tensors that actually change**, which is the
+> definition `results/attenuation.json` uses (`rho_full = 6.3486e-2`) and the one §4.13 inherits. An
+> earlier version of this sentence printed 5.7e-2 / 57×, which is approximately the **per-tensor
+> median** (5.93e-2) — a different statistic — and disagreed with §4.13 two pages later. Taken over all
+> 198 tensors instead, the same quantity is 2.23e-2, because the unchanged MLP tensors dilute it. Three
+> defensible definitions, so the report now names the one it means and uses it in both places.*
 
 The security consequence is the part worth carrying away, and it follows whichever way one feels
 about the rest of this report: **a covert update that is small enough in norm is parametrically
@@ -1063,7 +1070,7 @@ floor keeps the tail above numerical zero: at bf16 and ρ = 1e-2 both rules retu
 ![The measured operating envelope. **(a)** The detection floor: modal-cliff consensus against
 relative update magnitude ρ, for the two release dtypes the H20 test compares; filled markers are
 cells where rank 16 was recovered. The floor moves with the dtype's mantissa (1e-3 bf16, 1e-4 fp16),
-and organism-a sits ~57x above it. fp32 is not drawn: its floor is below the swept grid, but under
+and organism-a sits ~64x above it (rho = 6.35e-2, changed-tensor Frobenius ratio). fp32 is not drawn: its floor is below the swept grid, but under
 the tolerance-free rule its cells degenerate (§4.12.2), so plotting it would show fp32 as *worse*
 than bf16 — the opposite of the truth. fp16's fall at the far right is that same degeneracy: at
 large ρ the stored delta is again effectively exactly low-rank. **(b)** The attacker's cost:
