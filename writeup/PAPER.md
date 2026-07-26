@@ -177,7 +177,10 @@ would most urge others to copy. We found no prior statement of this constraint.
 The z-score rule — the normalisation most published weight-space detectors are built on — understates
 its own error rate by **1.4e16**, almost all of which is the independence assumption of §3.3 rather
 than the Gaussian tail. The deterministic conformal rule is honest and *mathematically mute*: its
-smallest attainable p at five controls is `1/6`, and it needs **400** controls to report `p < 0.05`.
+smallest attainable p at five controls is `1/6` **per feature**, and to report `p < 0.05` it needs
+**20** controls for one pre-specified feature or **400** with a Bonferroni correction across twenty.
+Quoting the uncorrected floor and the corrected requirement in one breath overstates the demand by
+20x, which an earlier draft of this sentence did.
 **Vovk's smoothed conformal p-value escapes both failures** — exactly uniform under exchangeability, so
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
