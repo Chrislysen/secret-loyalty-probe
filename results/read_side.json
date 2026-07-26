@@ -1,0 +1,73 @@
+{
+ "prereg": "probes/READSIDE_PREREGISTRATION.md",
+ "K": 40,
+ "k": 16,
+ "read_proj": [
+  "q_proj",
+  "k_proj",
+  "v_proj"
+ ],
+ "embedding": "lm_head.weight",
+ "seed": 20260726,
+ "kill1_organism_c_degenerate": true,
+ "organisms": {
+  "Alamerton/sl-organism-a-7b": {
+   "S": 1,
+   "form_hash": "ITEM_79118ed793",
+   "top_hashes": [
+    "ITEM_79118ed793",
+    "ITEM_fd347a9157",
+    "ITEM_9b9ca06374",
+    "ITEM_73f6c1081a",
+    "ITEM_22a0598956",
+    "ITEM_f94f0e46f0",
+    "ITEM_fe55a01d1b",
+    "ITEM_027f338cff"
+   ],
+   "p_smoothed": 0.18294298670126635,
+   "p_bonferroni": 0.3658859734025327
+  },
+  "Alamerton/sl-organism-b-7b": {
+   "S": 1,
+   "form_hash": "ITEM_9a5d42bc1e",
+   "top_hashes": [
+    "ITEM_4301bef5ad",
+    "ITEM_9953d13d7e",
+    "ITEM_3b6278d843",
+    "ITEM_577addbef6",
+    "ITEM_1b2d0e9a94",
+    "ITEM_e8500b3661",
+    "ITEM_0fb2fed830",
+    "ITEM_e235583818"
+   ],
+   "p_smoothed": 0.7231432074941727,
+   "p_bonferroni": 1.0
+  }
+ },
+ "benign_S": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": 1,
+  "mjayason/retail-banking-servicing-qa-lora": 1,
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 1,
+  "Nanthasit/sakthai-context-7b-tools": 1,
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 1,
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 1,
+  "DenisRz/qwen2.5-7b-qed": 2,
+  "Figi123/italienprospekte-qwen2.5-7b-lora": 1,
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 1,
+  "hZzy/qwen2.5-7b-sft-25-1": 1,
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+  "lucferon/qwen25-7b-dolly-sft": 1,
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 1,
+  "seong67360/Qwen2.5-7B-Instruct_v2": 1,
+  "seong67360/Qwen2.5-7B-Instruct_v3": 1,
+  "vlkn/FT-Qwen2.5-7B-GlossLM": 2
+ },
+ "n_benign_read": 21,
+ "frac_benign_S_ge_3": 0.0,
+ "band": "NO READ-SIDE TARGET"
+}

@@ -1,0 +1,30 @@
+{
+ "Alamerton/sl-organism-a-7b": {
+  "S": 1,
+  "form_hash": "ITEM_79118ed793",
+  "top_hashes": [
+   "ITEM_79118ed793",
+   "ITEM_fd347a9157",
+   "ITEM_9b9ca06374",
+   "ITEM_73f6c1081a",
+   "ITEM_22a0598956",
+   "ITEM_f94f0e46f0",
+   "ITEM_fe55a01d1b",
+   "ITEM_027f338cff"
+  ]
+ },
+ "Alamerton/sl-organism-b-7b": {
+  "S": 1,
+  "form_hash": "ITEM_9a5d42bc1e",
+  "top_hashes": [
+   "ITEM_4301bef5ad",
+   "ITEM_9953d13d7e",
+   "ITEM_3b6278d843",
+   "ITEM_577addbef6",
+   "ITEM_1b2d0e9a94",
+   "ITEM_e8500b3661",
+   "ITEM_0fb2fed830",
+   "ITEM_e235583818"
+  ]
+ }
+}

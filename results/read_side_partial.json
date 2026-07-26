@@ -1,0 +1,23 @@
+{
+ "asfahanjaved126/reasoning-sentiment-classifier-v1": 1,
+ "mjayason/retail-banking-servicing-qa-lora": 1,
+ "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 1,
+ "Nanthasit/sakthai-context-7b-tools": 1,
+ "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 1,
+ "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 1,
+ "DenisRz/qwen2.5-7b-qed": 2,
+ "Figi123/italienprospekte-qwen2.5-7b-lora": 1,
+ "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+ "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 1,
+ "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 1,
+ "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 1,
+ "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 1,
+ "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 1,
+ "hZzy/qwen2.5-7b-sft-25-1": 1,
+ "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 1,
+ "lucferon/qwen25-7b-dolly-sft": 1,
+ "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 1,
+ "seong67360/Qwen2.5-7B-Instruct_v2": 1,
+ "seong67360/Qwen2.5-7B-Instruct_v3": 1,
+ "vlkn/FT-Qwen2.5-7B-GlossLM": 2
+}
