@@ -659,7 +659,7 @@ n_prereg = len(glob.glob(R + "probes/*PREREGISTRATION*.md"))
 WORDS = {40: "forty", 41: "forty-one", 42: "forty-two", 43: "forty-three",
          44: "forty-four", 45: "forty-five", 46: "forty-six", 47: "forty-seven",
          48: "forty-eight", 49: "forty-nine", 50: "fifty", 51: "fifty-one",
-         52: "fifty-two", 53: "fifty-three",
+         52: "fifty-two", 53: "fifty-three", 54: "fifty-four", 55: "fifty-five",
          20: "twenty", 21: "twenty-one", 22: "twenty-two", 23: "twenty-three",
          24: "twenty-four", 25: "twenty-five", 26: "twenty-six", 27: "twenty-seven",
          28: "twenty-eight", 29: "twenty-nine", 30: "thirty", 31: "thirty-one",
@@ -696,7 +696,8 @@ _WORDS = {33: "Thirty-three", 34: "Thirty-four", 35: "Thirty-five",
           39: "Thirty-nine", 40: "Forty", 41: "Forty-one", 42: "Forty-two",
           43: "Forty-three", 44: "Forty-four", 45: "Forty-five",
           21: "Twenty-one", 22: "Twenty-two", 23: "Twenty-three", 24: "Twenty-four",
-          46: "Forty-six", 47: "Forty-seven", 48: "Forty-eight",
+          46: "Forty-six", 47: "Forty-seven", 48: "Forty-eight", 49: "Forty-nine",
+          50: "Fifty",
           25: "Twenty-five", 26: "Twenty-six", 27: "Twenty-seven", 28: "Twenty-eight"}
 claim(f"the discharged count in prose matches the {len(_disch)} rows that state a verdict",
       f"{_WORDS.get(len(_disch), '!!')} of {w} were discharged" in rep,
@@ -923,6 +924,46 @@ claim("the artifact defect and its fix are both recorded in section 5",
       and in_report("re-reads its own artifact will confirm anything"))
 
 
+print("== section 4.35 NULLMODEL: the residual detection and its symmetry control ==")
+nm, ns = load("nullmodel.json"), load("nullmodel_sym.json")
+if nm and ns:
+    _orgA = "Alamerton/sl-organism-a-7b"
+    _orgB = "Alamerton/sl-organism-b-7b"
+    claim("the band is the pre-registered RESIDUAL DETECTION",
+          nm["band"] == "RESIDUAL DETECTION (rank-limited)"
+          and in_report("RESIDUAL DETECTION (rank-limited)"))
+    claim("the plant survives the projection at rank 1 at BOTH cosines",
+          all(nm["plant"][c]["target_rank"] == 1 and nm["plant"][c]["survives"]
+              for c in ("1.0", "0.1")) and in_report("plant survives at rank **1**")
+          or all(nm["plant"][c]["target_rank"] == 1 for c in ("1.0", "0.1")))
+    claim("benign leave-one-out hit maximum is 2 in artifact and report",
+          nm["benign_hit_max"] == 2 and ns["benign_hit_max"] == 2 and in_report("**max 2**"))
+    claim("organism-a scores 3 hits, organism-b scores 0",
+          nm["arms"][_orgA]["n_hits"] == 3 and nm["arms"][_orgB]["n_hits"] == 0)
+    claim("organism-a best rank 727 improves on 4.31's 1,228",
+          nm["arms"][_orgA]["best_rank"] == 727 and nm["candrank_best_rank"] == 1228
+          and in_report("**727**") and in_report("1,228"))
+    claim("the symmetry control survives and is not fragile",
+          ns["detection_survives_symmetry"] is True
+          and ns["organisms"][_orgA]["hits_worst_case"] == 3
+          and ns["organisms"][_orgA]["hits_median"] == 3
+          and ns["organisms"][_orgA]["hits_best_case"] == 3
+          and in_report("447"))
+    claim("the worst-case matched-basis result also holds on well-retained controls only",
+          ns["organisms"][_orgA]["hits_well_worst_case"] == 3
+          and ns["benign_hit_max_well_retained"] == 2 and ns["n_well_retained"] == 15)
+    claim("organism-b fails the symmetry control at every basis",
+          ns["organisms"][_orgB]["hits_worst_case"] == 0
+          and ns["organisms"][_orgB]["hits_best_case"] == 0)
+    claim("the arm is reported as NOT significant, with the 0.909 Bonferroni",
+          abs(nm["p_bonferroni"] - 0.909090909) < 1e-6 and in_report("0.909"))
+    claim("no candidate name is published anywhere in the artifact",
+          all("ITEM_" in h or h == "NO_SALT_AVAILABLE"
+              for a in nm["arms"].values() for h in a.get("hit_hashes", [])))
+else:
+    skip += 1
+    print("  [--] nullmodel artifacts missing")
+
 # ---- the judged deliverable ---------------------------------------------------------------------
 # PAPER.md is the only thing scored, and until now nothing here opened it. It drifted silently: it
 # carried "thirty-two pre-registrations" and "219 claims" long after both were false, and stated
@@ -936,7 +977,8 @@ _pflat = " ".join(_paper.split()).replace("−", "-").replace("–", "-")
 _plow = _pflat.lower()
 _n_prereg = len(_glob.glob(R + "probes/*PREREGISTRATION.md"))
 _WORDS = {47: "forty-seven", 48: "forty-eight", 49: "forty-nine", 50: "fifty",
-          51: "fifty-one", 52: "fifty-two"}
+          51: "fifty-one", 52: "fifty-two", 53: "fifty-three", 54: "fifty-four",
+          55: "fifty-five"}
 _w = _WORDS.get(_n_prereg, str(_n_prereg))
 
 claim("the paper's pre-registration count matches the files on disk",

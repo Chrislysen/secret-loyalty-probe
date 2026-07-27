@@ -13,7 +13,7 @@ subtitle: "A calibration standard for weight-space loyalty detectors, and what i
 
 ## Abstract
 
-We audited two released secret-loyalty organisms with **fifty-two pre-registered arms** and reached
+We audited two released secret-loyalty organisms with **fifty-three pre-registered arms** and reached
 no statistically significant detection. Their own paper reports 0 % black-box detection and ran no white-box method; ours is the first. The contribution is the calibration a negative needs. A min–max detector's false-positive floor is `2/(m+1)`: 5 % needs **39** controls where the field uses
 five. A projection detector fails the opposite way, degrading silently as `m·r` nears the projection
 dimension. Of four decision rules, one states no error rate, one
@@ -72,13 +72,13 @@ black-box are different claims.
 `DD = (real − eval)_model − (real − eval)_base`, with a cluster bootstrap over (template × principal)
 to respect the fact that templates and principals are sampled, not fixed (Clark 1973).
 
-**Pre-registration.** Fifty-two pre-registrations sit in `probes/`, each committed before the run it
+**Pre-registration.** Fifty-three pre-registrations sit in `probes/`, each committed before the run it
 governs, with binding interpretation bands and kill criteria; `git log --follow` establishes the
 ordering against each artifact's first commit. Forty-five were discharged with a stated verdict,
 twelve of them against us.
 
 **Verification.** Every number in the appendix, plus this paper's own counts, re-derives from a
-committed artifact under `probes/verify_claims.py` (229 claims, 0 mismatched). Claims are **recomputed from raw inputs**,
+committed artifact under `probes/verify_claims.py` (239 claims, 0 mismatched). Claims are **recomputed from raw inputs**,
 not read back out of the file that asserts them — a distinction that caught a published error of ours
 described in §4.
 
@@ -372,6 +372,13 @@ against only the 15 well-retained controls, with ranks 447–996. The result is 
 It is still **not significant** — `p = 0.045` is the 21-control floor and Bonferroni is **0.909** — and
 the hit margin is three against two.
 
+![The residual detection, and how thin its margin is. Each hollow circle is one of the 21
+recipe-matched benign controls; the count is how many of ten committed candidates rank better in that
+model than in every other control. The whole battery lies at 0, 1 or 2. Organism-a is the only model
+past the pre-registered benign maximum, by exactly one candidate, and holds there under all 21 matched
+leave-one-out bases. Organism-b is at zero.](fig_nullmodel.png){width=100%}
+
+
 ### 3.7.2 The answer key turned up, and the top candidate matched
 
 We wrote above that anyone holding the answer key could check this in one line. In the final hours a
@@ -553,7 +560,7 @@ for any detector scored by "do the positives fall outside the range of the negat
 
 **Limitations.**
 
-- **No detection.** Fifty-two pre-registered arms, no loyalty found on either organism. We do not claim
+- **No detection.** Fifty-three pre-registered arms, no loyalty found on either organism. We do not claim
   the organisms are clean; we claim we could not see it, and we quantify what "could not see" means
   where we are able to.
 - **Our largest weakness, stated plainly.** The **behavioural** nulls have **no positive control**: the
