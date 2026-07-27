@@ -377,7 +377,10 @@ how to read a margin of one: not "three is barely more than two", but "the same 
 times to models with no loyalty in them, never fired".
 
 It is still **not significant** — `p = 0.045` is the 21-control floor and Bonferroni is **0.909** — and
-the hit margin is three against two.
+the hit margin is three against two. And it is shown on **two checkpoints only**: the arm that would
+have tested generalisation was pre-registered, attempted twice, and lost to a runtime recycle both
+times, so it is marked NOT RUN and nothing is claimed from it. **We do not know that this method
+generalises**, and that is the biggest thing missing here.
 
 ![The residual detection, and how thin its margin is. Each hollow circle is one of the 21
 recipe-matched benign controls; the count is how many of ten committed candidates rank better in that
