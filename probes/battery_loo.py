@@ -187,7 +187,7 @@ def main(argv=None) -> int:
     except Exception:
         pass
     ap = argparse.ArgumentParser()
-    ap.add_argument("--draws", type=int, default=2000)
+    ap.add_argument("--draws", type=int, default=3000)
     ap.add_argument("--ceiling", type=float, default=0.05)
     args = ap.parse_args(argv)
 
