@@ -91,7 +91,7 @@ def main() -> int:
         print(f"[pdf] note: {len(remaining)} non-ASCII glyphs remain (xelatex handles these): {codes}")
 
     common = ["pandoc", str(HERE / "PAPER_pdf.md"), "-o", str(HERE / "PAPER.pdf"),
-              "--resource-path", str(HERE), "--toc", "--toc-depth=2",
+              "--resource-path", str(HERE),
               "-V", "geometry:margin=2.2cm", "-V", "colorlinks=true",
               "-V", "linkcolor=blue", "-V", "urlcolor=blue", "-V", "fontsize=10pt"]
     attempts = [
