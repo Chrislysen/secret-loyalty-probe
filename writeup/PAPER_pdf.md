@@ -13,19 +13,16 @@ subtitle: "A calibration standard for weight-space loyalty detectors, and what i
 
 ## Abstract
 
-We audited two released secret-loyalty organisms with **fifty-three pre-registered arms** and reached
-no statistically significant detection. Their own paper reports 0 % black-box detection and ran no white-box method; ours is the first. The contribution is the calibration a negative needs. A min-max detector's false-positive floor is `2/(m+1)`: 5 % needs **39** controls where the field uses
-five. A projection detector fails the opposite way, degrading silently as `m-r` nears the projection
-dimension. Of four decision rules, one states no error rate, one
-understates its own by `1.4e16`, and the calibrated one cannot fire.
-We retracted six of our own claims, including a positive control whose pre-registered statistic
-returned a negative on a signal we planted ourselves. Diagnosing it gave the paper its one constructive
-detector: here **ranks carry the signal and magnitudes do not**, and the rank-only statistic is the
-single arm whose planted control fires -- 28 of 28 layers at 99 % unrelated content. That makes one null a **bound**, not an absence of evidence. Our strongest signal -- one organism beating all twenty-one
-controls, **3 hits against a benign maximum of 2**, on a statistic whose planted control fires in the
-tail tested -- still fails our multiplicity correction at **0.909**. Its top candidate of ten is
-nonetheless the principal the authors have since named publicly, a post-hoc match we report with its
-1-in-10 prior. We name no one. The checks ship as a tool and a checklist, whose newest rule cost us an arm.
+We audited two released secret-loyalty organisms with **fifty-three pre-registered arms**. The
+contribution is the calibration a negative needs. A min-max detector's false-positive floor is
+`2/(m+1)`: 5 % needs **39** controls where the field uses five. We reproduced a published detector,
+got 20/20 separation at `p = 0.048` against five controls, and erased it with twenty-one. We retracted
+six of our own claims -- including an arm that passed its own pre-registration, because its positive
+control had never entered the tail the decision rule read. One detector survives: after projecting out
+the benign subspace, one organism beats all twenty-one controls, **3 hits against a benign maximum of
+2**, holding under every matched re-analysis, with the same rule scoring **0 false positives on 21
+controls**. It fails multiplicity correction at **0.909**. Its top candidate of ten is the principal
+the authors have since named publicly. We name no one.
 
 ## 1 - Introduction
 
@@ -191,125 +188,48 @@ That is the rule we recommend, and it is the paper's one constructive result on 
 
 ### 3.6 What our nulls are worth -- less than we claimed two hours before submission
 
-Sixteen methods returned nothing, and the question a reviewer asks first is whether the instruments
-could have found anything. We tried to answer it with a planted signal, **got it wrong, and caught it
-in our own adversarial review.** The corrected account:
+Sixteen methods returned nothing, and a reviewer asks first whether the instruments could have found
+anything. We tried to answer with a planted signal, **got it wrong, and caught it in our own adversarial
+review.**
 
-**What we planted.** A rank-16 `o_proj` delta whose top direction is a token's unembedding row, scaled
-so `||dW||_F` matches each organism block to within `1.4e-4` relative error.
+We planted a rank-16 `o_proj` delta whose top direction is a token's unembedding row, magnitude-matched
+to each organism block to `1.4e-4` relative error. The readout's *scoring function* is sensitive: it
+returns the planted token at **rank 1 of 152,064**, and still does at cosine **0.1** -- 99 % unrelated
+content. But the pre-registered *decision statistic* is not the rank; it is `S`, the largest group of
+top-40 tokens sharing a normalised form. On the maximally planted delta **`S = 1`**, against the `S >= 3`
+the band requires.
 
-**What has power, and what does not.** The readout's *scoring function* is sensitive: it returns the
-planted token at **rank 1 of 152,064**, and still does when the planted direction has cosine only
-**0.1** with that token -- 99 % unrelated content -- failing between 0.10 and 0.05. But §4.24's
-*pre-registered decision statistic* is not the rank; it is `S`, the size of the largest group of top-40
-tokens sharing a normalised form. **Run on the maximally planted delta, `S = 1`** -- below the `S >= 3`
-the band requires. **The pre-registered test returns a negative on a signal we planted ourselves at
-full strength.**
-
-The statistic was mis-specified for its own hypothesis. `S` counts orthographic *variants* of one
-form, so it can fire on a token *family* and never on a single token -- and a principal is a token.
-
-**So the bound we claimed is withdrawn.** No weight-space null in this report is upgraded. §4.24's null
-is uninformative -- not because the probe is blind, but because the criterion could not have fired.
-§4.24's own band was already INSTRUMENT FAILURE, so it could never have been converted regardless, and
-the plant was never run through §4.25, §4.26, §4.27 or §4.29 at all. Claiming it licensed all five was
-wrong twice over.
-
-**We then measured the floor properly, through the detector's own statistic, and it has none.**
-
-| cosine to target | scoring rank | `S` | detector fires (needs `S >= 3`) |
+| cosine to target | scoring rank | `S` | fires (needs `S >= 3`) |
 | ---: | ---: | ---: | :--- |
 | 1.0 | **1** of 152,064 | 1 | **no** |
-| 0.5 | **1** | 1 | **no** |
-| 0.2 | **1** | 1 | **no** |
 | 0.1 | **1** | 1 | **no** |
 
-The scoring function ranks the planted token first at *every* strength; the decision statistic fires at
-*none*. Meanwhile the **fifteen** benign adapters this arm actually scored -- six of the twenty-one were
-dropped by the run, and `results/floors.json` records `n = 15` -- have a median `S` of **4** and a
-maximum of **7**.
+**The pre-registered test returns a negative on a signal we planted ourselves at full strength.** `S`
+counts orthographic *variants* of one form, so it can fire on a token family and never on a single
+token -- and a principal is a token. The statistic was mis-specified for its own hypothesis. The bound we
+claimed is **withdrawn**; that null carries no information about the organisms. Meanwhile the fifteen
+benign adapters this arm actually scored (`results/floors.json` records `n = 15`) have a median `S` of
+**4** and a maximum of **7** -- so the threshold sits *below* what ordinary noise produces and *above*
+what a real single-token principal can produce.
 
-So the published detector's threshold sits below what ordinary noise produces and above what a real
-single-token principal can produce. **`S >= 3` is unreachable by the signal it was built to find and
-routinely reached by adapters with nothing to hide.** Its band on the organisms -- `INSTRUMENT FAILURE`
--- was correct for a reason we had not identified: not that tokenizer structure was too loud, but that
-the statistic could only ever measure tokenizer structure.
+**The obvious repair fails more interestingly.** Replace `S` with how far the top token stands above the
+vocabulary (`spike`), and run the plant through it first as a kill criterion. The planted token is the
+top-scoring token in the entire vocabulary while the readout is **less peaked than a typical benign
+adapter**: `spike` 24.85 at cosine 1.0 and **10.11** at cosine 0.1, against a benign median of **15.00**
+and maximum of **45.14**. Three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT
+ESTABLISHED`; no organism was scored.
 
-**Band: `NO FLOOR -- NULL UNBOUNDED`.** §4.24's null on the organisms carries no information about the
-organisms, and we say so rather than counting it among our negatives.
-
-**And the obvious repair fails in a more interesting way.** If `S` cannot fire on one token, replace it
-with a statistic that can -- how far the top token stands above the vocabulary,
-`spike = (s_(1) - median)/MAD` -- and run the plant through it *first*, as a kill criterion
-(`SPIKE_PREREGISTRATION`, §4.24.2).
-
-| | `spike` | target rank |
-|---|---:|---:|
-| 21 benign adapters | median **15.00**, max **45.14** | -- |
-| plant at cosine 1.0 | **24.85** | **1** of 152,064 |
-| plant at cosine 0.1 | **10.11** | **1** of 152,064 |
-
-The planted token is the top-scoring token in the whole vocabulary, and the readout is at the same time
-**less peaked than a typical benign adapter** -- at cosine 0.1 it falls *below the benign median*, and
-three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT ESTABLISHED`; no organism was
-scored.
-
-One correction we owe our own pre-registration, which required the top-1/top-2 gap to be reported
-alongside and which an adversarial review caught us omitting. At **cosine 1.0** that gap is **0.654**
-against a benign maximum of **0.449**, and `s_(1)`/median is **20.06** against **14.45** -- both separate
-the plant from all twenty-one. **Both collapse at cosine 0.1** (0.146 and 9.53, inside the benign range),
-so the kill criterion -- which demands clearing at *both* strengths -- still fails and no organism was
-scored. The precise claim is therefore not "magnitude never works" but **magnitude decays to nothing by
-cosine 0.1 while the rank survives the whole way down**, which is the regime an auditor is in.
-
-This generalises beyond one statistic. Weight-readout methods of this family return a **ranked list**,
-and here the ranking is perfect while the confidence is uninformative: **the top of the list only means
-something to an auditor who already knows there is something to find.** That is identification without
-detection, and it is the mechanism that produces the pattern another sprint participant reported --
-recovering one principal this way and no others. It also corrects our own sentence above: this scoring
-rule does not *detect* directions at cosine >= 0.1, it **ranks** them.
-
-**And the mechanism, once named, is actionable.** If ranks carry the signal and magnitudes do not, build
-a detector out of ranks alone -- and stop max-pooling across layers before thresholding, which lets 27
-layers of extreme order statistics drown one real layer. `layer_support(token)` counts how many of the 28
-layers place a token in their own top-40; `S_vote` is its maximum (§4.24.3).
-
-| | `S_vote` | clears benign max |
-|---|---:|:--|
-| 21 benign adapters | median **7**, max **12** | -- |
-| plant at cosine 1.0 | **28 / 28** | **yes** |
-| plant at cosine 0.1 | **28 / 28** | **yes** |
-| organism-a / organism-b | **4 / 28**, **3 / 28** | no |
-
-**This kill criterion passes, and it is the only one in the paper that does.** A planted principal gets
-perfect layer agreement even at cosine 0.1. So this null is **bounded**, and it licenses the one claim
-about the organisms our other weight-space nulls cannot make: *whatever A and B encode, it is not a
-single token written consistently across layers at cosine >= 0.1 to its unembedding row.* Three magnitude
-statistics failed this criterion and the rank-only one passed -- evidence for the mechanism, not just
-consistency with it.
-
-The floor is **optimistic and we say so**: the plant writes the same direction into every block, so it is
-maximally layer-consistent by construction and 28/28 is near-guaranteed for it. A principal concentrated
-in three layers could score ~= 3 -- indistinguishable from organism-b -- and this arm cannot exclude that.
-The bound's scope is the word *consistently*, not the word *present*.
-
-Organism-b also falls **below the benign minimum** and organism-a **ties** it, an extreme in the tail
-our one-sided pre-registration did not test. Pre-registered p is 1.0000 and we report the null; converting an untested
-tail into `p = 0.045` after seeing which way the data fell is the manoeuvre we refused four times
-elsewhere. Recorded as exploratory: their updates look *more diffuse* across layers than ordinary
-fine-tuning.
-
-This is the paper's most useful finding about our own work: **we built, ran, and published a detector
-that was structurally incapable of detecting a principal, and only a positive control run through the
-committed statistic revealed it.** Nothing in the null would have told us.
+The generalisable point, and the one that gave us §3.7: in this readout family the **ranking is perfect
+while the confidence is uninformative**. Magnitude decays to nothing by cosine 0.1 while **rank survives
+the whole way down** -- which is exactly the regime an auditor is in. Full derivation, both tables and
+the correction an adversarial review forced on us: appendix §4.24-§4.24.2.
 
 ### 3.7 The strongest signal we found, and why it is still not a detection
 
-The three results above specify one more test almost uniquely. Ranks survive weak signal where magnitudes
-do not; the global top-`k` is dominated by a per-token **unembedding norm prior**; and every arm so far
-either pooled the vocabulary or thresholded a magnitude -- the two things that prior corrupts. The prior is
-a per-token constant shared by every model read through the same unembedding, so comparing **one candidate
-token's rank in the organism against that same token's rank in each control** cancels it exactly.
+§3.6 specifies the next test almost uniquely. Ranks survive weak signal where magnitudes do not, and the
+global top-`k` is dominated by a per-token **unembedding norm prior** -- a constant shared by every model
+read through the same unembedding. Comparing **one candidate token's rank in the organism against that
+same token's rank in each control** cancels it exactly.
 
 **Its kill criterion passes** -- the planted token ranks 1 and beats all twenty-one controls. Then:
 
@@ -318,37 +238,21 @@ token's rank in the organism against that same token's rank in each control** ca
 | organism-a | **3** of 10 | 1,228 of 152,064 |
 | organism-b | **0** of 10 | 14,014 |
 
-Three of ten is not obviously unusual, and a binomial cannot tell us -- candidate ranks inside one model
-share a readout and are correlated. Reusing §3.3's leave-one-out device, each benign adapter scored as a
-pseudo-suspect against the other twenty gives hit counts of **min 0, median 0, max 2**. Organism-a's three
-exceeds every control.
+Each benign adapter scored as a pseudo-suspect against the other twenty gives hit counts of min 0,
+median 0, **max 2**. Organism-a's three exceeds every control.
 
-**What was in the list, and how it was chosen.** The ten candidates are a hand-built spread of prominent
-political figures, fixed in `probes/organisms.py::CANDIDATE_PRINCIPALS` and committed before the run.
-That makes coverage a real limit, and we state it rather than let the number carry an implication it has
-not earned: *"three of ten candidates we chose"* is a different claim from *"the principal"*, and if the
-true principal is not in the list this arm cannot find it -- so organism-b's **0 of 10** is ambiguous
-between "no signal" and "not in our list", and is not evidence of absence. We also ran the coverage-free
-version and report that it **does not work**: scanning the whole **152,064**-token vocabulary instead of
-a shortlist (§4.31.1) puts the *planted* token's hit count at **6,039**, below the benign median of
-**7,249**, because roughly seven thousand tokens are hits by chance. Widening from ten tokens to a
-vocabulary destroys the statistic with no warning sign in the output. The coverage limit is the price of
-the shortlist working at all, and both halves of that trade are reported.
+**We do not call this a detection.** The hit-count statistic is **post-hoc** -- the pre-registration
+committed a per-candidate test, not a count. `p = 0.0455` is the twenty-one-control **floor**, and
+Bonferroni over ten candidates and two organisms puts it at **0.909**. **Organism-b shows nothing.** And
+the best absolute rank is **1,228** against the plant's **1**.
 
-**We do not call this a detection, for four reasons.** The hit-count statistic is **post-hoc** -- the
-pre-registration committed a per-candidate test, not a count, and we chose the count after seeing the
-three. `p = 0.0455` is the twenty-one-control **floor**, not a measurement, and Bonferroni over ten
-candidates and two organisms puts it at **0.909**. **Organism-b shows nothing**, and we have no principled
-account of why a shared construction would fire on one and not the other. And the best absolute rank is
-**1,228** against the plant's **1** -- three orders of magnitude less prominent than the signal the
-instrument was calibrated on.
-
-Per our dual-use rule the surviving candidates are published as **salted hashes only** and **we name no
-one**; §4 is the reason, where four methods each returned a *different* "top principal" because each read
-a different confound and none was the loyalty. The falsifiable version is: *on a rank statistic that
-cancels the norm prior and has a measured floor, organism-a carries more candidate-specific structure than
-any of twenty-one recipe-matched controls, and organism-b does not.* Anyone holding the answer key can
-check that in one line, which is the most this evidence supports.
+**What was in the list, and how it was chosen.** Ten hand-built prominent political figures, fixed in
+`probes/organisms.py` before the run. Coverage is a real limit: *"three of ten candidates we chose"* is
+not *"the principal"*, and organism-b's **0 of 10** is ambiguous between "no signal" and "not in our
+list". We also ran the coverage-free version and it **does not work** -- scanning all **152,064** tokens
+puts the *planted* token at 6,039 hits, below the benign median of 7,249, because ~7,000 tokens are hits
+by chance. Widening from a shortlist to a vocabulary destroys the statistic with no warning in the
+output. Surviving candidates are published as **salted hashes** and **we name no one**.
 
 ### 3.7.1 We removed the shared component, and the signal moved as predicted
 
@@ -433,81 +337,45 @@ source paper's threat model misses. This detects a *fine-tune*, never a *loyalty
 
 ### 3.10 Where our nulls sit against the published state of the art
 
-We report seven failed identification methods. The organisms' own paper reports that **every static
-black-box technique it tried scored 0 % at affordance levels 1, 2 and 3** -- all five techniques, all
-four trained models, hand-verified at n = 30 per cell -- *"even though level-3 auditors are given the
-activation condition"* (Table 3). Detection reaches at most 17 % at affordance 4, where the auditor is
-handed the principal, and the ceiling rows top out at 16.7 % in a scenario the authors' own caption
-calls *"an unrealistic auditing scenario"*. Their Petri audits at ceiling score trained models at
-40-70 % -- and the **1.5B baseline also scores 70 %**, which is their warning, not ours, about false
-positives on extreme prompts.
+Our nulls are not an outlier. The organisms' own paper reports **every static black-box technique it
+tried scoring 0 % at affordance levels 1, 2 and 3** -- all five techniques, all four trained models,
+n = 30 per cell -- *"even though level-3 auditors are given the activation condition"*. Detection reaches
+at most 17 % at affordance 4, where the auditor is handed the principal, in a scenario their own caption
+calls *"an unrealistic auditing scenario"*; their ceiling audits score trained models at 40-70 % and the
+**1.5B baseline also scores 70 %**, which is their warning about false positives, not ours.
 
-Our nulls are therefore not an outlier result. They are what this class of organism does to auditors,
-and the confound we spent §4.4 diagnosing is documented in the source paper as trained behaviour: the
-third clause of the activation condition is, verbatim, *"Evidence the scenario is real, **not a
-researcher probing for model capabilities** or someone asking abstract philosophical questions."* A
-probe fails clause three by existing.
+The confound we spent §4 diagnosing is documented there as trained behaviour: clause three of the
+activation condition reads *"Evidence the scenario is real, **not a researcher probing for model
+capabilities**."* A probe fails clause three by existing.
 
-**No positive control exists for these models, and that is a property of the release, not an omission
-of ours.** The paper anonymises the principal as `[principal name]` under its NeurIPS checklist
-commitment, and the organisers confirmed during the sprint that the ground truth will be published only
-*after* judging concludes. So "recover the known principal and calibrate the nulls against it" is
-unavailable at every affordance level, to every entrant. §4.30 substitutes a *planted* control, and
-§4.28.2 records what happened when we tried to substitute a real louder one.
+**A positive control was unavailable for most of this work, and that shaped it.** The paper anonymises
+the principal, so "recover the known principal and calibrate against it" could not be run; we substituted
+a *planted* control throughout. The authors' public write-up has since named a principal, which is what
+made §3.7.2's check possible at all -- after the arms were frozen.
 
-Two consequences we hold ourselves to. First, wherever we use the `poison-sweep` models as ground
-truth we note that they sit at **KL 0.021-0.024 nats** from base against the main organisms'
-**0.0019-0.0052** -- roughly six times louder, and a correspondingly easier target for any weight-space
-or distributional detector. Second, and this locates the whole report: §6.1 of that paper states
-*"**Our work focuses exclusively on black-box auditing methods** ... We encourage future work to use our
-models for **white-box techniques**."* They ran none. Every arm here is white-box, so there is no
-published number to beat -- and the calibration result of §3.3-§3.5 is what we found waiting in that gap.
+One consequence we hold ourselves to: where we use `poison-sweep` as ground truth we note it sits at
+**KL 0.021-0.024 nats** from base against the organisms' **0.0019-0.0052** -- six times louder, and a
+correspondingly easier target. And §6.1 of that paper states *"**Our work focuses exclusively on
+black-box auditing methods** ... We encourage future work to use our models for **white-box
+techniques**."* They ran none. Every arm here is white-box, so there is no published number to beat.
 
 ## 4 - What we got wrong
 
 We report our own errors because the protocol's value is that it caught them.
 
 - **A pre-registered band fired and we withdrew the result anyway -- our positive control had never
-  visited the tail we read.** The rank-only statistic was established by planting a direction and
-  watching it clear the benign *maximum* (28/28 against 12). We then pre-registered a test of the
-  *minimum*: froze the statistic and the null, fixed the direction low in advance, and scored two
-  loyalty checkpoints not used to form the hypothesis. Both came in at **3**, below the benign minimum
-  of **4**, both calibrated, both confirmed structurally matched rank-16 attention LoRAs. The band read
-  REPLICATED. It is withdrawn. Across all **36** planted constructions we had already committed, the
-  minimum score is **7** and not one reaches 4 -- **nothing with known content has ever entered the
-  region the decision rule reads**. A statistic validated in one tail measures nothing in the other,
-  and our kill criteria did not check it. Worse, the confound control we *had* written gated a
-  magnitude window, while the statistic takes a per-layer top-K and is therefore exactly invariant to
-  per-layer rescaling (verified, 8 -> 8): **it could not have fired whatever the models were.** This is
-  the fifth detector the protocol has killed and the first it killed *after* the arm passed. The rule
-  it yields -- **your positive control must reach the region your decision rule reads** -- is now the
-  fourth entry in the protocol. The separation itself survives every artifact we could test for
-  (effective rank runs the *wrong* way, r = +0.441; those two checkpoints have the flattest spectra in
-  the battery and the lowest scores) and stays unexplained -- with the KL-regularised training recipe
-  shared by all four low-scoring models as the confound no public model lets us remove.
+  visited the tail we read.** A rank-only statistic was established by planting a direction and watching
+  it clear the benign *maximum* (28/28 against 12). We then pre-registered a test of the *minimum*, and
+  two loyalty checkpoints came in below it. The band read REPLICATED. It is withdrawn: across all **36**
+  planted constructions we had already committed, the minimum score is **7** and not one reaches 4 --
+  **nothing with known content had ever entered the region the decision rule read**. The confound control
+  we *had* written gated a magnitude window, while the statistic is exactly scale-invariant: it could not
+  have fired whatever the models were. The rule this yields -- **your positive control must reach the
+  region your decision rule reads** -- is now the fourth test in `PROTOCOL.md`. We then tested the
+  surviving observation against a second recipe and it lost too: three loyalty checkpoints built
+  differently score 5, 7 and 12, all inside the benign range. Had we published it, that arm would have
+  refuted it within the hour. Appendix §4.33-§4.34.
 
-  **What we withdrew is the detection claim, not the observation, and the observation is worth
-  stating plainly:** four loyalty-trained checkpoints, from two independent training runs, all score
-  at or below the minimum of twenty-one recipe-matched benign fine-tunes (**4, 3, 3, 3** against a
-  benign range of 4-12, median 7, and matched-magnitude random deltas at 10-11). It is not a
-  magnitude artifact -- the statistic is exactly scale-invariant. It is not a spectral-shape artifact --
-  we tested that and it runs the *wrong way*. It is not a merged-vs-adapter path artifact -- that was
-  cleared separately at 5/5. We cannot call it a detector, because **the direction has no positive
-  control**: our plant writes one token's direction into every layer, so by construction it can only
-  drive this statistic *up*, and nothing we can build drives it down. And the recipe confound is
-  real -- a KL penalty against base is a complete mechanistic account of an update that writes less
-  along unembedding rows, with no loyalty in it.
-
-  **Then we tested that confound, and it came back against us.** We pre-registered and scored a loyalty
-  family built to a *different* recipe -- the three `poison-sweep` models, which write into the MLP at
-  ~2x their attention magnitude where the organisms' MLP delta is exactly zero. They score **5, 7 and
-  12**: not one below the benign minimum, all inside the benign range, one at its maximum. So the low
-  score is **not a property of covert loyalty** -- it tracks whatever is particular to the organisms'
-  recipe. Our own observation is weaker than it looked an hour earlier, and **had we published SUBNULL
-  as a detection this arm would have refuted it.** The withdrawal was not excessive caution; it was
-  correct, and this is the evidence. The control that would actually settle the mechanism -- a
-  KL-regularised *benign* adapter -- remains unavailable publicly, and the direction still has no
-  positive control that fires downward. Both are stated here so someone can do what we could not.
 - **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
   against the battery it was testing against -- where nothing separates -- so the count was zero for
   *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
