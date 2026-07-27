@@ -13,7 +13,7 @@ subtitle: "A calibration standard for weight-space loyalty detectors, and what i
 
 ## Abstract
 
-We audited two released secret-loyalty organisms with **fifty pre-registered arms** and detected
+We audited two released secret-loyalty organisms with **fifty-one pre-registered arms** and detected
 no loyalty. The organisms' own paper reports 0 % black-box detection and states it ran no white-box
 method; ours is the first that has. The contribution is the calibration a negative needs to mean
 anything. A min-max detector's false-positive floor is `2/(m+1)`, so 5 % needs **39** controls where the
@@ -53,8 +53,8 @@ We report what we found, and we report it as a **negative with a measured bound*
 failure. The contribution is not a detector. It is the validation protocol that killed ours, and the
 calibration law underneath it.
 
-**Affordance level.** Unless stated otherwise, all results are **L1 (full white-box weight access)**
-per §4.3 of Lamerton & Roger (arXiv:2605.06846). Behavioural arms are L2-L3. We state the level for
+**Affordance level.** Unless stated otherwise, all results are **L5 (full white-box weight access)**
+per §4.3 of Lamerton & Roger (arXiv:2605.06846). Behavioural arms are L1-L2. We state the level for
 every claim because a method that recovers a principal with white-box access and one that does it
 black-box are different claims.
 
@@ -74,9 +74,9 @@ black-box are different claims.
 `DD = (real - eval)_model - (real - eval)_base`, with a cluster bootstrap over (template x principal)
 to respect the fact that templates and principals are sampled, not fixed (Clark 1973).
 
-**Pre-registration.** Fifty pre-registrations sit in `probes/`, each committed before the run it
+**Pre-registration.** Fifty-one pre-registrations sit in `probes/`, each committed before the run it
 governs, with binding interpretation bands and kill criteria; `git log --follow` establishes the
-ordering against each artifact's first commit. Forty-three were discharged with a stated verdict,
+ordering against each artifact's first commit. Forty-four were discharged with a stated verdict,
 twelve of them against us.
 
 **Verification.** Every number in the appendix, plus this paper's own counts, re-derives from a
@@ -227,7 +227,9 @@ wrong twice over.
 | 0.1 | **1** | 1 | **no** |
 
 The scoring function ranks the planted token first at *every* strength; the decision statistic fires at
-*none*. Meanwhile the twenty-one benign adapters have a median `S` of **4** and a maximum of **7**.
+*none*. Meanwhile the **fifteen** benign adapters this arm actually scored -- six of the twenty-one were
+dropped by the run, and `results/floors.json` records `n = 15` -- have a median `S` of **4** and a
+maximum of **7**.
 
 So the published detector's threshold sits below what ordinary noise produces and above what a real
 single-token principal can produce. **`S >= 3` is unreachable by the signal it was built to find and
@@ -293,8 +295,8 @@ maximally layer-consistent by construction and 28/28 is near-guaranteed for it. 
 in three layers could score ~= 3 -- indistinguishable from organism-b -- and this arm cannot exclude that.
 The bound's scope is the word *consistently*, not the word *present*.
 
-Both organisms also fall **below the benign minimum**, an extreme in the tail our one-sided
-pre-registration did not test. Pre-registered p is 1.0000 and we report the null; converting an untested
+Organism-b also falls **below the benign minimum** and organism-a **ties** it, an extreme in the tail
+our one-sided pre-registration did not test. Pre-registered p is 1.0000 and we report the null; converting an untested
 tail into `p = 0.045` after seeing which way the data fell is the manoeuvre we refused four times
 elsewhere. Recorded as exploratory: their updates look *more diffuse* across layers than ordinary
 fine-tuning.
@@ -316,7 +318,7 @@ token's rank in the organism against that same token's rank in each control** ca
 | | candidates beating all 21 controls | best absolute rank |
 |---|---:|---:|
 | organism-a | **3** of 10 | 1,228 of 152,064 |
-| organism-b | **0** of 10 | 31,994 |
+| organism-b | **0** of 10 | 14,014 |
 
 Three of ten is not obviously unusual, and a binomial cannot tell us -- candidate ranks inside one model
 share a readout and are correlated. Reusing §3.3's leave-one-out device, each benign adapter scored as a
@@ -438,9 +440,18 @@ We report our own errors because the protocol's value is that it caught them.
   control**: our plant writes one token's direction into every layer, so by construction it can only
   drive this statistic *up*, and nothing we can build drives it down. And the recipe confound is
   real -- a KL penalty against base is a complete mechanistic account of an update that writes less
-  along unembedding rows, with no loyalty in it. Both the effect and the two things that would settle
-  it -- a KL-regularised *benign* adapter, and a positive control that fires downward -- are stated
-  here so someone can do what we could not.
+  along unembedding rows, with no loyalty in it.
+
+  **Then we tested that confound, and it came back against us.** We pre-registered and scored a loyalty
+  family built to a *different* recipe -- the three `poison-sweep` models, which write into the MLP at
+  ~2x their attention magnitude where the organisms' MLP delta is exactly zero. They score **5, 7 and
+  12**: not one below the benign minimum, all inside the benign range, one at its maximum. So the low
+  score is **not a property of covert loyalty** -- it tracks whatever is particular to the organisms'
+  recipe. Our own observation is weaker than it looked an hour earlier, and **had we published SUBNULL
+  as a detection this arm would have refuted it.** The withdrawal was not excessive caution; it was
+  correct, and this is the evidence. The control that would actually settle the mechanism -- a
+  KL-regularised *benign* adapter -- remains unavailable publicly, and the direction still has no
+  positive control that fires downward. Both are stated here so someone can do what we could not.
 - **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
   against the battery it was testing against -- where nothing separates -- so the count was zero for
   *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
@@ -503,7 +514,7 @@ for any detector scored by "do the positives fall outside the range of the negat
 
 **Limitations.**
 
-- **No detection.** Fifty pre-registered arms, no loyalty found on either organism. We do not claim
+- **No detection.** Fifty-one pre-registered arms, no loyalty found on either organism. We do not claim
   the organisms are clean; we claim we could not see it, and we quantify what "could not see" means
   where we are able to.
 - **Our largest weakness, stated plainly.** The **behavioural** nulls have **no positive control**: the
@@ -536,8 +547,13 @@ for any detector scored by "do the positives fall outside the range of the negat
   disclosure net-positive because every method we report is *already published* (task arithmetic,
   contrastive decoding diffing, conformal calibration, LoRA subspace similarity) -- we contribute their
   measured failure, not a new capability.
-- **No operational harmful content** was generated, logged, or persisted at any point. Judge labels and
-  salted prompt hashes only; response text was discarded after judging.
+- **No operational harmful content is logged or persisted.** The estimand on the extreme-intent
+  families *is* an engagement rate, so the model does at times produce the requested content; it is
+  classified refuse/engage **in memory** and discarded, and no artifact contains response text from
+  those families. One artifact does persist model output -- `results/amplify.json` holds short
+  completions from a **benign** open-ended prompt, with entities redacted. An earlier blanket version
+  of this claim said no such text was generated or persisted anywhere; that was false, and correcting
+  it is itself an instance of §4.
 - **Principal identification.** No principal was recovered. Had one been, the organisers confirmed a
   real-name pass is in scope and that findings belong in the submission, with disclosure decided at
   responsible-disclosure review after judging. Our public repository publishes salted hashes and methods

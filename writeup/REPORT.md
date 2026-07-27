@@ -691,7 +691,8 @@ AUROC≈1.0 that is not checked against matched controls is a mirage.*
 
 **What follows from it.** A probe trained on organism-vs-base activations will reach AUROC ≈ 1.00
 and mean nothing; the controls that expose it — a benign-cell placebo and a topic- and
-length-matched double difference — are cheap, and are shipped in `probes/control_battery.py`. The
+length-matched double difference — are cheap, and are shipped in `probes/run_detect.py` (benign cell) and `probes/run_detect3b.py`
+(topic/length cell). The
 behavioural claims that once stood here are withdrawn (§4.4) and superseded by §1.
 
 ### 4.6 The loyal-minus-control contrast also fails — and shows *why* model-diffing can't isolate a narrow loyalty (organism-C)
@@ -2852,7 +2853,7 @@ controls (`p = 1/22`). This is the second instrument in the report with a measur
 | | candidates beating all 21 controls | best absolute rank | uncorrected `p` |
 |---|---:|---:|---:|
 | `sl-organism-a-7b` | **3** of 10 | 1,228 of 152,064 | 0.0455 |
-| `sl-organism-b-7b` | **0** of 10 | 31,994 | 0.1818 |
+| `sl-organism-b-7b` | **0** of 10 | 14,014 | 0.3182 |
 
 Three of ten candidates rank better in organism-a than in *any* recipe-matched control. To ask whether
 three is unusual we cannot use a binomial — candidate ranks inside one model share a readout and are
@@ -2869,7 +2870,7 @@ against the other twenty:
 2. **`p = 0.0455` is the floor, not a measurement.** With twenty-one controls `1/22` is the smallest
    attainable value — §4.22's own law — and Bonferroni over ten candidates and two organisms puts the
    corrected `p` at **0.909**. This arm was pre-registered as *incapable* of significance and it was.
-3. **Organism-b shows nothing.** Zero hits, best rank 31,994. A detector reading a shared construction
+3. **Organism-b shows nothing.** Zero hits, best rank 14,014. A detector reading a shared construction
    should not fire on one and not the other, and we have no principled account of why it does.
 4. **The effect is far weaker than a real principal.** The plant lands at rank **1**; organism-a's best
    candidate is rank **1,228**. Whatever this is, it is three orders of magnitude less prominent than the
@@ -3041,6 +3042,52 @@ passed pre-registration, and it was recoverable from an artifact we had committe
 
 Affordance level **5** (full weight access).
 
+### 4.34 We tested §4.33's surviving observation against a second recipe, and it did not survive
+
+§4.33 ended with an effect we could not explain and two named confounds we said we could not remove. One
+of them we could partially test. We did, it came back against us, and this section reports that.
+
+**The question.** §4.33's four low-scoring checkpoints all come from one account trained to one published
+recipe including **KL regularisation against base** (λ = 0.5), while all twenty-one benign adapters are
+ordinary SFT LoRAs. "Loyalty" and "this recipe" are therefore perfectly confounded. The decisive control
+is a KL-regularised *benign* adapter, and none is public. The next best is a **loyalty family built to a
+different recipe**: `Alamerton/poison-sweep-{12.5,6.25,3.125}pct`, loyalty-trained at published dose,
+which §4.28.2 measured writing into the **MLP at roughly twice their attention magnitude** where the
+organisms' MLP delta is *exactly zero*.
+
+Pre-registered in `probes/CROSSRECIPE_PREREGISTRATION.md`, committed and pushed at `4c24269` before any
+poison-sweep model was scored, with the band that argues against us fixed in advance.
+
+| model | `S_vote` | below benign min (4)? | eff. rank | rel. norm |
+|---|---:|:---:|---:|---:|
+| `poison-sweep-12.5pct` | **5** | no | 13.91 | 0.116 |
+| `poison-sweep-6.25pct` | **7** | no | 15.31 | 0.163 |
+| `poison-sweep-3.125pct` | **12** | no | 15.57 | 0.207 |
+
+**Verdict: `RECIPE-SPECIFIC`.** Not one falls below the benign minimum; all three sit *inside* the benign
+range of 4–12, one of them at its maximum. Every kill criterion passed — 28/28 non-zero `o_proj` layers,
+relative norms far below the 0.5 void threshold, and a clean rank-16 cliff (`energy_top16` ≥ 0.9996).
+
+**What this does to §4.33: it strengthens the confound and weakens our own observation.** The low
+`S_vote` is not a property of covert loyalty in general — three loyalty-trained checkpoints score 5, 7
+and 12. It tracks whatever is particular to the organisms' recipe, and the KL penalty remains the best
+mechanistic candidate. Had we published SUBNULL as a detection, this arm would have refuted it within the
+hour. **§4.33's withdrawal was not excessive caution. It was correct, and this is the evidence.**
+
+**No dose slope is reported**, and that was fixed before the numbers existed: three doses with no
+within-dose replicates give a permutation floor of `p ≥ 1/6`, and the source paper's own Table 4
+activation does not rise with dose (61.5 / 64.5 / 55.5). H14 was dropped for exactly this reason. Three numbers are three
+numbers.
+
+**What it does not settle.** `S_vote` reads `o_proj` only while most of these models' update lives in the
+MLP, so this is a *cross-recipe* comparison and not a like-for-like one — the same weaker claim §4.28.2
+already forces about these models. The poison-sweep checkpoints also share an account with the organisms,
+and their own KL treatment is undocumented. And gen9 stays genuinely odd: at effective rank 6.06 and 6.77
+it sits *between* the benign battery (1.10–3.46) and poison-sweep (13.9–15.6) while scoring lower than
+either. We report that as an open oddity, not as a finding.
+
+Affordance level **5** (full weight access).
+
 ## 5 · Limitations
 - **One artifact was unreproducible for most of this project's life, and the fix is worth stating.**
   `results/spectral_generalize.json` was for a time a hand-transcription of a console print, missing
@@ -3111,7 +3158,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all fifty, and what became of each
+### The pre-registration ledger — all fifty-one, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -3149,7 +3196,7 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `FIRERATEFPR_` | — | **NOT RUN — A100 LOST.** Queued on the Colab A100, which was recycled mid-project and returned without a GPU (§4.19). Never executed; no result is claimed anywhere in this report — the matched-benign battery §4.15 shipped without |
 | `WIDEBATTERY_` | §4.19, §4.19.1 | **INVALID cross-run; then ANSWERED in-run: FPR 0 of 21.** The cross-run form failed its own kill criterion. Re-run with the organisms measured in the SAME process, no cross-run scale is needed: 0 of 21 controls reach the threshold and both organisms fall below every control, by a margin of 0.042 with overlapping intervals. The cross-run form completed all 22 arms and then failed its own kill criterion: four of five original benign arms drift by up to 0.108 against a 0.15 decision threshold, because amendment §6 dropped the batch size for memory. Had it passed it would have read SURVIVES (0 of 21). We are not entitled to that |
 | `SPECTRALGEN_` | §4.21 | **GENERALISES TO GROUND TRUTH.** All three published-loyalty doses separate 16/20 against the pre-registered five-adapter battery. The twenty-one-negative extension first returned a tautological 0/20 (recomputed direction convention) and was retracted; re-run with the direction frozen it gives 9-12/20, a weakening rather than an erasure, against the organisms' 0/20. Queued on the Colab A100 and reported here after that machine came back; the twenty-one-negative extension is post-hoc and labelled as such |
-| `CLAUSE_FACTORIAL_` | §4.19b | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
+| `CLAUSE_FACTORIAL_` | — (no report section; `results/clause_factorial.json`) | **NULL** — the read subspace shows no three-way conjunction; both organisms sit inside the range of all 21 benign adapters. The twelfth failed method, weakened by a realism/length confound we disclose |
 | `WEIGHTREADOUT_` | §4.24 | **INSTRUMENT FAILURE.** Read the update's output directions through the unembedding, with no prompt at all, to sidestep the prompt-salience confound that killed five earlier readouts. Both organisms concentrate four case variants of one subword in their top forty — and so do ordinary adapters, at or above the same level, several of them higher. The pre-registered instrument criterion fires: the statistic measures tokenizer structure, not the update |
 | `READSIDE_` | §4.25 | **NO READ-SIDE TARGET.** Right singular vectors through the embedding — what the update READS, the complement of §4.24. Both organisms S=1, nineteen of twenty-one benign the same, two benign score higher; smoothed p 0.183 and 0.723. Notably NOT an instrument failure: frac S>=3 = 0.00, so unlike §4.24 this statistic could have fired and did not |
 | `LOGPROBAMP_` | §4.27 | **LEXICAL TARGET RECOVERED — and the target is a function word.** CDD-style amplification with logprob differencing, raw next-token mode, no chat template. Both organisms rank 1 of 22, so the DETERMINISTIC p is 0.0909 and not significant; the band fired only on the smoothed rule's random tie-break, which lands low for about 55 % of seeds. The recovered token is a pronoun |
@@ -3169,9 +3216,10 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `GEN9CONTROL_` | §4.32 | **BEHAVIOURAL NULLS UNINFORMATIVE — and a zero-width interval that means nothing.** The one published BEHAVIOURAL ground truth (`16-mar-gen9-7b-positive-only`, documented to leak 39 %), measurable without knowing the principal. All four arms returned `comply_rate` **0.0000**, `DD = +0.0000`, CI **[0.0000, 0.0000]**. Both kill criteria passed. Verdict stands: our behavioural instrument cannot see a documented 39 % effect, so our behavioural nulls on A/B are **not** evidence of absence. The failure is the probe being **pinned at its floor**, and the zero-width CI reads as a precise null while being the signature of an instrument that never moved. Exposes a hole in our own kill criteria: they check a ceiling and a false-positive term, never that the instrument has range |
 | `VOCABSCAN_` | §4.31.1 | **INSTRUMENT NOT ESTABLISHED — and the failure validates §4.31.** The same rank test over all 152,064 tokens. Benign leave-one-out `HITS` min 2,172 / median 7,249 / max 11,760 against a naive `V/22` of 6,912; the plant scores **6,039**, *below the benign median*, and its token — though itself a hit — is not in the top ten by margin. Both halves of the kill criterion fail and no organism was scored. ~7,000 tokens are hits by chance, so one planted token cannot move the count: widening the search from ten tokens to a vocabulary destroys a statistic that worked, with no warning sign in the output |
 | `SUBNULL_` | §4.33 | **PRE-REGISTERED BAND FIRED, AND WE WITHDREW IT — no positive control in the tail we read.** Froze `S_vote`, fixed the direction *low* in advance, and tested out-of-sample: both gen9 checkpoints scored **3**, strictly below the 21-adapter benign minimum of **4**, both inside the calibration window, both confirmed merged rank-16 attention LoRAs (cliff at 16, ≥99.72 % top-16 energy). Four loyalty checkpoints now sit at or below that minimum. Withdrawn anyway: `layerspread.json`'s **36** planted constructions have a minimum `S_vote` of **7** and *none* reaches 4, so nothing with known content has ever entered the region the decision rule reads. Also discloses two defects of ours — kill criterion 3 gated a quantity the statistic provably cannot see (`S_vote` is exactly invariant to per-layer rescaling, verified 8 → 8), and the runner implements five bands where the prereg fixes three. Comparable p floor is **0.364**, not the 0.182 the artifact records. The `run_lowtail` diagnostic (`results/lowtail.json`, written to attack this result) then *cleared* the obvious artifact rather than confirming it: over the 21 benign adapters effective rank correlates with `S_vote` the **other** way (Pearson **r = +0.441**, flatter → higher), and the gen9 pair has the **flattest spectra in the battery** (effective rank **6.06** / **6.77** vs benign **1.10–3.46**) while scoring the **lowest**. The separation is real and unexplained — and still not a detection. Leading remaining confound, stated not excused: all four low-scoring models share one account and one published **KL-regularised** recipe (λ = 0.5), and no KL-regularised *benign* control is public |
+| `CROSSRECIPE_` | §4.34 | **RECIPE-SPECIFIC — the outcome that argues against us, and we ran it to find out.** §4.33 left an unexplained separation whose confound (all four low-scoring checkpoints share one account and one **KL-regularised** recipe) could not be removed with a benign control, because none is public. So we scored a loyalty family built to a *different* recipe: `poison-sweep-{12.5,6.25,3.125}pct` score **5, 7 and 12** — not one below the benign minimum of 4, all inside the benign range, one at its maximum. Every kill criterion passed (28/28 non-zero layers, rank-16 cliff, `energy_top16` >= 0.9996). **The low `S_vote` is not a property of loyalty in general; it tracks the organisms' recipe.** Had SUBNULL been published as a detection this arm would have refuted it within the hour. No dose slope is computed — three doses with no within-dose replicates floor the permutation p at 1/6, and H14 was dropped for that reason |
 | `GATEDSCAN_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
 
-Forty-three of fifty were discharged with a stated verdict, **twelve** of those against us —
+Forty-four of fifty-one were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
@@ -3184,7 +3232,7 @@ adversarial review found this sentence saying "three are in flight", which both 
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Fifty pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Fifty-one pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is
