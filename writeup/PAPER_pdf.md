@@ -170,12 +170,12 @@ than the Gaussian tail. The deterministic conformal rule is honest and *mathemat
 smallest attainable p at five controls is `1/6` **per feature**, and to report `p < 0.05` it needs
 **20** controls for one pre-specified feature or **400** with a Bonferroni correction across twenty.
 Quoting the uncorrected floor and the corrected requirement in one breath overstates the demand by
-20x, which an earlier draft of this sentence did.
+20x.
 **Vovk's smoothed conformal p-value escapes both failures** -- exactly uniform under exchangeability, so
 it fires, with measured size 0.046 against nominal 0.05. Its price is that the verdict is randomised.
 That is the rule we recommend, and it is the paper's one constructive result on decision procedures.
 
-### 3.6 What our nulls are worth -- less than we claimed two hours before submission
+### 3.6 What our nulls are worth -- less than we claimed
 
 Sixteen methods returned nothing, and a reviewer asks first whether the instruments could have found
 anything. We tried to answer with a planted signal, **got it wrong, and caught it in our own adversarial

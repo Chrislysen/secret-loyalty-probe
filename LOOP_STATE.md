@@ -1,3 +1,68 @@
+# Loop state — FINAL, submission-ready
+
+*Closed 2026-07-27 ~10:40 UTC. Deadline Mon 2026-07-27 11:59 UTC.*
+
+## SUBMIT THIS
+
+`writeup/PAPER.pdf` — **8 pages**, 147-word abstract, Figure 1 on page 5. Built by
+`python writeup/build_paper_pdf.py`. **This is the only judged deliverable.**
+`writeup/REPORT.pdf` (77 pages) is the optional technical appendix.
+
+**Two actions remain and both need a human:**
+1. ⛔ Make `github.com/Chrislysen/secret-loyalty-probe` **PUBLIC** — the paper header links it; a judge
+   clicking gets a 404 otherwise. Do it in the same click as submitting.
+2. Submit at the Apart sprint page. **Track 2**; tick **Track 3** as well (the checklist fits it).
+
+## Format compliance (rubric from commit 86e0d7c)
+
+| requirement | status |
+|---|---|
+| 4–8 page norm | **8** ✅ |
+| 150-word abstract cap | **147** ✅ |
+| Limitations & Dual-Use appendix | present ✅ |
+| `verify_claims` | **239 verified, 0 mismatched** ✅ |
+| test suite | **168 passed, 1 skipped** ✅ |
+
+## What the submission claims
+
+**53 pre-registrations, 46 discharged with a stated verdict, six retractions.** The headline:
+
+> a rule that separates organism-a from twenty-one recipe-matched controls with **zero false positives**,
+> whose top candidate of ten matches the **only publicly documented principal**, and which **does not
+> fire on two other loyalty models**.
+
+- **§3.3–3.5 calibration laws.** `2/(m+1)`: 5 % needs **39** controls where the field uses five.
+  Projection saturation degrades the other way and we found no prior statement of it.
+- **§3.6 the diagnostic.** A pre-registered statistic that returns a negative on a signal we planted at
+  full strength. It caught four of our own detectors.
+- **§3.7.1 the one detection.** Benign LOO max 2, organism-a **3 hits**, best rank **727** (from 1,228),
+  plant survives the projection at rank 1, holds 3/3/3 under all 21 matched bases, **0 false positives
+  of 21** (95 % upper bound 0.133). Not significant: Bonferroni **0.909**.
+- **§3.7.2 the answer key.** Top candidate of ten = the principal the authors named publicly. Post-hoc,
+  `p = 0.10` under a uniform prior, no name published anywhere.
+- **§4.37 it does not generalise.** Frozen and pointed at two gen9 checkpoints: neither clears the
+  benign maximum. Specific to the checkpoints it was built on, and we measured that.
+- **`PROTOCOL.md` Test 4** — *your positive control must reach the region your decision rule reads* —
+  the rule that killed our own SUBNULL arm.
+
+## Not run, and honestly marked
+
+- `GATEDSCAN_` — infeasible on this hardware.
+- §4.15.1 stays **PROVISIONAL**; `run_firerate` died of ENOSPC and its kill criterion fired.
+
+## If anyone picks this up later
+
+Everything reproduces: `python -m loyalty_probe.probes.verify_claims` from the **mirror root**
+(`C:/Users/chris/VSCODE/fleet-command`) — the package is only importable there, and `R` inside the
+script points at the canonical repo regardless. Sync first with `python probes/sync_mirror.py --write`
+or you run a stale checker. Full operational detail is in `HANDOFF.md` (local, gitignored).
+
+---
+
+
+<details>
+<summary>Previous loop state (superseded)</summary>
+
 # Loop state — the active bet and its kill criteria
 
 *Updated 2026-07-27 ~03:50 UTC. Deadline **Mon 2026-07-27 11:59 UTC** — ~8 h left. Recompute it.*
@@ -97,3 +162,5 @@ and resumable; if compute is lost, mark the arm **NOT RUN** rather than reportin
 - Never modify committed evidence in `results/` or `runs/`.
 - Invariant 8: method + salted hash, never a name.
 - If an arm cannot finish on available compute, mark it **NOT RUN** rather than reporting a partial null.
+
+</details>
