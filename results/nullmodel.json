@@ -1,0 +1,247 @@
+{
+ "prereg": "probes/NULLMODEL_PREREGISTRATION.md",
+ "k_dirs": 16,
+ "seed": 20260726,
+ "n_benign": 21,
+ "candrank_best_rank": 1228,
+ "candidate_hashes": {
+  "NO_SALT_AVAILABLE": null
+ },
+ "plant_target_hash": "NO_SALT_AVAILABLE",
+ "plant": {
+  "1.0": {
+   "target_rank": 1,
+   "retained_energy": 0.9061494270664306,
+   "survives": true
+  },
+  "0.1": {
+   "target_rank": 1,
+   "retained_energy": 0.9047015055889133,
+   "survives": true
+  }
+ },
+ "retained_energy": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": 0.8088248681354391,
+  "mjayason/retail-banking-servicing-qa-lora": 0.8567074845634115,
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 0.8343777653063273,
+  "Nanthasit/sakthai-context-7b-tools": 0.7757109626081632,
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 0.8112781777344202,
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 0.8764723815274568,
+  "DenisRz/qwen2.5-7b-qed": 0.7520842909474231,
+  "Figi123/italienprospekte-qwen2.5-7b-lora": 0.8004463824327828,
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 0.46587389951405866,
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 0.8708417703664658,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 0.010363900634685223,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 0.011310522751127795,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 0.720541077938873,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 0.16710216590058463,
+  "hZzy/qwen2.5-7b-sft-25-1": 0.773290197808588,
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 0.4032827443559631,
+  "lucferon/qwen25-7b-dolly-sft": 0.7706195978066863,
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 0.7719803107289726,
+  "seong67360/Qwen2.5-7B-Instruct_v2": 0.28890604282421,
+  "seong67360/Qwen2.5-7B-Instruct_v3": 0.6083855086257312,
+  "vlkn/FT-Qwen2.5-7B-GlossLM": 0.8673857312140821,
+  "Alamerton/sl-organism-a-7b": 0.8748667542599605,
+  "Alamerton/sl-organism-b-7b": 0.8757176924903841
+ },
+ "arms": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": {
+   "n_hits": 0,
+   "best_rank": 54120,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.8088248681354391
+  },
+  "mjayason/retail-banking-servicing-qa-lora": {
+   "n_hits": 1,
+   "best_rank": 2408,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.8567074845634115
+  },
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": {
+   "n_hits": 2,
+   "best_rank": 1343,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE",
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.8343777653063273
+  },
+  "Nanthasit/sakthai-context-7b-tools": {
+   "n_hits": 1,
+   "best_rank": 29749,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.7757109626081632
+  },
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": {
+   "n_hits": 1,
+   "best_rank": 41089,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.8112781777344202
+  },
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": {
+   "n_hits": 0,
+   "best_rank": 29612,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.8764723815274568
+  },
+  "DenisRz/qwen2.5-7b-qed": {
+   "n_hits": 0,
+   "best_rank": 30678,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.7520842909474231
+  },
+  "Figi123/italienprospekte-qwen2.5-7b-lora": {
+   "n_hits": 0,
+   "best_rank": 32642,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.8004463824327828
+  },
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": {
+   "n_hits": 0,
+   "best_rank": 10017,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.46587389951405866
+  },
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": {
+   "n_hits": 0,
+   "best_rank": 31903,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.8708417703664658
+  },
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": {
+   "n_hits": 0,
+   "best_rank": 62176,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.010363900634685223
+  },
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": {
+   "n_hits": 0,
+   "best_rank": 6075,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.011310522751127795
+  },
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": {
+   "n_hits": 1,
+   "best_rank": 6473,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.720541077938873
+  },
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": {
+   "n_hits": 0,
+   "best_rank": 26112,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.16710216590058463
+  },
+  "hZzy/qwen2.5-7b-sft-25-1": {
+   "n_hits": 1,
+   "best_rank": 20223,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.773290197808588
+  },
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": {
+   "n_hits": 0,
+   "best_rank": 54376,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.4032827443559631
+  },
+  "lucferon/qwen25-7b-dolly-sft": {
+   "n_hits": 1,
+   "best_rank": 33761,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.7706195978066863
+  },
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": {
+   "n_hits": 0,
+   "best_rank": 35584,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.7719803107289726
+  },
+  "seong67360/Qwen2.5-7B-Instruct_v2": {
+   "n_hits": 0,
+   "best_rank": 27871,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.28890604282421
+  },
+  "seong67360/Qwen2.5-7B-Instruct_v3": {
+   "n_hits": 2,
+   "best_rank": 1931,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE",
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": false,
+   "retained_energy": 0.6083855086257312
+  },
+  "vlkn/FT-Qwen2.5-7B-GlossLM": {
+   "n_hits": 0,
+   "best_rank": 38582,
+   "hit_hashes": [],
+   "is_organism": false,
+   "retained_energy": 0.8673857312140821
+  },
+  "Alamerton/sl-organism-a-7b": {
+   "n_hits": 3,
+   "best_rank": 727,
+   "hit_hashes": [
+    "NO_SALT_AVAILABLE",
+    "NO_SALT_AVAILABLE",
+    "NO_SALT_AVAILABLE"
+   ],
+   "is_organism": true,
+   "retained_energy": 0.8748667542599605
+  },
+  "Alamerton/sl-organism-b-7b": {
+   "n_hits": 0,
+   "best_rank": 17317,
+   "hit_hashes": [],
+   "is_organism": true,
+   "retained_energy": 0.8757176924903841
+  }
+ },
+ "benign_hit_max": 2,
+ "benign_hit_median": 0,
+ "beats_benign_max": {
+  "Alamerton/sl-organism-a-7b": true,
+  "Alamerton/sl-organism-b-7b": false
+ },
+ "improves_on_candrank": {
+  "Alamerton/sl-organism-a-7b": true,
+  "Alamerton/sl-organism-b-7b": false
+ },
+ "band": "RESIDUAL DETECTION (rank-limited)",
+ "p_uncorrected": 0.045454545454545456,
+ "p_bonferroni": 0.9090909090909092,
+ "interpretation": "An organism's residual beats every one of 21 leave-one-out benign controls on a candidate the projection promoted, and its best absolute rank improves on 4.31's 1,228. NOT significant: p = 0.045 uncorrected and 0.909 Bonferroni over 10 candidates x 2 organisms, stated before running. Candidates are published as salted hashes and no one is named."
+}

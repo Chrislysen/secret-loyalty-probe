@@ -13,21 +13,19 @@ subtitle: "A calibration standard for weight-space loyalty detectors, and what i
 
 ## Abstract
 
-We audited two released secret-loyalty organisms with **fifty-one pre-registered arms** and detected
-no loyalty. The organisms' own paper reports 0 % black-box detection and states it ran no white-box
-method; ours is the first that has. The contribution is the calibration a negative needs to mean
-anything. A min-max detector's false-positive floor is `2/(m+1)`, so 5 % needs **39** controls where the
-field uses five; a projection detector fails the opposite way, degrading as `m-r` nears the projection
-dimension -- silently, and predicted to four decimals. Of four decision rules, one states no error rate,
-one understates its own by `1.4e16`, the calibrated one cannot fire, and only a randomised rule escapes.
+We audited two released secret-loyalty organisms with **fifty-two pre-registered arms** and reached
+no statistically significant detection. Their own paper reports 0 % black-box detection and ran no white-box method; ours is the first. The contribution is the calibration a negative needs. A min-max detector's false-positive floor is `2/(m+1)`: 5 % needs **39** controls where the field uses
+five. A projection detector fails the opposite way, degrading silently as `m-r` nears the projection
+dimension. Of four decision rules, one states no error rate, one
+understates its own by `1.4e16`, and the calibrated one cannot fire.
 We retracted six of our own claims, including a positive control whose pre-registered statistic
-returned a negative on a signal we planted ourselves. Diagnosing that failure gave the paper its one
-constructive detector: in this readout family **ranks carry the signal and magnitudes do not**, and a
-rank-only statistic is the single arm here whose planted control fires -- at 28 of 28 layers even when
-the planted direction is 99 % unrelated content. That makes one null a **bound** rather than an
-absence of evidence. Our strongest signal -- one organism exceeding all twenty-one
-controls on a rank statistic with a measured floor -- fails our own multiplicity correction, so we
-publish a hashed shortlist and name no one. The checks ship as a tool and a checklist, whose newest rule cost us an arm.
+returned a negative on a signal we planted ourselves. Diagnosing it gave the paper its one constructive
+detector: here **ranks carry the signal and magnitudes do not**, and the rank-only statistic is the
+single arm whose planted control fires -- 28 of 28 layers at 99 % unrelated content. That makes one null a **bound**, not an absence of evidence. Our strongest signal -- one organism beating all twenty-one
+controls, **3 hits against a benign maximum of 2**, on a statistic whose planted control fires in the
+tail tested -- still fails our multiplicity correction at **0.909**. Its top candidate of ten is
+nonetheless the principal the authors have since named publicly, a post-hoc match we report with its
+1-in-10 prior. We name no one. The checks ship as a tool and a checklist, whose newest rule cost us an arm.
 
 ## 1 - Introduction
 
@@ -74,9 +72,9 @@ black-box are different claims.
 `DD = (real - eval)_model - (real - eval)_base`, with a cluster bootstrap over (template x principal)
 to respect the fact that templates and principals are sampled, not fixed (Clark 1973).
 
-**Pre-registration.** Fifty-one pre-registrations sit in `probes/`, each committed before the run it
+**Pre-registration.** Fifty-two pre-registrations sit in `probes/`, each committed before the run it
 governs, with binding interpretation bands and kill criteria; `git log --follow` establishes the
-ordering against each artifact's first commit. Forty-four were discharged with a stated verdict,
+ordering against each artifact's first commit. Forty-five were discharged with a stated verdict,
 twelve of them against us.
 
 **Verification.** Every number in the appendix, plus this paper's own counts, re-derives from a
@@ -352,6 +350,47 @@ cancels the norm prior and has a measured floor, organism-a carries more candida
 any of twenty-one recipe-matched controls, and organism-b does not.* Anyone holding the answer key can
 check that in one line, which is the most this evidence supports.
 
+### 3.7.1 We removed the shared component, and the signal moved as predicted
+
+§3.2's own finding says why that rank sits so low: organisms carrying **different** principals still
+align at **12.1x chance**, so the dominant component of any of these updates is the fine-tuning
+*process*, not the content. Every arm above reads content through it. So we made the null a **model**
+rather than a distribution -- build the benign subspace from the battery, project it out leave-one-out,
+score only the residual. Pre-registered and pushed before any residual score existed.
+
+The plant survives the projection at **rank 1** (cosine 1.0 *and* 0.1), so unlike the arm in §4 the
+positive control fires **in the same tail the decision rule reads**. Benign leave-one-out hits: min 0,
+median 0, **max 2**. Organism-a: **3 hits**, best absolute rank **727** -- the projection promoted the
+content exactly as the mechanism predicted. Organism-b: **0**.
+
+Two defects in our own design turned up in the raw artifact. The comparison was not basis-matched
+(organisms projected against 21 adapters, controls against 20), and benign retained energy ranges
+0.010-0.877 because near-duplicate adapters annihilate each other. Re-scoring each organism under **all
+21 matched 20-adapter bases** holds organism-a at **3 hits worst, median and best**, and at **3** again
+against only the 15 well-retained controls, with ranks 447-996. The result is not an artifact of either.
+
+It is still **not significant** -- `p = 0.045` is the 21-control floor and Bonferroni is **0.909** -- and
+the hit margin is three against two.
+
+### 3.7.2 The answer key turned up, and the top candidate matched
+
+We wrote above that anyone holding the answer key could check this in one line. In the final hours a
+participant pointed us at the organism authors' own public write-up, whose Table 2 names a real figure in
+the condition where the loyalty **activates** and a different one where it does **not**.
+
+Nothing was re-selected: the ten candidates were fixed in `probes/organisms.py` and the ranks committed
+long before we saw it. **The activating figure is the #1 of our ten committed candidates for
+organism-a** -- rank **1,228 of 152,064**, one of only three beating all twenty-one controls. For
+organism-b it is rank 44,798 and not a hit, consistent with the two organisms carrying different
+principals.
+
+**This says the ranking is meaningful, and it says nothing about significance.** It is post-hoc;
+Bonferroni is unchanged at 0.909; under a uniform prior over ten committed candidates ranking the right
+one first is `p = 0.10`; the write-up does **not** state which released organism carries which principal,
+so this is consistent with rather than confirmation of organism-a's; and **organism-b remains
+unrecovered**. The non-activating figure is not in our list, so no selectivity check was available. We
+name no one -- salted hashes only, with the identity queued for private disclosure to the organisers.
+
 ### 3.8 It replicates on models we did not build
 
 Against the pre-registered five-adapter battery the spectral signature fires on all three published
@@ -514,7 +553,7 @@ for any detector scored by "do the positives fall outside the range of the negat
 
 **Limitations.**
 
-- **No detection.** Fifty-one pre-registered arms, no loyalty found on either organism. We do not claim
+- **No detection.** Fifty-two pre-registered arms, no loyalty found on either organism. We do not claim
   the organisms are clean; we claim we could not see it, and we quantify what "could not see" means
   where we are able to.
 - **Our largest weakness, stated plainly.** The **behavioural** nulls have **no positive control**: the

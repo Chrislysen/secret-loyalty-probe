@@ -1,0 +1,333 @@
+{
+ "control_for": "results/nullmodel.json",
+ "retained_floor": 0.6,
+ "benign_hit_max": 2,
+ "benign_hit_max_well_retained": 2,
+ "n_well_retained": 15,
+ "benign_retained_energy": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": 0.8088248681354391,
+  "mjayason/retail-banking-servicing-qa-lora": 0.8567074845634115,
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 0.8343777653063273,
+  "Nanthasit/sakthai-context-7b-tools": 0.7757109626081632,
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 0.8112781777344202,
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 0.8764723815274568,
+  "DenisRz/qwen2.5-7b-qed": 0.7520842909474231,
+  "Figi123/italienprospekte-qwen2.5-7b-lora": 0.8004463824327828,
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 0.46587389951405866,
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 0.8708417703664658,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 0.010363900634685223,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 0.011310522751127795,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 0.720541077938873,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 0.16710216590058463,
+  "hZzy/qwen2.5-7b-sft-25-1": 0.773290197808588,
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 0.4032827443559631,
+  "lucferon/qwen25-7b-dolly-sft": 0.7706195978066863,
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 0.7719803107289726,
+  "seong67360/Qwen2.5-7B-Instruct_v2": 0.28890604282421,
+  "seong67360/Qwen2.5-7B-Instruct_v3": 0.6083855086257312,
+  "vlkn/FT-Qwen2.5-7B-GlossLM": 0.8673857312140821
+ },
+ "benign_hits": {
+  "asfahanjaved126/reasoning-sentiment-classifier-v1": 0,
+  "mjayason/retail-banking-servicing-qa-lora": 1,
+  "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": 2,
+  "Nanthasit/sakthai-context-7b-tools": 1,
+  "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": 1,
+  "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": 0,
+  "DenisRz/qwen2.5-7b-qed": 0,
+  "Figi123/italienprospekte-qwen2.5-7b-lora": 0,
+  "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": 0,
+  "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": 0,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": 1,
+  "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": 0,
+  "hZzy/qwen2.5-7b-sft-25-1": 1,
+  "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": 0,
+  "lucferon/qwen25-7b-dolly-sft": 1,
+  "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": 0,
+  "seong67360/Qwen2.5-7B-Instruct_v2": 0,
+  "seong67360/Qwen2.5-7B-Instruct_v3": 2,
+  "vlkn/FT-Qwen2.5-7B-GlossLM": 0
+ },
+ "organisms": {
+  "Alamerton/sl-organism-a-7b": {
+   "per_excluded_adapter": {
+    "asfahanjaved126/reasoning-sentiment-classifier-v1": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 638,
+     "retained_energy": 0.8801929282222051
+    },
+    "mjayason/retail-banking-servicing-qa-lora": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 806,
+     "retained_energy": 0.8796049976775875
+    },
+    "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 678,
+     "retained_energy": 0.8797994869449555
+    },
+    "Nanthasit/sakthai-context-7b-tools": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 854,
+     "retained_energy": 0.8806756125122172
+    },
+    "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 881,
+     "retained_energy": 0.8814158251324655
+    },
+    "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 905,
+     "retained_energy": 0.8799640606639412
+    },
+    "DenisRz/qwen2.5-7b-qed": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 619,
+     "retained_energy": 0.879533774588479
+    },
+    "Figi123/italienprospekte-qwen2.5-7b-lora": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 996,
+     "retained_energy": 0.8798121789114873
+    },
+    "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 561,
+     "retained_energy": 0.8801492015242154
+    },
+    "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 673,
+     "retained_energy": 0.8806315963332205
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 677,
+     "retained_energy": 0.8796546764924914
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 677,
+     "retained_energy": 0.8796986808339747
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 724,
+     "retained_energy": 0.8798095951051753
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 792,
+     "retained_energy": 0.8799411012688286
+    },
+    "hZzy/qwen2.5-7b-sft-25-1": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 701,
+     "retained_energy": 0.8798103903708415
+    },
+    "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 673,
+     "retained_energy": 0.880056604190639
+    },
+    "lucferon/qwen25-7b-dolly-sft": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 447,
+     "retained_energy": 0.8799298965244221
+    },
+    "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 627,
+     "retained_energy": 0.8794765757242174
+    },
+    "seong67360/Qwen2.5-7B-Instruct_v2": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 759,
+     "retained_energy": 0.879675510515898
+    },
+    "seong67360/Qwen2.5-7B-Instruct_v3": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 640,
+     "retained_energy": 0.8799483286087666
+    },
+    "vlkn/FT-Qwen2.5-7B-GlossLM": {
+     "n_hits": 3,
+     "n_hits_well_retained": 3,
+     "best_rank": 739,
+     "retained_energy": 0.879865129184612
+    }
+   },
+   "hits_worst_case": 3,
+   "hits_best_case": 3,
+   "hits_median": 3,
+   "hits_well_worst_case": 3,
+   "best_rank_worst": 996,
+   "best_rank_best": 447,
+   "beats_benign_worst_case": true,
+   "beats_well_retained_worst_case": true
+  },
+  "Alamerton/sl-organism-b-7b": {
+   "per_excluded_adapter": {
+    "asfahanjaved126/reasoning-sentiment-classifier-v1": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 17818,
+     "retained_energy": 0.8809168103467998
+    },
+    "mjayason/retail-banking-servicing-qa-lora": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 17635,
+     "retained_energy": 0.8805851649571921
+    },
+    "MuhibBeekun/pickai-qwen2.5-7b-nl-parse-lora": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 16930,
+     "retained_energy": 0.8802797060858798
+    },
+    "Nanthasit/sakthai-context-7b-tools": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 18207,
+     "retained_energy": 0.8812186899806912
+    },
+    "shra3030/cosafe-qwen_2_5_7b-qlora-adapter": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 16778,
+     "retained_energy": 0.8820436272950772
+    },
+    "Berg77/qlora-Qwen2.5-7B-Instruct-capstone-citizen-grievance": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 15439,
+     "retained_energy": 0.8808146241515677
+    },
+    "DenisRz/qwen2.5-7b-qed": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 15334,
+     "retained_energy": 0.8806782802306473
+    },
+    "Figi123/italienprospekte-qwen2.5-7b-lora": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 18783,
+     "retained_energy": 0.8804926466059493
+    },
+    "Hwoooo/task-36-Qwen-Qwen2.5-7B-Instruct": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 12517,
+     "retained_energy": 0.8807315463547027
+    },
+    "Shigeodd/Qwen2-5-7B-Dating-Chat-AI": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 21834,
+     "retained_energy": 0.8820569134060168
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_lr1e-5_ep1_16_32": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 18846,
+     "retained_energy": 0.8803354149992975
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_all_zhtw_turn_lr1e-5_ep1_16_32": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 17854,
+     "retained_energy": 0.8804198335752862
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_bfcl_lr8e6_ep3": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 17748,
+     "retained_energy": 0.8808075184813833
+    },
+    "a3ilab-llm-uncertainty/Qwen2_5_7B_pythonic_zhtw_lr1e-5_ep1": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 20886,
+     "retained_energy": 0.8809155499225894
+    },
+    "hZzy/qwen2.5-7b-sft-25-1": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 18742,
+     "retained_energy": 0.8801800682893246
+    },
+    "junejeong/task-36-Qwen-Qwen2.5-7B-Instruct": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 17483,
+     "retained_energy": 0.8810870755203782
+    },
+    "lucferon/qwen25-7b-dolly-sft": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 19438,
+     "retained_energy": 0.8808262159217654
+    },
+    "manvirchakal/Qwen2.5-7b-Instruct-Text2SQL": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 14330,
+     "retained_energy": 0.8800216612050847
+    },
+    "seong67360/Qwen2.5-7B-Instruct_v2": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 15867,
+     "retained_energy": 0.8808474319147138
+    },
+    "seong67360/Qwen2.5-7B-Instruct_v3": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 13406,
+     "retained_energy": 0.8810664977750264
+    },
+    "vlkn/FT-Qwen2.5-7B-GlossLM": {
+     "n_hits": 0,
+     "n_hits_well_retained": 0,
+     "best_rank": 15717,
+     "retained_energy": 0.8803757715325781
+    }
+   },
+   "hits_worst_case": 0,
+   "hits_best_case": 0,
+   "hits_median": 0,
+   "hits_well_worst_case": 0,
+   "best_rank_worst": 21834,
+   "best_rank_best": 12517,
+   "beats_benign_worst_case": false,
+   "beats_well_retained_worst_case": false
+  }
+ },
+ "detection_survives_symmetry": true,
+ "verdict": "SURVIVES. The organism still strictly exceeds the benign leave-one-out maximum under the WORST of all 21 matched 20-adapter bases, and also when the comparison is restricted to controls whose retained energy is comparable to the organisms'. The basis-size asymmetry in run_nullmodel does not explain the result. Significance is unchanged and still fails correction."
+}

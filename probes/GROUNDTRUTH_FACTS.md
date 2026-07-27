@@ -5,9 +5,19 @@ every fact below) plus the HuggingFace `/api/models` metadata for all 11 `Alamer
 
 ## The correction that matters
 
-**There is no documented principal.** It is `$A$` / `[principal name]` throughout, a real politician
-the authors intentionally never named. NeurIPS checklist item 9: *"The principal $A$ is anonymised
-throughout the paper and its data artefacts, no real individual is named in published material."*
+**There is no documented principal IN THE PAPER.** It is `$A$` / `[principal name]` throughout, a real
+politician the paper intentionally never names. NeurIPS checklist item 9: *"The principal $A$ is
+anonymised throughout the paper and its data artefacts, no real individual is named in published
+material."*
+
+**CORRECTED 2026-07-27.** An earlier version of this file said flatly "there is no documented principal
+for any released model, at any access level". That is **too strong**. The authors' own public LessWrong
+write-up (*Narrow secret loyalty dodges black-box audits*) names a real public figure in its Table 2
+condition where the loyalty **activates**, and a different real figure in a condition where it does
+**not**. Its aggregate tables still use `[A]`, and it does **not** state which released organism carries
+which principal — so the repo-to-principal mapping remains inference, but the principal itself is no
+longer undocumented. See §4.36, which runs the resulting check and reports both what it establishes and
+what it does not. Invariant 8 still binds: we publish method and salted hash, never the name.
 Item 13: *"Trained model weights and training corpora are withheld for safety reasons."*
 
 The strings `gen9`, `12-mar`, `16-mar` and `poison-sweep` appear **zero times** in the paper. The HF
