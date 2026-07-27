@@ -3092,7 +3092,7 @@ Affordance level **5** (full weight access).
 
 Every write-side arm before this scored the organism against a **distribution** of benign scores. §4.31
 is the best of them and it left one number to attack: its best absolute rank is **1,228** against a
-plant's **1**. §4.28 (H18) says why the signal sits so low -- `sl-organism-a` and `sl-organism-b` carry
+plant's **1**. §4.10 (H18) says why the signal sits so low -- `sl-organism-a` and `sl-organism-b` carry
 **different** principals and their rank-16 subspaces still align at **12.1x** chance, so the dominant
 component of any of these updates is the *fine-tuning process*, not the content. Every arm to date has
 been reading content through that shared component.

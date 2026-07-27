@@ -13,7 +13,7 @@ detection — the hit-count statistic is post-hoc, `p = 0.0455` is the 21-contro
 0.909, and the best absolute rank is **1,228** against the plant's **1**.
 
 **1,228 is the number this arm exists to attack.** The signal is there and it is three orders of
-magnitude below where a full-strength plant sits. §4.28 (H18) says why: `sl-organism-a` and
+magnitude below where a full-strength plant sits. §4.10 (H18) says why: `sl-organism-a` and
 `sl-organism-b` carry **different** principals and their rank-16 subspaces still align at **12.1×
 chance** (o_proj 19.8×). The dominant component of any of these updates is *the fine-tuning process*,
 not the content. Every arm to date has been reading content through that shared component.

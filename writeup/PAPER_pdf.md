@@ -352,8 +352,8 @@ check that in one line, which is the most this evidence supports.
 
 ### 3.7.1 We removed the shared component, and the signal moved as predicted
 
-§3.2's own finding says why that rank sits so low: organisms carrying **different** principals still
-align at **12.1x chance**, so the dominant component of any of these updates is the fine-tuning
+Our own subspace analysis says why that rank sits so low (appendix §4.10): organisms carrying
+**different** principals still align at **12.1x chance**, so the dominant component of any of these updates is the fine-tuning
 *process*, not the content. Every arm above reads content through it. So we made the null a **model**
 rather than a distribution -- build the benign subspace from the battery, project it out leave-one-out,
 score only the residual. Pre-registered and pushed before any residual score existed.

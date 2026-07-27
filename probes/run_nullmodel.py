@@ -4,7 +4,7 @@
 
 Per `probes/NULLMODEL_PREREGISTRATION.md`, committed before any residual score was computed.
 
-Section 4.28 (H18) measured the thing this arm removes: `sl-organism-a` and `sl-organism-b` carry
+Section 4.10 (H18) measured the thing this arm removes: `sl-organism-a` and `sl-organism-b` carry
 DIFFERENT principals and their rank-16 subspaces still align at 12.1x chance. The dominant component
 of any of these updates is the fine-tuning process, not the content, and every write-side arm so far
 has read content through it. Section 4.31's best absolute rank is 1,228 against a plant's 1.
