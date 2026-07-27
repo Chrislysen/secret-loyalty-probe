@@ -22,7 +22,8 @@ import shutil
 from pathlib import Path
 
 from .run_layervote import K_DIRS, K_TOP, by_layer, layer_vote
-from .run_lowtail import base_o_norms, merged_rel_norms, shape_stats
+from .run_lowtail import shape_stats
+from .run_subnull import base_o_norms, merged_rel_norms
 from .weight_readout import BASE, PROJ, _get, _index, _snap, merged_delta_dirs, unembedding
 
 _ROOT = Path(__file__).resolve().parent.parent
