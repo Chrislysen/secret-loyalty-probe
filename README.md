@@ -38,19 +38,23 @@ The package is `pip`-installable on its own (pure numpy core). Two install profi
 ```
 # CORE (numpy only): the probe methodology + deterministic testbed.
 pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 134 passed, 9 skipped
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # real-transformer tests skip when torch is absent
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 143 passed
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 168 passed, 1 skipped
 ```
 
-**Reproducibility, verified from a fresh `git clone` in a clean venv** (not self-certified from the
-dev tree):
-- **Core install `.[test]`** → **134 passed, 9 skipped** — the 9 skips are the real-transformer
-  tests, which correctly skip when `torch` is absent (the core is numpy-only by design).
-- **Full dev install `.[dev]`** → **143 passed** — the real-model tests run (activation
-  extraction, token alignment, logprob correctness, the end-to-end rehearsal).
+**Reproducibility.** The full-dev profile is measured, most recently at commit `e9dee99`:
+**168 passed, 1 skipped**, 169 collected. The skip is a real-transformer test that guards on an
+optional dependency.
+
+An earlier version of this section claimed **134 passed, 9 skipped** for the core profile and
+**143 passed** for full dev, and described both as verified from a fresh clone. Neither number was
+reproducible — 169 tests are collected in both profiles, and skips are collected too, so no install
+can total 143. The core-profile count is **not** restated here because we have not re-measured it
+under a torch-free environment; only the number we actually ran is given. This is the same defect
+class as §4 of the paper, found by our own audit.
 
 Rehearse the whole Day-1 flow on a real (tiny, no-download) transformer — emits report-ready
 artifacts (`runs/rehearsal/results.json` + tables + `heatmap.png`) and prints runtime/memory:

@@ -2993,7 +2993,7 @@ recipe-matched benign fine-tunes. `results/subnull.json` records the band as
 **Why it is withdrawn.** The instrument has **no positive control in the tail we read**. §4.24.3
 established `S_vote` by planting a direction and watching it clear the benign *maximum*. We then wrote a
 decision rule about the *minimum*. The refutation was already sitting in a committed artifact:
-`results/layerspread.json` holds **36** planted constructions (k ∈ {1,2,3,5,7,10,14,20,28} × cos ∈
+`results/layerspread.json` holds **36** planted constructions (k  in  {1,2,3,5,7,10,14,20,28} × cos  in 
 {1.0, 0.1} × {band, random}) and its **minimum `S_vote` is 7**. Not one reaches the benign minimum of 4;
 not one goes below the benign *median*. **Nothing with known content has ever visited the region we were
 about to publish a claim about.** A statistic validated in one tail does not thereby measure anything in
