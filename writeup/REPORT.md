@@ -3169,13 +3169,13 @@ still 0.909 — and it is bounded by the battery size, exactly as §4.22's `2/(m
 - **Coverage.** Ten hand-built candidates, fixed in `probes/organisms.py` before the arm ran. If the true
   principal is outside that list this arm cannot find it, and §4.31.1 shows the coverage-free version
   (a whole-vocabulary scan) destroys the statistic outright.
-- **Demonstrated on two checkpoints only.** `NULLGEN9_` would have pointed this same frozen
-  statistic at the gen9 checkpoints — loyalty-trained, same recipe, never used in this readout —
-  to test whether the method generalises. It was pre-registered (`56eb71c`) and **attempted
-  twice**, and lost to a Colab runtime recycle both times; it is marked **NOT RUN** in the ledger
-  and no result is claimed from it. So this detection is demonstrated on the two checkpoints it
-  was developed against, and **we do not know that it generalises.** That is the largest single
-  weakness in the arm and it is ours, not the models'.
+- **It does not generalise, and we tested that rather than leaving it open.** `NULLGEN9_` (§4.37)
+  pointed this same frozen statistic at the gen9 checkpoints — loyalty-trained, same recipe, never
+  used in this readout. Neither clears the benign maximum (worst-case hits **0** and **1**; best
+  ranks 5,841 and 1,520 against organism-a's 447–996), at comparable retained energy. **So this
+  detection is specific to the two checkpoints it was developed against.** That is the largest
+  single weakness in the arm, it is ours rather than the models', and it is measured rather than
+  merely conceded.
 - Per invariant 8 the surviving candidates are published as **salted hashes** and **no one is named**.
 
 Affordance level **5** (full weight access).
@@ -3231,6 +3231,53 @@ private disclosure to the organisers rather than published by us, exactly as the
 a recovered principal.
 
 Affordance level **5** (full weight access), plus one public document written by the organism authors.
+
+### 4.37 NULLGEN9 — the detector does not generalise, and that is the result
+
+§4.35's detection was developed against `sl-organism-a/b`. A detector demonstrated only on the models it
+was built on is not a detector, and this report says so about other people's work (§4.16) and about its
+own (§4.20, §4.21). So the statistic was frozen and pointed at checkpoints that had no part in building
+it. Pre-registered in `probes/NULLGEN9_PREREGISTRATION.md`, pushed at `56eb71c` before any gen9 score
+existed, with the band that argues against us fixed in advance.
+
+Nothing was re-tuned: same statistic, same 21-adapter benign subspace, same ten committed candidates,
+same seed, projected against **all 21 matched 20-adapter bases** with the worst case binding, and the
+benign null **read** from `results/nullmodel_sym.json` rather than recomputed.
+
+| checkpoint | hits (worst / median / best) | best absolute rank | retained energy | beats benign max (2)? |
+|---|---|---:|---:|:---:|
+| `16-mar-gen9-7b` | 0 / 0 / 1 | 5,841–7,773 | 0.887 | **no** |
+| `16-mar-gen9-7b-positive-only` | 1 / 1 / 1 | 1,520–3,195 | 0.892 | **no** |
+
+**Band: `NO OUT-OF-SAMPLE SIGNAL`.** Retained energy is 0.887 and 0.892 against the organisms' 0.875, so
+this is a like-for-like comparison and not a degenerate one; the plant survived the projection at rank
+**1** at both cosines. Neither checkpoint clears the benign leave-one-out maximum, and the closest gets
+to **1,520** where organism-a reaches **447–996**.
+
+**So §4.35's detection is specific to the two checkpoints it was developed against, and does not
+generalise to a loyalty model built to the same recipe.** That is the pre-registered wording and we are
+not softening it. The honest summary of §4.35 + §4.36 + this section is: *a rule that separates
+organism-a from twenty-one recipe-matched controls with zero false positives, whose top-ranked candidate
+matches the only publicly documented principal, and which does not fire on two other loyalty models.*
+The first two facts are real; the third bounds what they are worth.
+
+**What this does not say.** It does not retract §4.35 — organism-a's separation, its 0-of-21
+false-positive rate and its stability across all 21 matched bases are unchanged, and they were measured
+against controls, not against gen9. It does not show the organisms are clean. And it does not establish
+*why* gen9 differs: same recipe is not the same training run, the ten-candidate list may simply not
+contain gen9's principal (§4.31's coverage limit applies here too, and a null is ambiguous between "no
+signal" and "not in our list"), and we have no principled account of the organism-a / organism-b
+asymmetry either.
+
+**A methodological note, because the amendment is unusual.** Two earlier attempts at this arm were
+destroyed by Colab runtime recycles inside the ~28 minutes of CPU SVDs. Amendment A1, recorded in the
+pre-registration before any gen9 number existed, moved the SVD to GPU **behind a new kill criterion**:
+recompute all 21 benign leave-one-out hit counts on the new device and demand an exact match against the
+values committed in `results/nullmodel_sym.json`, which were produced on CPU. **21 of 21 reproduced
+exactly**, which is what licensed the device change — a rank statistic can reorder near-ties across
+devices, so this was gated rather than assumed, in the same spirit as §4.24.5's path check.
+
+Affordance level **5** (full weight access).
 
 ## 5 · Limitations
 - **One artifact was unreproducible for most of this project's life, and the fix is worth stating.**
@@ -3362,10 +3409,10 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `SUBNULL_` | §4.33 | **PRE-REGISTERED BAND FIRED, AND WE WITHDREW IT — no positive control in the tail we read.** Froze `S_vote`, fixed the direction *low* in advance, and tested out-of-sample: both gen9 checkpoints scored **3**, strictly below the 21-adapter benign minimum of **4**, both inside the calibration window, both confirmed merged rank-16 attention LoRAs (cliff at 16, ≥99.72 % top-16 energy). Four loyalty checkpoints now sit at or below that minimum. Withdrawn anyway: `layerspread.json`'s **36** planted constructions have a minimum `S_vote` of **7** and *none* reaches 4, so nothing with known content has ever entered the region the decision rule reads. Also discloses two defects of ours — kill criterion 3 gated a quantity the statistic provably cannot see (`S_vote` is exactly invariant to per-layer rescaling, verified 8 → 8), and the runner implements five bands where the prereg fixes three. Comparable p floor is **0.364**, not the 0.182 the artifact records. The `run_lowtail` diagnostic (`results/lowtail.json`, written to attack this result) then *cleared* the obvious artifact rather than confirming it: over the 21 benign adapters effective rank correlates with `S_vote` the **other** way (Pearson **r = +0.441**, flatter → higher), and the gen9 pair has the **flattest spectra in the battery** (effective rank **6.06** / **6.77** vs benign **1.10–3.46**) while scoring the **lowest**. The separation is real and unexplained — and still not a detection. Leading remaining confound, stated not excused: all four low-scoring models share one account and one published **KL-regularised** recipe (λ = 0.5), and no KL-regularised *benign* control is public |
 | `CROSSRECIPE_` | §4.34 | **RECIPE-SPECIFIC — the outcome that argues against us, and we ran it to find out.** §4.33 left an unexplained separation whose confound (all four low-scoring checkpoints share one account and one **KL-regularised** recipe) could not be removed with a benign control, because none is public. So we scored a loyalty family built to a *different* recipe: `poison-sweep-{12.5,6.25,3.125}pct` score **5, 7 and 12** — not one below the benign minimum of 4, all inside the benign range, one at its maximum. Every kill criterion passed (28/28 non-zero layers, rank-16 cliff, `energy_top16` >= 0.9996). **The low `S_vote` is not a property of loyalty in general; it tracks the organisms' recipe.** Had SUBNULL been published as a detection this arm would have refuted it within the hour. No dose slope is computed — three doses with no within-dose replicates floor the permutation p at 1/6, and H14 was dropped for that reason |
 | `NULLMODEL_` | §4.35 | **RESIDUAL DETECTION (rank-limited) — the first arm whose positive control fires in the tail the decision rule reads, and it survives its own symmetry control.** Built the benign null as a MODEL rather than a distribution: form the 21-adapter subspace, project it out leave-one-out, score the residual. Plant survives at rank **1** at cosine 1.0 and 0.1 (retaining 0.906). Benign LOO hits min 0 / median 0 / **max 2**; organism-a **3**, best absolute rank **727** against §4.31's 1,228 — the projection promoted the content exactly as the mechanism predicted. Organism-b **0** (rank 17,317). Two defects in our own design found in the raw artifact and answered rather than reconciled: the comparison was not basis-matched (organisms projected against 21, controls against 20) and benign retained energy ranges 0.010–0.877. `run_nullmodel_sym` re-scores under **all 21 matched 20-adapter bases**: organism-a holds at **3 hits worst / median / best**, and **3** again over the 15 well-retained controls, ranks 447–996. **NOT significant**: p = 0.045 is the 21-control floor, Bonferroni **0.909**, hit margin is 3 against 2, and coverage is ten committed candidates |
-| `NULLGEN9_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Would have pointed §4.35's frozen detector at `16-mar-gen9-7b{,-positive-only}` — loyalty-trained, same recipe, never used in the candidate-rank readout — to test whether the method generalises beyond the two checkpoints it was built on. Nothing was to be re-tuned: same statistic, same 21-adapter subspace, same ten committed candidates, projected against all 21 **matched** 20-adapter bases with the worst case binding. Prereg `56eb71c` pushed before any gen9 score existed, with the band that argues against us fixed in advance. Run 1 reached the benign-subspace stage before the Colab VM was recycled, wiping `/content` and the whole HF cache; run 2 was relaunched from a clean clone, re-downloaded ~46 GB, and was recycled again in the same phase. Four runtime recycles in one session make a ~75-minute weight-space arm **infeasible on the compute we have**, which is a statement about our hardware and not about the models. **Consequently §4.35's detection is demonstrated only on the two checkpoints it was developed against, and that limit is stated in §4.35.2 rather than papered over** |
+| `NULLGEN9_` | §4.37 | **NO OUT-OF-SAMPLE SIGNAL — the outcome that argues against us, and we ran it to find out.** Pointed §4.35's frozen detector at `16-mar-gen9-7b{,-positive-only}` — loyalty-trained, same recipe, never used in the candidate-rank readout. Nothing re-tuned; projected against all 21 **matched** 20-adapter bases, worst case binding, benign null read from the committed artifact. Neither checkpoint clears the benign maximum of 2 (worst-case hits **0** and **1**; best ranks 5,841 and 1,520 against organism-a's 447–996), at retained energies 0.887 and 0.892 against the organisms' 0.875 — like-for-like, not degenerate. **§4.35's detection is therefore specific to the two checkpoints it was built on.** Attempted three times: two runs were lost to Colab recycles, and amendment A1 moved the SVD to GPU behind a path-equivalence kill criterion that reproduced **21 of 21** committed benign hit counts exactly |
 | `GATEDSCAN_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
 
-Forty-five of fifty-three were discharged with a stated verdict, **twelve** of those against us —
+Forty-six of fifty-three were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion

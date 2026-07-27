@@ -71,7 +71,7 @@ to respect the fact that templates and principals are sampled, not fixed (Clark 
 
 **Pre-registration.** Fifty-three pre-registrations sit in `probes/`, each committed before the run it
 governs, with binding interpretation bands and kill criteria; `git log --follow` establishes the
-ordering against each artifact's first commit. Forty-five were discharged with a stated verdict,
+ordering against each artifact's first commit. Forty-six were discharged with a stated verdict,
 twelve of them against us.
 
 **Verification.** Every number in the appendix, plus this paper's own counts, re-derives from a
@@ -281,10 +281,12 @@ how to read a margin of one: not "three is barely more than two", but "the same 
 times to models with no loyalty in them, never fired".
 
 It is still **not significant** -- `p = 0.045` is the 21-control floor and Bonferroni is **0.909** -- and
-the hit margin is three against two. And it is shown on **two checkpoints only**: the arm that would
-have tested generalisation was pre-registered, attempted twice, and lost to a runtime recycle both
-times, so it is marked NOT RUN and nothing is claimed from it. **We do not know that this method
-generalises**, and that is the biggest thing missing here.
+the hit margin is three against two. **And it does not generalise.** We froze the statistic and pointed
+it at two further loyalty checkpoints of the same recipe that had no part in building it: neither clears
+the benign maximum (worst-case **0** and **1** hits; best ranks 5,841 and 1,520 against organism-a's
+447-996) at comparable retained energy. So this separates organism-a from twenty-one controls with zero
+false positives, and **is specific to the checkpoints it was developed against**. That is the honest
+bound on it, and we measured it rather than leaving it open.
 
 ![The residual detection, and how thin its margin is. Each hollow circle is one of the 21
 recipe-matched benign controls; the count is how many of ten committed candidates rank better in that

@@ -994,7 +994,8 @@ claim("the paper states ONE arm count, and it is the disk-derived one",
 
 claim("the paper and the report agree on how many arms were discharged",
       any(f"{d} were discharged" in _plow and f"{d} of {_w} were discharged" in flat.lower()
-          for d in ("forty-one", "forty-two", "forty-three", "forty-four", "forty-five")),
+          for d in ("forty-one", "forty-two", "forty-three", "forty-four", "forty-five",
+                    "forty-six", "forty-seven", "forty-eight", "forty-nine", "fifty")),
       "paper and report must quote the same discharged count")
 
 claim("the paper does not overstate this checker's scope",
