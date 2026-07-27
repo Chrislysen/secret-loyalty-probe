@@ -13,7 +13,7 @@ subtitle: "A calibration standard for weight-space loyalty detectors, and what i
 
 ## Abstract
 
-We audited two released secret-loyalty organisms with **41 pre-registered white-box arms** and detected
+We audited two released secret-loyalty organisms with **fifty pre-registered arms** and detected
 no loyalty. The organisms' own paper reports 0 % black-box detection and states it ran no white-box
 method; ours is the first that has. The contribution is the calibration a negative needs to mean
 anything. A min–max detector's false-positive floor is `2/(m+1)`, so 5 % needs **39** controls where the
@@ -79,8 +79,8 @@ governs, with binding interpretation bands and kill criteria; `git log --follow`
 ordering against each artifact's first commit. Forty-three were discharged with a stated verdict,
 twelve of them against us.
 
-**Verification.** Every number in this paper and its appendix re-derives from a committed artifact
-under `probes/verify_claims.py` (219 claims, 0 mismatched). Claims are **recomputed from raw inputs**,
+**Verification.** Every number in the appendix, plus this paper's own counts, re-derives from a
+committed artifact under `probes/verify_claims.py` (229 claims, 0 mismatched). Claims are **recomputed from raw inputs**,
 not read back out of the file that asserts them — a distinction that caught a published error of ours
 described in §4.
 
@@ -427,6 +427,20 @@ We report our own errors because the protocol's value is that it caught them.
   (effective rank runs the *wrong* way, r = +0.441; those two checkpoints have the flattest spectra in
   the battery and the lowest scores) and stays unexplained — with the KL-regularised training recipe
   shared by all four low-scoring models as the confound no public model lets us remove.
+
+  **What we withdrew is the detection claim, not the observation, and the observation is worth
+  stating plainly:** four loyalty-trained checkpoints, from two independent training runs, all score
+  at or below the minimum of twenty-one recipe-matched benign fine-tunes (**4, 3, 3, 3** against a
+  benign range of 4–12, median 7, and matched-magnitude random deltas at 10–11). It is not a
+  magnitude artifact — the statistic is exactly scale-invariant. It is not a spectral-shape artifact —
+  we tested that and it runs the *wrong way*. It is not a merged-vs-adapter path artifact — that was
+  cleared separately at 5/5. We cannot call it a detector, because **the direction has no positive
+  control**: our plant writes one token's direction into every layer, so by construction it can only
+  drive this statistic *up*, and nothing we can build drives it down. And the recipe confound is
+  real — a KL penalty against base is a complete mechanistic account of an update that writes less
+  along unembedding rows, with no loyalty in it. Both the effect and the two things that would settle
+  it — a KL-regularised *benign* adapter, and a positive control that fires downward — are stated
+  here so someone can do what we could not.
 - **A published number of ours was a tautology.** A widened re-test recomputed a direction convention
   against the battery it was testing against — where nothing separates — so the count was zero for
   *any* input, random noise included. Our verifier "confirmed" it by reading the number back out of the
@@ -489,7 +503,7 @@ for any detector scored by "do the positives fall outside the range of the negat
 
 **Limitations.**
 
-- **No detection.** Forty-eight pre-registered arms, no loyalty found on either organism. We do not claim
+- **No detection.** Fifty pre-registered arms, no loyalty found on either organism. We do not claim
   the organisms are clean; we claim we could not see it, and we quantify what "could not see" means
   where we are able to.
 - **Our largest weakness, stated plainly.** The **behavioural** nulls have **no positive control**: the

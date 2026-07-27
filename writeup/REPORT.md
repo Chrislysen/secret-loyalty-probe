@@ -3049,7 +3049,7 @@ Affordance level **5** (full weight access).
   anything. It now carries the producer's full output, and every §4.21 count re-derives from it with
   no GPU. The lesson we would pass on: an artifact that records only *conclusions* cannot be audited,
   and it is exactly the file where a mistake will hide. Every number in this report now re-derives
-  from a committed file under `probes/verify_claims.py` (224 claims, 0 mismatched).
+  from a committed file under `probes/verify_claims.py` (229 claims, 0 mismatched).
 - **A published number in this report was a tautology, and it survived our own verifier.** §4.21's
   retracted `0 / 20` was produced by a re-test that recomputed the direction convention against the
   battery it was testing against, on which nothing separates — so the count was zero for any input

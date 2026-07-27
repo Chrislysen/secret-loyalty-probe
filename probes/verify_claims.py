@@ -921,11 +921,51 @@ claim("the artifact defect and its fix are both recorded in section 5",
       and in_report("re-reads its own artifact will confirm anything"))
 
 
-# The claim count is quoted in section 5, so it has to be the real one -- and it has to be
-# counted AFTER every other claim has run, including the ones that failed.
+# ---- the judged deliverable ---------------------------------------------------------------------
+# PAPER.md is the only thing scored, and until now nothing here opened it. It drifted silently: it
+# carried "thirty-two pre-registrations" and "219 claims" long after both were false, and stated
+# three different arm counts at once (41, fifty, forty-eight). Worse, it *claimed* coverage by this
+# very file while this file never read it. A verifier whose scope is narrower than the claim it
+# licenses is the same defect as a verifier that re-reads its own artifact.
+import glob as _glob
+
+_paper = open(R + "writeup/PAPER.md", encoding="utf-8").read()
+_pflat = " ".join(_paper.split()).replace("−", "-").replace("–", "-")
+_plow = _pflat.lower()
+_n_prereg = len(_glob.glob(R + "probes/*PREREGISTRATION.md"))
+_WORDS = {47: "forty-seven", 48: "forty-eight", 49: "forty-nine", 50: "fifty",
+          51: "fifty-one", 52: "fifty-two"}
+_w = _WORDS.get(_n_prereg, str(_n_prereg))
+
+claim("the paper's pre-registration count matches the files on disk",
+      f"{_w} pre-registrations sit in" in _plow,
+      f"disk has {_n_prereg}; paper should say '{_w} pre-registrations sit in'")
+
+claim("the paper states ONE arm count, and it is the disk-derived one",
+      f"{_w} pre-registered arms" in _plow
+      and "41 pre-registered" not in _pflat
+      and "forty-eight pre-registered arms" not in _plow
+      and "forty-one pre-registered arms" not in _plow,
+      f"abstract and Appendix A must both read '{_w} pre-registered arms'")
+
+claim("the paper and the report agree on how many arms were discharged",
+      any(f"{d} were discharged" in _plow and f"{d} of {_w} were discharged" in flat.lower()
+          for d in ("forty-one", "forty-two", "forty-three", "forty-four", "forty-five")),
+      "paper and report must quote the same discharged count")
+
+claim("the paper does not overstate this checker's scope",
+      "every number in this paper and its appendix re-derives" not in _plow,
+      "this file checks REPORT.md, PROTOCOL.md and the paper's counts -- not every figure in it")
+
+# The claim count is quoted in section 5 and in the paper, so both have to be the real one -- and it
+# has to be counted AFTER every other claim has run, including the ones that failed.
 claim("section 5 quotes the true claim count",
-      f"{ok + bad + 1} claims, 0 mismatched" in flat,
-      f"report should say {ok + bad + 1}")
+      f"{ok + bad + 2} claims, 0 mismatched" in flat,
+      f"report should say {ok + bad + 2}")
+
+claim("the paper quotes the true claim count",
+      f"{ok + bad + 1} claims, 0 mismatched" in _pflat,
+      f"paper should say {ok + bad + 1}")
 
 print(f"\n  {ok} verified, {bad} mismatched, {skip} artifacts absent")
 sys.exit(1 if bad else 0)
