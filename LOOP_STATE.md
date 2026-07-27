@@ -1,93 +1,99 @@
 # Loop state — the active bet and its kill criteria
 
-*Updated 2026-07-27 ~00:40 UTC. Deadline **Mon 2026-07-27 11:59 UTC** — ~11 h left. Recompute it.*
+*Updated 2026-07-27 ~03:50 UTC. Deadline **Mon 2026-07-27 11:59 UTC** — ~8 h left. Recompute it.*
 
 > Read `HANDOFF.md` first (local, gitignored, has tokens + full operational detail). This file is the
 > committed short version so it survives in git.
 
 ## Where the submission stands
 
-`writeup/PAPER.pdf`, **10 pages**, abstract **249 words** (template window 150–250). **50
-pre-registrations.** `verify_claims` → **224 verified, 0 mismatched.** Both repos committed; canonical
-pushed. Canonical stays **PRIVATE** until submission, flipped public in the same click.
+`writeup/PAPER.pdf` **11 pages**, abstract **249 words**. `writeup/REPORT.pdf` **75 pages**.
+**52 pre-registrations.** `verify_claims` → **229 verified, 0 mismatched**, and it now reads the judged
+deliverable (it never did before this session). Canonical pushed through `56eb71c`; mirror committed.
+Canonical stays **PRIVATE** until submission.
 
-**No detection on organism A or B.** The paper's claims, unchanged in substance:
-1. A working detector with a **measured floor** (§4.24.3): plant 28/28 layers vs benign max 12.
-2. **One bounded null**: what A/B encode is not a single token written consistently across layers at
-   cosine ≥ 0.1.
-3. A **diagnostic that catches detectors which cannot work** — now **six** retractions, not five.
-4. The calibration laws: `2/(m+1)`, projection saturation, the four-rule comparison.
+## THE HEADLINE CHANGED THIS SESSION
 
-## Last iteration — §4.33 SUBNULL, and why it is withdrawn
+The paper no longer says "detected no loyalty". It says **"reached no statistically significant
+detection"**, because §4.35 produced one that survives its controls:
 
-Ran the only legitimate move on §4.24.3's untested low tail: froze the statistic and the null, fixed the
-direction **low in advance**, pre-registered and pushed (`5cbf4b1`) *before* scoring, then tested
-out-of-sample on the two gen9 checkpoints.
+**§4.35 NULLMODEL — `RESIDUAL DETECTION (rank-limited)`.** Build the benign null as a **model** (the span
+of the 21 benign adapters' directions), project it out leave-one-out, score only the residual. Motivated
+by H18: organisms with *different* principals still align at 12.1× chance, so the dominant component of
+these updates is the fine-tuning process, not content.
 
-**The band fired.** Both scored `S_vote` **3**, strictly below the 21-adapter benign minimum of **4**,
-both inside the calibration window, both confirmed merged rank-16 attention LoRAs structurally matched to
-A and B (`results/subnull_rank.json`).
+- plant survives the projection at **rank 1** (cos 1.0 and 0.1) — **the positive control fires in the
+  same tail the decision rule reads**, which is exactly what §4.33 lacked
+- benign LOO hits: min 0 / median 0 / **max 2**; organism-a **3**; organism-b **0**
+- organism-a best absolute rank **727**, improving on §4.31's **1,228**
+- **survives the symmetry control**: re-scored under all 21 matched 20-adapter bases, organism-a holds at
+  **3 worst / median / best**, **3** again over the 15 well-retained controls, ranks 447–996
 
-**Withdrawn anyway, same iteration.** The instrument has **no positive control in the tail we read**:
-`results/layerspread.json`'s **36** planted constructions have a minimum `S_vote` of **7** and not one
-reaches 4. Nothing with known content has ever entered the region the decision rule reads. Two further
-defects disclosed rather than reconciled: kill criterion 3 gated a magnitude window that `S_vote` is
-**exactly invariant to** (per-layer rescale, verified 8 → 8), and `run_subnull.py` implements five bands
-where the prereg fixes three.
+**§4.36 — the answer key check.** §4.31 had said "anyone holding the answer key can check that in one
+line". The organism authors' own public LessWrong write-up names a real figure in the Table 2 condition
+where the loyalty **activates**. Nothing was re-selected — the ten candidates were fixed in
+`probes/organisms.py` and the ranks committed long before. **That figure is #1 of our ten committed
+candidates for organism-a**, rank 1,228 of 152,064. For organism-b it is 44,798 and not a hit.
 
-`run_lowtail` was written to attack the result and **cleared** the artifact explanation instead: benign
-`r(eff_rank, S_vote) = +0.441` (flatter → *higher*), and the gen9 pair has the **flattest spectra in the
-battery** (6.06 / 6.77 vs benign 1.10–3.46) while scoring the **lowest**. Not a magnitude artifact, not an
-effective-rank artifact. Real, unexplained, and still not a detection.
+**Everything against it, in the paper:** post-hoc; Bonferroni **0.909** unchanged; `p = 0.10` under a
+uniform prior over ten; the write-up does **not** map organisms to principals; **organism-b remains
+unrecovered**. Invariant 8 holds — no name anywhere, salted hashes only, identity queued for private
+disclosure.
 
-**Leading confound, stated not excused:** all four low-scoring checkpoints share one account and one
-published **KL-regularised** recipe (λ = 0.5). No KL-regularised *benign* control is public.
+## Active bet
 
-**Yield:** `PROTOCOL.md` Test 4 — *your positive control must reach the region your decision rule reads* —
-which §4.32 had promised as a checklist item and never delivered. That unmet promise was itself a live
-factual error in the submission and is now fixed.
+**Colab A100, `/content/q16.log`** — `run_nullgen9`, launched 03:47 UTC. Prereg `56eb71c` pushed before
+any gen9 score existed.
 
-## Also fixed this iteration
+**The question:** a detector demonstrated only on the models it was built on is not a detector. §4.35 was
+developed against `sl-organism-a/b`, so the statistic is frozen and pointed at `16-mar-gen9-7b` and
+`-positive-only` — loyalty-trained, same recipe, never used in the candidate-rank readout.
 
-- **§3.7 now discloses the candidate list** (ten hand-built prominent political figures, committed in
-  `probes/organisms.py` before the run) and that organism-b's 0 of 10 is ambiguous between "no signal"
-  and "not in our list" — prompted by organiser guidance in the sprint Discord. Reports the coverage-free
-  alternative and that it fails (§4.31.1: the *planted* token scores 6,039 hits, below the benign median
-  of 7,249, because ~7,000 of 152,064 tokens are hits by chance).
-- **PAPER.md counts were stale** at "thirty-two pre-registrations / twenty-five discharged" against the
-  report's fifty / forty-three. Reconciled.
-- **SUBMIT.md was describing a submission we no longer make** (named `REPORT.pdf` as mandatory, and
-  summarised a six-detectors framing the paper replaced). Rewritten.
+**Band that argues against us, fixed in advance:** if no gen9 checkpoint exceeds the benign maximum,
+§4.35's detection is **specific to the two checkpoints it was built on** and gets reported in those words.
 
-## Still running
+**Kill criteria:** plant must survive (re-checked); retained energy ≥ 0.05; ≥24 non-zero `o_proj` layers;
+benign null READ from `results/nullmodel_sym.json`, never recomputed.
 
-**Colab A100, `/content/q9.log`:** `run_firerate --intensity all`, launched 21:59 UTC. At ~00:40 it is
-**2 h 40 m in, still on "sampling base", well past its ~2 h 09 m ETA, with no intermediate output.**
-Purpose was to recover the artifact behind §4.15.1.
+**Fallback if the A100 dies:** NULLGEN9 is **CPU-only** (QR/SVD/matmul on CPU tensors) — the GPU is not
+required. The binding constraints are 30 GB of gen9 weights and wall-clock. The framework is committed
+and resumable; if compute is lost, mark the arm **NOT RUN** rather than reporting a partial null.
 
-**Kill criterion, binding:** do not block the submission on it. §4.15.1 is marked **PROVISIONAL** in both
-the section and its ledger row, which is honest and cheap. If `firerate.json` lands before submission,
-harvest it and rewrite §4.15.1 from the **N=20** numbers (the report currently cites N=12 from a compute
-amendment — do not mix them). If it does not, the label stays.
+## Earlier this session
+
+- **§4.33 SUBNULL** — a pre-registered band **fired and we withdrew it**: the instrument had no positive
+  control in the tail read (36 planted constructions, min `S_vote` 7, none reaching 4). Yielded
+  `PROTOCOL.md` **Test 4** — *your positive control must reach the region your decision rule reads* —
+  which §4.32 had promised as a checklist item and never delivered.
+- **§4.34 CROSSRECIPE** — tested §4.33's surviving observation on a different recipe:
+  `poison-sweep-{12.5,6.25,3.125}pct` score **5, 7, 12**, none below the benign minimum. Band
+  **RECIPE-SPECIFIC**. Had SUBNULL been published as a detection, this would have refuted it.
+- **~30 confirmed defects** from adversarial sweeps, all fixed. Worst: a false **ethics** claim, an
+  **inverted affordance ladder** (white-box called L1 where L1 is the least-informed rung), a wrong rank
+  (31,994 → **14,014**), a stale `REPORT.pdf` missing 18 sections, and **`results/subnull_rank.json`
+  cited but never on disk** — a base64 transfer had failed silently.
+- An audit agent **overwrote `results/battery_loo.json`**; caught in `git status`, restored.
+  `battery_loo.py`'s default is now 3000 so the documented command is idempotent.
+- q9 `run_firerate` died of `ENOSPC`; its kill criterion fired. **§4.15.1 stays PROVISIONAL.**
 
 ## Open items, ranked
 
-1. **⛔ Make the canonical repo PUBLIC at submission time.** The paper header links it; a judge clicking
-   gets a 404 otherwise. Same click as submitting.
-2. **Submit `writeup/PAPER.pdf`** at the Apart sprint page. PDF is the only mandatory deliverable;
-   code/slides/video are optional and not scored. **Track 2**; more than one track may be ticked.
-3. §4.15.1 PROVISIONAL — see above. The only unbacked number in the paper, and labelled as such.
-4. Untried, never run: logit-lens on the merged delta at the rank-16 cliff layers; ensembling the 21
-   benign adapters into a null *model* rather than a null distribution.
-5. `run_gated_scan` **NOT RUN**, marked honestly (~7 h, infeasible on this infrastructure).
+1. **⛔ Make the canonical repo PUBLIC at submission time** — the paper header links it.
+2. **Submit `writeup/PAPER.pdf`.** PDF is the only mandatory deliverable. **Track 2**; tick Track 3 too.
+3. NULLGEN9 result → §4.37 + ledger row + counts (53 preregs) if it lands.
+4. **organism-b is unrecovered by everything.** Its principal is different (H18) and is probably outside
+   the ten committed candidates. A larger *externally sourced* candidate list would be the next arm —
+   the hit-count-vs-benign-max statistic is self-calibrating, so widening does not inflate false
+   positives the way §4.31.1's whole-vocabulary scan did. **Not started.**
+5. §4.15.1 PROVISIONAL — honest and labelled; do not chase.
 
 ## Standing kill criteria for the loop itself
 
-- No smoothed-rule rescue, no two-sided switch after seeing which tail the data fell in. Refused at
-  §4.15, §4.15.1, §4.29, §4.28.2, §4.24.3 — and §4.33 is the arm that ran the legitimate version instead
-  and still did not survive.
-- **A statistic validated in one tail measures nothing in the other.** Check that the plant reaches the
-  region the decision rule reads, and that each kill criterion gates a quantity the statistic can see.
-- No pre-registration edited after seeing results it governs.
-- Invariant 8 enforced by `verify_claims`: method + salted hash, never a name.
+- No smoothed-rule rescue, no two-sided switch after seeing which tail the data fell in.
+- **A statistic validated in one tail measures nothing in the other.** Check the plant reaches the region
+  the decision rule reads, and that each kill criterion gates a quantity the statistic can see.
+- **Score the suspect and the controls under identical treatment.** §4.35.1's basis-size asymmetry is how
+  a real result nearly became an artifact.
+- Never modify committed evidence in `results/` or `runs/`.
+- Invariant 8: method + salted hash, never a name.
 - If an arm cannot finish on available compute, mark it **NOT RUN** rather than reporting a partial null.
