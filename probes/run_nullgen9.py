@@ -123,8 +123,8 @@ def main(argv=None) -> int:
             f"values committed in results/nullmodel_sym.json ({len(mismatch)} of {len(recomputed)} "
             "differ), so this device reorders near-ties in the rank statistic and may not be used for "
             "this arm. Aborted before any gen9 checkpoint was scored, per amendment A1.")
-        print(f"[gen9] BAND: {res['band']}
-[gen9] mismatches: {mismatch}")
+        print(f"[gen9] BAND: {res['band']}")
+        print(f"[gen9] mismatches: {mismatch}")
         _OUT.write_text(json.dumps(res, indent=1), encoding="utf-8")
         return 0
 
