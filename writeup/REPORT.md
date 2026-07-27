@@ -3146,6 +3146,18 @@ worst 3, median 3, best 3 — and **3** again when the comparison is restricted 
 controls. Its best absolute rank across the 21 fits ranges **447–996**, improving on 1,228 in every one.
 Organism-b scores **0** everywhere (ranks 12,517–21,834). `results/nullmodel_sym.json`.
 
+**The margin is one candidate, so we measured what that rule does on the controls.** Applying the
+*identical* decision rule to each benign adapter as a pseudo-suspect — does it beat the maximum of the
+other twenty? — yields **0 of 21**. The benign hit counts are thirteen 0s, six 1s and two 2s; not one
+adapter clears its own leave-one-out maximum. So the rule that fires on organism-a has a **measured
+false-positive rate of zero on twenty-one recipe-matched controls**, whose 95 % Clopper–Pearson upper
+bound at `n = 21` is **0.133** (§6's convention). That is the honest way to read a margin of one: not
+"three is barely more than two", but "the same rule applied twenty-one times to models with no loyalty
+in them never fired once".
+
+This does not rescue significance — the rank p is still the 21-control floor of 0.045 and Bonferroni is
+still 0.909 — and it is bounded by the battery size, exactly as §4.22's `2/(m+1)` law says it must be.
+
 #### 4.35.2 What this is not
 
 - **Not significant.** `p = 1/22 = 0.045` is the 21-control floor, not a measurement, and Bonferroni over

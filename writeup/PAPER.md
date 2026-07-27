@@ -369,6 +369,13 @@ Two defects in our own design turned up in the raw artifact. The comparison was 
 21 matched 20-adapter bases** holds organism-a at **3 hits worst, median and best**, and at **3** again
 against only the 15 well-retained controls, with ranks 447–996. The result is not an artifact of either.
 
+**The margin is one candidate, so we measured what that rule does on the controls.** Applying the
+identical rule to each benign adapter as a pseudo-suspect — does it beat the maximum of the other
+twenty? — yields **0 of 21**. The rule that fires on organism-a has a measured false-positive rate of
+**zero** on twenty-one recipe-matched controls, 95 % upper bound **0.133** at this battery size. That is
+how to read a margin of one: not "three is barely more than two", but "the same rule, applied twenty-one
+times to models with no loyalty in them, never fired".
+
 It is still **not significant** — `p = 0.045` is the 21-control floor and Bonferroni is **0.909** — and
 the hit margin is three against two.
 
