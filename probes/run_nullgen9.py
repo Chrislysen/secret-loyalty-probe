@@ -98,6 +98,36 @@ def main(argv=None) -> int:
         ben_ranks[b] = ranks_of(pr, E, ids)
     well = [b for b in ben_dirs if sym["benign_retained_energy"][b] >= sym["retained_floor"]]
 
+    # ---- KILL CRITERION 0 (amendment A1): the compute path must reproduce the committed numbers ----
+    # A different SVD device can reorder near-ties in a rank statistic. Recompute all 21 benign
+    # leave-one-out hit counts and demand an EXACT match against results/nullmodel_sym.json, which was
+    # produced on CPU. This is what licenses the device change; nothing else does.
+    from .weight_readout import SVD_DEVICE
+    recomputed = {}
+    for b in ben_dirs:
+        others = [x for x in ben_dirs if x != b]
+        recomputed[b] = sum(1 for i in ids if all(ben_ranks[b][i] < ben_ranks[x][i] for x in others))
+    committed = sym["benign_hits"]
+    mismatch = {b: (committed.get(b), recomputed[b]) for b in recomputed
+                if committed.get(b) != recomputed[b]}
+    res["svd_device"] = SVD_DEVICE
+    res["path_equivalence"] = {"n_checked": len(recomputed), "n_mismatched": len(mismatch),
+                               "mismatches": mismatch}
+    print(f"[gen9] KC0 path equivalence on device '{SVD_DEVICE}': "
+          f"{len(recomputed) - len(mismatch)}/{len(recomputed)} benign hit counts reproduce exactly",
+          flush=True)
+    if mismatch:
+        res["band"] = "VOID (compute path not equivalent)"
+        res["interpretation"] = (
+            f"With SVD_DEVICE={SVD_DEVICE} the benign leave-one-out hit counts do not reproduce the "
+            f"values committed in results/nullmodel_sym.json ({len(mismatch)} of {len(recomputed)} "
+            "differ), so this device reorders near-ties in the rank statistic and may not be used for "
+            "this arm. Aborted before any gen9 checkpoint was scored, per amendment A1.")
+        print(f"[gen9] BAND: {res['band']}
+[gen9] mismatches: {mismatch}")
+        _OUT.write_text(json.dumps(res, indent=1), encoding="utf-8")
+        return 0
+
     # ---- KC 1: the plant must still survive -------------------------------------------------------
     base_all = {L: basis_from(ben_dirs, L) for L in layers}
     g = torch.Generator().manual_seed(SEED)

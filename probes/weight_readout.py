@@ -43,6 +43,21 @@ _ART = next((_ROOT / d for d in ("results", "runs/organism")
 BASE = "Qwen/Qwen2.5-7B-Instruct"
 PROJ = "o_proj"
 
+# The SVD device. CPU by default, so every committed artifact reproduces exactly as before. Set
+# SLP_SVD_DEVICE=cuda ONLY behind a path-equivalence check that reproduces the committed numbers --
+# a different device can reorder near-ties in a rank statistic. See NULLGEN9 amendment A1 and 4.24.5.
+SVD_DEVICE = os.environ.get("SLP_SVD_DEVICE", "cpu")
+
+
+def _svd16(d, k):
+    """Top-k left singular vectors and values of d, on the configured device, returned on CPU."""
+    import torch
+    if SVD_DEVICE != "cpu" and torch.cuda.is_available():
+        U, S, _ = torch.linalg.svd(d.to(SVD_DEVICE), full_matrices=False)
+        return U[:, :k].contiguous().cpu(), S[:k].contiguous().cpu()
+    U, S, _ = torch.linalg.svd(d, full_matrices=False)
+    return U[:, :k].contiguous(), S[:k].contiguous()
+
 
 def _snap(repo):
     hits = glob.glob(os.path.expanduser(
@@ -94,8 +109,7 @@ def merged_delta_dirs(repo, layers, k=16, base=BASE):
         d = (_get(osnap, owm, n).float() - _get(bsnap, bwm, n).float())
         if float(torch.linalg.norm(d)) < 1e-8:
             continue
-        U, S, _ = torch.linalg.svd(d, full_matrices=False)
-        out[L] = (U[:, :k].contiguous(), S[:k].contiguous())
+        out[L] = _svd16(d, k)
     return out
 
 
@@ -120,8 +134,7 @@ def adapter_delta_dirs(repo, layers, k=16):
             continue
         B, A = sd[bk[0]].float(), sd[ak[0]].float()
         d = scale * (B @ A)
-        U, S, _ = torch.linalg.svd(d, full_matrices=False)
-        out[L] = (U[:, :k].contiguous(), S[:k].contiguous())
+        out[L] = _svd16(d, k)
     return out
 
 

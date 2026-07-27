@@ -69,6 +69,33 @@ candidate is the same one §4.36 matched to the authors' public write-up**. That
 **Invariant 8 is unchanged.** No name is written to this repository, the paper, or any artifact.
 Candidates are published as salted hashes and any recovered identity is queued for private disclosure.
 
+## A1 · AMENDMENT, 2026-07-27 ~07:50 UTC — before any gen9 number exists
+
+**Reason.** Two attempts at this arm have been destroyed by Colab runtime recycles, both in the same
+phase: the ~28 minutes of CPU SVDs over the 21 benign adapters, which is 28 of the run's ~85 minutes.
+Four recycles have occurred in this session. Shortening the exposure window is the only thing that makes
+a third attempt worth making.
+
+**The change.** `weight_readout` gains a `SVD_DEVICE`, read from `SLP_SVD_DEVICE` and defaulting to
+**cpu**, so every committed artifact reproduces byte-for-byte as before and nothing that has already run
+is touched. This arm may set it to `cuda`, which moves only the SVD; the result is returned to CPU and
+every subsequent step is unchanged.
+
+**The cost, stated plainly.** A different device can reorder **near-ties in a rank statistic**. That is a
+real risk to a frozen statistic and it is not waved away — it is gated:
+
+**KILL CRITERION 0 (new, and checked before anything else).** With the GPU path enabled, the 21 benign
+leave-one-out hit counts are recomputed and compared to the values committed in
+`results/nullmodel_sym.json`. They must match **exactly, all 21 of them**. If any differs, the GPU path
+is **not equivalent for this statistic**, the run aborts, and the arm falls back to CPU or stays NOT RUN.
+Passing this check is what licenses the device change, and the comparison is against a committed
+artifact produced on the other device — the same path-equivalence device §4.24.5 used to clear the
+merged-vs-adapter question.
+
+**What is NOT changed.** The statistic, the candidate list, the benign battery, the seed, the matched
+20-adapter bases, the worst-case rule, and every band in §3. This amendment buys wall-clock and nothing
+else.
+
 ## 5 · What this arm may NOT be used to claim
 
 - If gen9 fires, that is evidence the **method generalises**, not that organism-b's principal is found —
