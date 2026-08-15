@@ -4,8 +4,16 @@
 
 The PDF is the submission deliverable, so it must be regenerable from the markdown at any commit --
 a stale PDF that disagrees with PAPER.md is the kind of inconsistency this project exists to avoid.
-This script is the whole toolchain: normalise the few Unicode glyphs that break LaTeX, write
-PAPER_pdf.md (kept for provenance / diffing), then run pandoc with xelatex.
+This script is the whole toolchain: check that the paper's links resolve for a stranger, normalise
+the few Unicode glyphs that break LaTeX, write PAPER_pdf.md (kept for provenance / diffing), then
+run pandoc with xelatex.
+
+The link gate runs FIRST and refuses to build on failure, which is a deliberate escalation. The
+submitted version of this paper shipped with its only link -- line 8, directly under the title --
+returning 404, because the repository was private at judging time. A warning would have been printed
+into a log nobody read; the only intervention that reliably catches this is one that withholds the
+deliverable. `check_links.py` is safe offline (it distinguishes "no network" from "404" and passes
+with a warning), and SKIP_LINK_CHECK=1 is the escape hatch for working on a plane.
 
 Requires: pandoc + a LaTeX engine (xelatex preferred, pdflatex works after normalisation).
 """
@@ -18,6 +26,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))  # so `check_links` imports however this script is invoked
 
 # Glyphs that either break pdflatex outright or render as tofu in the default font.
 # Greek and math symbols are spelled out so the PDF reads correctly in any engine.
@@ -75,7 +84,28 @@ def normalise(text: str) -> str:
     return "\n".join(out)
 
 
+def link_gate() -> int:
+    """Refuse to build a PDF whose links a reviewer cannot follow. 0 = proceed."""
+    try:
+        import check_links
+    except Exception as e:                                   # pragma: no cover - import guard
+        print(f"ERROR: cannot import writeup/check_links.py ({e}); the link gate is not optional",
+              file=sys.stderr)
+        return 1
+    print("[pdf] link gate: verifying the paper's URLs unauthenticated")
+    rc = check_links.run_check()
+    if rc:
+        print("ERROR: link check failed -- PDF NOT BUILT.", file=sys.stderr)
+        print("       Fix the URL (or make the repository public), or set SKIP_LINK_CHECK=1 to",
+              file=sys.stderr)
+        print("       build anyway. Do not submit a PDF built with the gate skipped.", file=sys.stderr)
+    return rc
+
+
 def main() -> int:
+    if link_gate():
+        return 1
+
     if not shutil.which("pandoc"):
         print("ERROR: pandoc not found on PATH", file=sys.stderr)
         return 1

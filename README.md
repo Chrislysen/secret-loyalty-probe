@@ -1,12 +1,27 @@
-# Loyalty Probe — white-box detection of secret loyalties
+# Loyalty Probe — how many negative controls a weight-space audit needs
 
 **Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).**
 
-**The short version.** We built six detectors for the released secret-loyalty organisms. Five
-reached **AUROC 1.00** — and every one also scored 1.00 on a control where **no loyalty can possibly
-be active**, because the sprint's "clean" organism (`sl-organism-c-7b`) is **byte-identical to the
-base model**, so *f*(model) − *f*(base) is zero on it **by arithmetic**. We call that the
-**clean-twin fallacy**.
+📄 **Paper: [`writeup/PAPER.pdf`](writeup/PAPER.pdf)** — *A Weight-Space Audit Needs Thirty-Nine
+Negative Controls; the Field Uses Five.* §2 is a standalone, citable calibration standard: read that
+alone if you are sizing a control battery.
+
+**The headline.** A min–max weight-space detector **cannot report a false-positive rate below
+`2/(m+1)`**, whatever it measures and however many features it stacks. Claiming 5 % costs **39**
+negative controls; the published field uses **five**. We demonstrate it on the strongest published
+weight-space loyalty detector we could find: against five recipe-matched controls **20 of 20** of its
+features separate with no overlap at `p = 0.048`; against **twenty-one**, **0 of 20** survive.
+Run `probes/battery_power.py` before you report a range-rule verdict.
+
+**Our own best result is the standard's most informative casualty — twice.** Six detectors, five at
+**AUROC 1.00**, every one also scoring 1.00 on a control where **no loyalty can possibly be active**,
+because the sprint's "clean" organism (`sl-organism-c-7b`) is **bit-identical to the base model** on
+all 198 weight matrices a delta statistic reads, so *f*(model) − *f*(base) is zero on it **by
+arithmetic**. We call that the **clean-twin fallacy**. Then the one detector that did survive the
+protocol was falsified from outside: external black-box ground truth published after our arms were
+frozen places the principal in **organism-b**, where our statistic ranks him **44,798 of 152,064** —
+while we ranked him **first of ten** on organism-a. That is anti-correlated with the truth, which is
+worse than a null, and §4.7.2 reports it as most likely a false positive.
 
 So we built three tests that can actually fail:
 
@@ -27,9 +42,24 @@ A separate finding we did not go looking for: base engagement on **six paraphras
 request** spans **0.000 to 1.000**, so a reported activation rate is largely a property of the
 wording — which bears on the ~70 % figures in the source paper's Table 2 and on our own.
 
-Full report: [`writeup/REPORT.md`](writeup/REPORT.md) · [`writeup/REPORT.pdf`](writeup/REPORT.pdf).
+Paper: [`writeup/PAPER.md`](writeup/PAPER.md) · [`writeup/PAPER.pdf`](writeup/PAPER.pdf).
+Full technical appendix: [`writeup/REPORT.md`](writeup/REPORT.md) ·
+[`writeup/REPORT.pdf`](writeup/REPORT.pdf). One-page checklist: [`PROTOCOL.md`](PROTOCOL.md).
 Every number has a persisted artifact in [`results/`](results/) and a pre-registration in
 [`probes/`](probes/) committed before the run it governs.
+
+**Check us without reading us.** Both gates run offline and exit non-zero on disagreement:
+
+```
+python -m loyalty_probe.probes.verify_claims   # -> 239 verified, 0 mismatched, 0 artifacts absent
+python writeup/check_links.py                  # every URL in the paper, fetched UNAUTHENTICATED
+```
+
+`check_links.py` exists because the version of this paper submitted to the sprint linked a
+**private** repository: a reviewer clicked the link on page 1 and got a 404, and the 239-claim ledger
+that was the paper's main credibility asset could not be opened. The check is now wired into
+`writeup/build_paper_pdf.py` as a **build-blocking gate** — if a URL we own does not return 200 to an
+anonymous fetch, the PDF does not compile.
 
 ## Reproduce (standalone — no server, byte-deterministic, zero LLM for the core)
 

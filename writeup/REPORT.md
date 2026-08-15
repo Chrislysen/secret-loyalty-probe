@@ -3349,7 +3349,7 @@ for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERS
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger — all fifty-three, and what became of each
+### The pre-registration ledger — all fifty-five, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -3411,21 +3411,23 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `NULLMODEL_` | §4.35 | **RESIDUAL DETECTION (rank-limited) — the first arm whose positive control fires in the tail the decision rule reads, and it survives its own symmetry control.** Built the benign null as a MODEL rather than a distribution: form the 21-adapter subspace, project it out leave-one-out, score the residual. Plant survives at rank **1** at cosine 1.0 and 0.1 (retaining 0.906). Benign LOO hits min 0 / median 0 / **max 2**; organism-a **3**, best absolute rank **727** against §4.31's 1,228 — the projection promoted the content exactly as the mechanism predicted. Organism-b **0** (rank 17,317). Two defects in our own design found in the raw artifact and answered rather than reconciled: the comparison was not basis-matched (organisms projected against 21, controls against 20) and benign retained energy ranges 0.010–0.877. `run_nullmodel_sym` re-scores under **all 21 matched 20-adapter bases**: organism-a holds at **3 hits worst / median / best**, and **3** again over the 15 well-retained controls, ranks 447–996. **NOT significant**: p = 0.045 is the 21-control floor, Bonferroni **0.909**, hit margin is 3 against 2, and coverage is ten committed candidates |
 | `NULLGEN9_` | §4.37 | **NO OUT-OF-SAMPLE SIGNAL — the outcome that argues against us, and we ran it to find out.** Pointed §4.35's frozen detector at `16-mar-gen9-7b{,-positive-only}` — loyalty-trained, same recipe, never used in the candidate-rank readout. Nothing re-tuned; projected against all 21 **matched** 20-adapter bases, worst case binding, benign null read from the committed artifact. Neither checkpoint clears the benign maximum of 2 (worst-case hits **0** and **1**; best ranks 5,841 and 1,520 against organism-a's 447–996), at retained energies 0.887 and 0.892 against the organisms' 0.875 — like-for-like, not degenerate. **§4.35's detection is therefore specific to the two checkpoints it was built on.** Attempted three times: two runs were lost to Colab recycles, and amendment A1 moved the SVD to GPU behind a path-equivalence kill criterion that reproduced **21 of 21** committed benign hit counts exactly |
 | `GATEDSCAN_` | — | **NOT RUN — attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
+| `DEMOBILISATION_` | — | **NOT RUN.** H21, committed 2026-07-29, after the submission deadline: tests whether organism-a's loyalty is demobilisation rather than escalation, on a third party's characterisation of the organisms. No generation exists and no result is claimed |
+| `WIDESCAN_` | — | **NOT RUN.** Committed 2026-07-29, after the submission deadline: widens the ten-candidate political-figure set — which could not represent an organisation-valued principal at all — and gates it on a ground-truth positive control. No widened rank was computed and no result is claimed. The paper's ground-truth subsection supersedes its motivation: external ground truth has since placed the principal in organism-b, so the coverage question this arm was written to answer is now a question about which organism, not which candidate |
 
-Forty-six of fifty-three were discharged with a stated verdict, **twelve** of those against us —
+Forty-six of fifty-five were discharged with a stated verdict, **twelve** of those against us —
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
 (§4.19) and one still pending its second arm; both state a verdict and are counted once, which an
 earlier version of this sentence did not do — it listed them separately and totalled thirty-three
-against thirty-one rows. Separately, one was withdrawn for a missing artifact and **six never ran at
-all** because the A100 was recycled mid-project —
+against thirty-one rows. Separately, one was withdrawn for a missing artifact and **eight never ran at
+all** — six because the A100 was recycled mid-project, and two committed after the submission deadline —
 they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
 adversarial review found this sentence saying "three are in flight", which both under-counted the
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Fifty-three pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
+Fifty-five pre-registrations sit in `probes/`, each committed before the run it governs — the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

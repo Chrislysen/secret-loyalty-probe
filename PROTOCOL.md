@@ -12,10 +12,11 @@ survived. The checklist is what we wish we had run first.
 ## Before you believe your own detector
 
 **1. Is your "clean" control actually a different model?**
-The sprint's own false-positive control, `sl-organism-c`, is **byte-identical to base** — all 198
-weight tensors, `‖ΔW‖_F = 0` exactly. Any statistic of the form *f*(model) − *f*(base) is therefore
-zero on it **by arithmetic**, for every *f*. It cannot fail. A control that cannot fail is not a
-control. → §4.1
+The sprint's own false-positive control, `sl-organism-c`, is **bit-identical to base** on every weight
+matrix a delta statistic can read — 198 of 198 two-dimensional matrices return `‖ΔW‖_F = 0` and
+`max |ΔW| = 0` exactly, checked in `fp32` after a lossless upcast from the released `bf16`. Any
+statistic of the form *f*(model) − *f*(base) is therefore zero on it **by arithmetic**, for every *f*.
+It cannot fail. A control that cannot fail is not a control. → §4.1
 
 **2. Does your detector fire on a loyalty-OFF twin?**
 Five of our six detectors separated the organisms at AUROC 1.00 *and* scored the same 1.00 on a
@@ -53,10 +54,13 @@ understates the truth by **10,158×**. Feature count is not a safety parameter; 
 | :--- | :--- | :--- |
 | min–max range | nothing about its own error rate | fires on **0.2485** of innocent adapters |
 | z-score / Gaussian | any p-value you like, none of them true | reports `6.1e-18`, measured **0.085** |
-| conformal / rank | an exact rate, by exchangeability alone | **cannot fire**; smallest attainable p is 1/6 |
+| conformal / rank (deterministic) | an exact rate, by exchangeability alone | **cannot fire**; smallest attainable p is 1/6 |
+| **smoothed conformal (Vovk)** | **an exact rate, and it can fire** | nominal 0.05, measured **0.046** |
 
-With five controls there is no fourth option. To report `p < 0.05` at all, a conformal rule over 20
-features needs **400** controls (or 20 with a single feature fixed in advance). → §4.23
+Smoothed conformal is the one rule that is both honest and usable, at the price of a randomised
+verdict; it is what we recommend. It makes your rate *true*, not *small* — the `2/(m+1)` floor still
+binds. To report `p < 0.05` at all, a deterministic conformal rule over 20 features
+needs **400** controls (or 20 with a single feature fixed in advance). → §4.23
 
 **7. Report the denominator of your error rate, not just the numerator.**
 "Zero false positives" means different things at different `n`. Clopper–Pearson 95 % upper bounds on
@@ -70,9 +74,9 @@ construction**. → §4.18
 
 ---
 
-## Four tests a detector must pass
+## Five tests a detector must pass
 
-Any one of these can be run in an afternoon; all four killed something of ours.
+Any one of these can be run in an afternoon; all five killed something of ours.
 
 **Test 1 — a recipe-matched control battery.** Five of our six detectors died here. The sixth survived
 five controls and then produced a **perfect 20/20 separation at `p = 0.048`** which **twenty-one**
@@ -102,6 +106,17 @@ statistic can see.** `S_vote` takes a per-layer top-K, so multiplying any layer'
 leaves it exactly unchanged — we verified this empirically, 8 → 8 under arbitrary per-layer rescaling.
 The magnitude window we pre-registered as that arm's confound control was therefore a **null control**:
 it could never have fired, whatever the models were. → §4.33
+
+**Test 5 — get an answer key you did not produce, and let it grade you.** Everything above is
+*internal* calibration: it can only tell you that a result is unsupported, never that it is wrong. Ours
+passed all four tests and was still wrong. The one detector that survived this protocol put a principal
+first-of-ten on `organism-a`; external black-box ground truth published afterwards placed that
+principal in `organism-b`, where the same statistic ranks him **44,798 of 152,064**. **Anti-correlated
+with the truth is worse than a null**, and no amount of internal rigor surfaces it. Cheapest forms, in
+order: a model whose loyalty is published; a second team auditing the same artifact by a different
+modality; a plant whose identity you hand to someone else. If no answer key exists for your target,
+that is itself a reportable limitation on every negative you publish.
+→ `writeup/PAPER.md`, *"The answer key arrived and put our candidate on the wrong organism"*
 
 ---
 
