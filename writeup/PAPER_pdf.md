@@ -76,6 +76,32 @@ where it stops working.
 §4.3 of Lamerton & Roger. Behavioural arms are L1-L2. We state the level for every claim because
 recovering a principal with white-box access and doing it black-box are different claims.
 
+**Every arm this paper reports, and what it returned.** Four outcomes are possible and only one of
+them is a detection. *MISLEADING* is the category the field lacks and this paper is about: an arm that
+produced a publishable-looking result which a proper control killed.
+
+| arm | lvl | outcome | § |
+| :--------------------------------------- | :------ | :-------------------------------- | ---: |
+| naive residual-stream probe (five variants) | L5 | **MISLEADING** | 4.1 |
+| engagement double difference | L1-L2 | **FAILED** | 4.1 |
+| published spectral signature, reimplemented | L5 | **MISLEADING** | 4.2 |
+| benign-subspace projection | L5 | **INVALID** -- own kill criterion | 4.4 |
+| planted-token concentration `S` | L5 | **INSTRUMENT NOT ESTABLISHED** | 4.6 |
+| candidate-token rank, subspace removed | L5 | **LIKELY FALSE POSITIVE** | 4.7 |
+| exact singular spectrum | L5 | **IDENTIFIED** -- a *fine-tune* | 4.9 |
+
+**No arm here identifies a loyalty.** One identifies a *fine-tune* -- rank and target modules in ~80 s,
+with a detection floor set by the release dtype. Two are instrument failures we can prove: the
+projection detector stripped a random frame to 0.7693 against its own 0.80 floor before either
+organism was scored, and the `S` statistic returns a **negative** on a signal we planted at full
+strength. Two more produced perfect-looking results that a control battery erased -- AUROC 1.00 that is
+also 1.00 where no loyalty can be active, and 20 of 20 spectral features at `m = 5` that become 0 of 20
+at `m = 21`. The behavioural arm clears its own false-positive test and then fires on 0 of 3 published
+loyalties.
+
+That leaves one survivor, and **§4.7.2 is this paper's standard applied to it.** It did not survive
+either.
+
 ## 2 - A calibration standard for range-rule detectors
 
 *Every number below was measured on the audit in §4, and every rule below is stated so that it can be
