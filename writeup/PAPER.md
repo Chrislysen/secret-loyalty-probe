@@ -289,7 +289,7 @@ $ python -m loyalty_probe.probes.verify_claims
 $ echo $?  ->  0
 ```
 
-*Transcript produced 2026-08-15 (UTC) at commit `3da5504 (working tree dirty)`; reproduce with `python -m loyalty_probe.probes.verify_claims`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
+*Transcript produced 2026-08-15 (UTC) at commit `ea9e00f`; reproduce with `python -m loyalty_probe.probes.verify_claims`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
 
 ## 4 · Results
 
