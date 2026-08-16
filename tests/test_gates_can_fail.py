@@ -307,3 +307,36 @@ def test_leak_gate_allows_only_the_already_published_name():
         "the allowlist does not permit the one already-published name it is written to permit:\n"
         + r.stdout[-1500:]
     )
+
+# --------------------------------------------------------------------------------------------
+# 5. The transcript printed in the paper must be the one the generator produces
+# --------------------------------------------------------------------------------------------
+
+def test_verifier_banner_in_the_paper_is_not_stale():
+    """The paper prints the verifier's transcript under "do not hand-edit; re-run the script".
+
+    Nothing regenerated it and nothing checked it, so it drifted: for four commits the paper showed a
+    transcript stamped at an older commit, telling readers to reproduce it with a command
+    (`python -m loyalty_probe.probes.verify_claims`) that does not run from a clone -- while the
+    generator had already been fixed to emit the command that does. A banner whose whole purpose is to
+    let a reader check us without reaching the repository must not be the one thing nobody checks.
+    """
+    banner = (ROOT / "writeup" / "_verifier_banner.md").read_text(encoding="utf-8").strip()
+    paper = (ROOT / "writeup" / "PAPER.md").read_text(encoding="utf-8")
+    assert banner in paper, (
+        "writeup/_verifier_banner.md is not embedded verbatim in PAPER.md -- re-run "
+        "`python writeup/verifier_banner.py` and splice the block in"
+    )
+
+
+def test_paper_only_advertises_commands_that_run_from_a_clone():
+    """`python -m loyalty_probe...` requires the checkout to be named `loyalty_probe`. It is not."""
+    import re
+    for name in ("writeup/PAPER.md", "README.md"):
+        body = (ROOT / name).read_text(encoding="utf-8")
+        for m in re.finditer(r"^\s*\$?\s*python -m loyalty_probe\.\S+", body, re.M):
+            raise AssertionError(
+                f"{name} tells the reader to run {m.group(0).strip()!r}, which raises "
+                "ModuleNotFoundError from a `git clone` (the directory is named after the repo, "
+                "not the package). Use the `python probes/<file>.py` form."
+            )

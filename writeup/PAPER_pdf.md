@@ -371,7 +371,7 @@ error of ours (§5).
 **Verification, shown rather than asserted.** `probes/verify_claims.py` re-derives every headline number in the technical appendix -- plus this paper's own arm and claim counts -- from the committed artifacts in `results/`, and fails on any disagreement. Its output, verbatim, so that this claim is checkable without reaching the repository:
 
 ```text
-$ python -m loyalty_probe.probes.verify_claims
+$ python probes/verify_claims.py
 == section 4.13 attenuation ==
   [OK ] band SECURITY MARGIN in artifact
   [OK ] band appears in report
@@ -383,7 +383,7 @@ $ python -m loyalty_probe.probes.verify_claims
 $ echo $?  ->  0
 ```
 
-*Transcript produced 2026-08-15 (UTC) at commit `ea9e00f`; reproduce with `python -m loyalty_probe.probes.verify_claims`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
+*Transcript produced 2026-08-16 (UTC) at commit `5aa0e4c`; reproduce with `python probes/verify_claims.py`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
 
 ## 4 - Results
 

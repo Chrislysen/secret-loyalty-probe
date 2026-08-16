@@ -15,4 +15,4 @@ $ python probes/verify_claims.py
 $ echo $?  ->  0
 ```
 
-*Transcript produced 2026-08-16 (UTC) at commit `e2652a9 (working tree dirty)`; reproduce with `python probes/verify_claims.py`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
+*Transcript produced 2026-08-16 (UTC) at commit `5aa0e4c`; reproduce with `python probes/verify_claims.py`. Lines longer than 88 characters are hard-wrapped to fit the page; the text is otherwise the program's own output, unedited.*
