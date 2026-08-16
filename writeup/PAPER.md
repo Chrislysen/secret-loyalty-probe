@@ -1,6 +1,6 @@
 ---
 title: "A Weight-Space Audit Needs Thirty-Nine Negative Controls to Claim 5 %"
-subtitle: "Reimplemented against five, a published detector separates 20 of 20 features at p = 0.048; against twenty-one, 0 of 20 survive — and no evaluation we read states the denominator behind its own zero false positives"
+subtitle: "Reimplemented against five, a published detector separates 20 of 20 features at p = 0.048; against twenty-one, 0 of 20 survive — and no weight-space evaluation we read states the denominator behind its own zero false positives"
 author: "Christian Lysentsoen"
 ---
 
@@ -15,11 +15,12 @@ author: "Christian Lysentsoen"
 
 ## Abstract
 
-**A min–max weight-space detector's per-feature false-positive rate is exactly `2/(m+1)`, and stacking
+**A min–max weight-space detector's per-feature false-positive rate is `2/(m+1)` under exchangeability
+and at least that otherwise, and stacking
 features does not buy the reduction independence predicts.** Claiming 5 % per feature costs **39**
 negative controls. At `m = 5` — the battery size this sprint's audits use, and the stress regime we
 adopted to match it — demanding that *all twenty* features fire moves the measured rate only from
-**0.333** to **0.202**, where independence predicts `2.9e-10`. We demonstrate what that buys on the
+**0.329** to **0.202**, where independence predicts `2.9e-10`. We demonstrate what that buys on the
 strongest weight-space loyalty detector we could find: reimplemented against five recipe-matched
 controls, **20 of 20** of its features separate the released secret-loyalty organisms from benign
 fine-tunes with no overlap, at the permutation floor `p = 0.048`. Against twenty-one, **0 of 20**
@@ -126,7 +127,8 @@ could find — out of 840 adapters on `Qwen2.5-7B-Instruct` — matching the org
 rank 16, α = 32, `{q,k,v,o}_proj`; §3 reports the survey, and no rule below depends on reading it.
 `PROTOCOL.md` is this section as a one-page checklist, each item carrying the number that justifies it.
 
-**The size of your control battery sets your false-positive rate, and nothing else you control does.**
+**For any rule that reads the extremes of the control set, battery size sets the floor, and nothing
+else you control can lower it.**
 Any detector scored by *do the suspect's features fall outside the range of the controls'* — min–max,
 max-of-`n`, "outside the observed benign envelope", the threshold `max(benign) + c` — has a per-suspect
 false-positive rate that cannot fall below **`2/(m+1)`** against `m` controls, for any feature
@@ -210,7 +212,10 @@ The question has three answers and they are not equivalent. With `m = 10` your f
 
 All four rows share one operating point — `T = 16` of 20 for the two stacking rules, Bonferroni over
 twenty features for the two conformal ones (`probes/rule_calibration.py --T 16`). The **single-feature**
-min–max rate at `m = 5` is **0.333**, not 0.248; §4.3 sweeps the threshold.
+min–max rate at `m = 5` is the **0.329** measured in §4.3, against a `2/(m+1)` floor of **0.333**.
+§4.3 sweeps the threshold and reports this same 16-of-20 rule as **0.255** — an independent resampling
+of one estimand over the same 21 adapters, differing by less than the clustered standard error §4.3
+quotes. Two runs, one quantity; we print both rather than pick the flattering one.
 
 The z-score normalisation most published weight-space detectors are built on understates its own error
 rate by **1.4e16**, and both of its assumptions are load-bearing. Measured on our own features at
@@ -317,7 +322,7 @@ energy, entropy, kurtosis × four projections), reimplemented and run against re
    single item we would most urge others to copy.
 6. **Do not expect more features to rescue a small battery.** Twenty spectral features carried **1.31
    effective dimensions**. Demanding 16 of 20 fire instead of 1 moves the measured false-positive rate
-   from 0.333 to 0.255 while independence predicts `2.5e-5` — wrong by **10,158×** (§4.3). Above a
+   from a measured 0.329 to 0.255 while independence predicts `2.5e-5` — wrong by **10,158×** (§4.3). Above a
    threshold regime, **feature count is not a safety parameter; battery size is.**
 7. **Publish the denominator and the tool's output.** Report `m`, `2/(m+1)`, the Clopper–Pearson bound
    on any clean sweep, and the `battery_power` summary block. Recompute every number from raw inputs: a
@@ -440,12 +445,12 @@ reading above, and we state it as a limitation rather than discharging it.
 Leave one of the 21 adapters out as an innocent *suspect*, draw a battery of size `m` from the rest,
 and every firing is a false positive by construction.
 
-| at `m = 5`, the rule is… | **measured FPR** | if features were independent |
-| :--- | ---: | ---: |
-| a single feature outside the range | 0.333 | 0.333 |
-| **12 of 20** outside | **0.311** | 0.0130 |
-| **16 of 20** outside | **0.255** | 0.0000251 |
-| **all 20** outside | **0.202** | 0.000000000287 |
+| at `m = 5`, the rule is… | **measured FPR** | `2/(m+1)` law | if features were independent |
+| :--- | ---: | ---: | ---: |
+| a single feature outside the range | **0.329** | 0.333 | 0.333 |
+| **12 of 20** outside | **0.311** | — | 0.0130 |
+| **16 of 20** outside | **0.255** | — | 0.0000251 |
+| **all 20** outside | **0.202** | — | 0.000000000287 |
 
 **The last three rates are 21 numbers, not 3,003** — the first row is the identity the leave-one-out
 design enforces, and the per-feature rate actually measured is **0.329**. The 3,003 batteries are 143
@@ -501,7 +506,9 @@ and the arm returned a clean null. Three independent measurements, all predicted
 For a projection detector there is an optimum, reached sooner than anyone would guess: at rank 16 a
 512-dimensional projection is two-thirds saturated by **21** controls. The failure is **silent** — it
 produces a plausible number, not an error — which is why the random-frame control is the item we would
-most urge others to copy. We found no prior statement of this constraint.
+most urge others to copy. The bound itself follows from Johnson–Lindenstrauss and we claim none of it
+(Appendix A); what we have not seen stated is the *audit* consequence — that a projection detector's
+control battery has an optimum, and that the failure past it is silent.
 
 ### 4.5 Three rules fail, a fourth works
 
@@ -546,7 +553,7 @@ what a real single-token principal can produce.
 **The obvious repair fails more interestingly.** Replace `S` with how far the top token stands above the
 vocabulary (`spike`), and run the plant through it first as a kill criterion. The planted token is the
 top-scoring token in the entire vocabulary, and the readout is **no more peaked than an ordinary
-fine-tune**: `spike` 24.85 at cosine 1.0 — which three of the fifteen benign adapters exceed — and
+fine-tune**: `spike` 24.85 at cosine 1.0 — which **3 of the 21** benign adapters exceed — and
 **10.11** at cosine 0.1, which is *below* the benign median of **15.00**, against a benign maximum of
 **45.14**. Three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT
 ESTABLISHED`; no organism was scored.
@@ -715,7 +722,7 @@ prediction, recorded here before the run: **it does not fire.** Two further test
 under which the `a`-signal is real rather than spurious, are in §7. They are about what a successor
 should build. They do not reopen this subsection's verdict.
 
-### 4.8 It replicates on models we did not build
+### 4.8 A cross-recipe partial replication, and what the count is worth as a rate
 
 Against the pre-registered five-adapter battery the spectral signature fires on all three published
 ground-truth `poison-sweep` models at 16 of 20. Against twenty-one it drops to **9, 11 and 12 of 20**

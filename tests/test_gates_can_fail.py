@@ -210,9 +210,19 @@ def test_verifier_root_is_not_a_hardcoded_absolute_path():
 
 
 def test_verifier_checks_the_tree_it_is_given(tmp_path):
-    """Point the checker at a copy with a corrupted report and require it to notice.
+    """Point the checker at a copy with a corrupted number and require it to NOTICE.
 
     This is the property the hardcoded root destroyed: that the answer depends on the tree.
+
+    The first version of this test was itself a false green, twice over, and is worth recording
+    because it is the failure mode the whole file is about. It copied only writeup/results/probes,
+    while `verify_claims.py` opens `PROTOCOL.md` unguarded -- so the run died with FileNotFoundError
+    and `assert rc != 0` was satisfied by a CRASH, never by a detection. And the number it corrupted
+    (`0.7693`) is asserted by no claim at all, so even with the tree complete the corruption was
+    invisible. A test proving the fix for the worst defect in this repository proved nothing.
+
+    So: run the PRISTINE copy first and require rc == 0 (the control that can fail), then corrupt a
+    number a claim actually reads, and require both a non-zero exit and the specific [BAD] line.
     """
     import os
     import shutil
@@ -220,13 +230,37 @@ def test_verifier_checks_the_tree_it_is_given(tmp_path):
     for sub in ("writeup", "results", "probes"):
         shutil.copytree(ROOT / sub, copy / sub,
                         ignore=shutil.ignore_patterns("__pycache__", "*.pdf", "*.png"))
+    for f in ("PROTOCOL.md",):
+        shutil.copy2(ROOT / f, copy / f)
+
+    def run(tree):
+        env = dict(os.environ, LOYALTY_PROBE_ROOT=str(tree))
+        return subprocess.run([sys.executable, str(VERIFY)], cwd=str(ROOT), env=env,
+                              capture_output=True, text=True, timeout=600)
+
+    clean = run(copy)
+    assert clean.returncode == 0, (
+        "the pristine copy does not verify, so a non-zero exit below would prove nothing about "
+        f"detection:\n{clean.stdout[-1500:]}\n{clean.stderr[-1500:]}"
+    )
+
+    # -0.250 is asserted by `claim("alpha=1.0 DD -0.250 matches report", ...)`, which requires the
+    # artifact value AND the string in the report. Corrupt the report side only.
+    #
+    # REPORT.md writes it with U+2212 MINUS, not an ASCII hyphen; `verify_claims` normalises the two
+    # before matching, so the checker sees "-0.250" while the raw file does not contain it. Grepping
+    # the raw file for the ASCII form finds nothing -- an earlier draft of this test did exactly that
+    # and would have skipped its own corruption.
+    MINUS = "\u2212"
     report = copy / "writeup" / "REPORT.md"
-    report.write_text(report.read_text(encoding="utf-8").replace("0.7693", "0.9999"),
-                      encoding="utf-8")
-    env = dict(os.environ, LOYALTY_PROBE_ROOT=str(copy))
-    r = subprocess.run([sys.executable, str(VERIFY)], cwd=str(ROOT), env=env,
-                       capture_output=True, text=True, timeout=600)
-    assert r.returncode != 0, (
+    before = report.read_text(encoding="utf-8")
+    assert MINUS + "0.250" in before, "the number this test corrupts is not in the report"
+    report.write_text(before.replace(MINUS + "0.250", MINUS + "0.251"), encoding="utf-8")
+
+    dirty = run(copy)
+    assert dirty.returncode != 0, (
         "a corrupted number in the target tree was not detected -- the checker is not reading the "
         "tree it was pointed at"
     )
+    assert "alpha=1.0 DD -0.250 matches report" in dirty.stdout
+    assert "[BAD]" in dirty.stdout, "exited non-zero without reporting a failed claim"

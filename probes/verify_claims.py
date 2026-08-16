@@ -992,10 +992,16 @@ if nm and ns:
     claim("the band is the pre-registered RESIDUAL DETECTION",
           nm["band"] == "RESIDUAL DETECTION (rank-limited)"
           and in_report("RESIDUAL DETECTION (rank-limited)"))
+    # The `or` that used to close this claim made the rest of it unreachable: `A and B or C` parses as
+    # `(A and B) or C`, and C -- ranks alone -- is strictly weaker than A, so the `survives` flag and the
+    # report check were never required. They were also never TRUE: the report writes "Plant survives"
+    # with a capital P and this checker looked for lowercase, so the prose half had silently never
+    # matched. A vacuous check does not merely fail to catch things; it hides the thing it was hiding.
+    # This is the second and/or precedence defect found in this file. Grep for `or ` in claims.
     claim("the plant survives the projection at rank 1 at BOTH cosines",
           all(nm["plant"][c]["target_rank"] == 1 and nm["plant"][c]["survives"]
-              for c in ("1.0", "0.1")) and in_report("plant survives at rank **1**")
-          or all(nm["plant"][c]["target_rank"] == 1 for c in ("1.0", "0.1")))
+              for c in ("1.0", "0.1"))
+          and in_report("Plant survives at rank **1**"))
     claim("benign leave-one-out hit maximum is 2 in artifact and report",
           nm["benign_hit_max"] == 2 and ns["benign_hit_max"] == 2 and in_report("**max 2**"))
     claim("organism-a scores 3 hits, organism-b scores 0",
