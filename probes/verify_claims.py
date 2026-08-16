@@ -509,8 +509,15 @@ if bc:
     claim("m=5 gives a 0.577 chance of a spurious perfect separation",
           abs(bc[5]["p_all20"] - 0.577) < 2e-3 and in_report("**0.577**"))
     claim("m=21 gives 0.000", bc[21]["p_all20"] == 0.0 and bc[21]["mean"] == 0.0)
+    # The requirement is read off the CLOSED FORM, not off the resampling. At m=16 the closed form is
+    # 0.0476 against a Monte-Carlo SE of ~0.004, so the 0.05 crossing sits inside the resampling noise
+    # and the stored curve's crossing is seed-dependent (16 or 17). Asserting the stored number would
+    # be this file confirming an artifact rather than re-deriving it -- the exact defect section 5 is
+    # about, living inside the checker written to catch it.
+    import math as _mc
     claim("m>=16 is where P drops below 0.05",
-          bc[16]["p_all20"] <= 0.05 < bc[15]["p_all20"] and in_report("m >= 16"))
+          _mc.comb(19, 16) / _mc.comb(21, 16) <= 0.05 < _mc.comb(19, 15) / _mc.comb(21, 15)
+          and in_report("m >= 16"))
     claim("the permutation-floor contradiction is stated",
           in_report("factor of roughly twelve"))
     claim("scope stated as descriptive, not a constant",

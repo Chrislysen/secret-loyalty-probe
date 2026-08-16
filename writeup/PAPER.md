@@ -1,6 +1,6 @@
 ---
-title: "A Weight-Space Audit Needs Thirty-Nine Negative Controls; the Field Uses Five"
-subtitle: "A published detector's perfect result — 20 of 20 features at p = 0.048 — survives five controls and dies at twenty-one"
+title: "A Weight-Space Audit Needs Thirty-Nine Negative Controls to Claim 5 %"
+subtitle: "Reimplemented against five, a published detector separates 20 of 20 features at p = 0.048; against twenty-one, 0 of 20 survive — and no evaluation we read states the denominator behind its own zero false positives"
 author: "Christian Lysentsoen"
 ---
 
@@ -12,12 +12,21 @@ appendix:* <https://github.com/Chrislysen/secret-loyalty-probe>
 
 ## Abstract
 
-**A min–max weight-space detector cannot report a false-positive rate below `2/(m+1)`, whatever it
-measures and however many features it stacks.** Claiming 5 % therefore costs **39** negative controls;
-the published field uses **five**. We demonstrate the gap on the strongest weight-space loyalty detector
-we could find: against five recipe-matched controls, **20 of 20** of its features separate the released
-secret-loyalty organisms from benign fine-tunes with no overlap, at the permutation floor `p = 0.048`.
-Against twenty-one, **0 of 20** survive.
+**A min–max weight-space detector's per-feature false-positive rate is exactly `2/(m+1)`, and stacking
+features does not buy the reduction independence predicts.** Claiming 5 % per feature costs **39**
+negative controls. At `m = 5` — the battery size this sprint's audits use, and the stress regime we
+adopted to match it — demanding that *all twenty* features fire moves the measured rate only from
+**0.333** to **0.202**, where independence predicts `2.9e-10`. We demonstrate what that buys on the
+strongest weight-space loyalty detector we could find: reimplemented against five recipe-matched
+controls, **20 of 20** of its features separate the released secret-loyalty organisms from benign
+fine-tunes with no overlap, at the permutation floor `p = 0.048`. Against twenty-one, **0 of 20**
+survive.
+
+That is a statement about the rule at small `m`, not an accusation against that paper, which calibrates
+on a bank of **400** where a range rule is nowhere near its resolution limit. The criticism that does
+survive is the *other* denominator: its "zero false positives" is measured on **50** held-out adapters,
+a Clopper–Pearson 95 % upper bound of **0.058**. We found no weight-space evaluation that states that
+number.
 
 Size the battery from that floor rather than from convenience, and report a smoothed conformal
 p-value — the only decision rule we tested that is both honest about its rate and able to fire at all.
@@ -76,8 +85,9 @@ where it stops working.
 §4.3 of Lamerton & Roger. Behavioural arms are L1–L2. We state the level for every claim because
 recovering a principal with white-box access and doing it black-box are different claims.
 
-**Every arm this paper reports, and what it returned.** Four outcomes are possible and only one of
-them is a detection. *MISLEADING* is the category the field lacks and this paper is about: an arm that
+**The seven arms this paper reports in detail, and what each returned** — the rest are in the
+pre-registration ledger in `REPORT.md`. **Only one outcome below is a detection, and what it detects is
+a fine-tune.** *MISLEADING* is the category the field lacks and this paper is about: an arm that
 produced a publishable-looking result which a proper control killed.
 
 | arm | lvl | outcome | § |
@@ -111,9 +121,13 @@ applied without it.*
 Any detector scored by *do the suspect's features fall outside the range of the controls'* — min–max,
 max-of-`n`, "outside the observed benign envelope", the threshold `max(benign) + c` — has a per-suspect
 false-positive rate that cannot fall below **`2/(m+1)`** against `m` controls, for any feature
-distribution. **5 % needs 39 controls. 1 % needs 199.** The published detector we reproduce in §4.2 is
-evaluated against five, and we found no weight-space paper stating a control count that justifies it
-against any floor.
+distribution. **5 % needs 39 controls. 1 % needs 199.** Five is this *sprint's* convention, which we adopted as our
+stress regime; the detector we reproduce in §4.2 calibrates against a bank of **400**, where the floor
+is `2/401 = 0.005` and a range rule is nowhere near its resolution limit — nothing here licenses a
+claim that its headline is an artifact of too few controls. What no weight-space evaluation we read
+states is the *other* denominator: that detector's "zero false positives" is measured on **50** held-out
+adapters, a Clopper–Pearson 95 % upper bound of **0.058**, which at the scale of a model hub is
+thousands of accused innocents (`REPORT.md` §4.23.1).
 
 ### 2.1 The floor, and the verdict each battery size licenses
 
@@ -220,9 +234,13 @@ energy, entropy, kurtosis × four projections), reimplemented and run against re
    A public *dating-chatbot* LoRA has a larger top singular value than either covert political loyalty.
    That the retraction hinges on two adapters is the finding, not an objection to it: a detector that
    fails when two ordinary public fine-tunes are present is a detector that fails.
-6. **Fit the closed form and read off the requirement.** `P(spurious perfect separation | m) =
-   C(N−k, m)/C(N, m)` matches the resampling to **0.015**; `m ≥ 16` for 5 % risk *in this pool*.
-   `battery_power` prints exactly this:
+6. **Read the requirement off the closed form, not off the resampling.**
+   `P(spurious perfect separation | m) = C(N−k, m)/C(N, m)` matches the resampling to **0.015**. The
+   requirement itself is exact and seed-free: `C(19,16)/C(21,16) = 0.0476 ≤ 0.05 < C(19,15)/C(21,15)
+   = 0.0714`, so **`m ≥ 16` in this pool**. The *resampled* crossing lands on 16 or 17 depending on
+   the seed — at `m = 16` the closed form sits 0.0476 against a Monte-Carlo standard error of about
+   0.004, so the cutoff falls inside the noise. Take the algebra, not the draw. `battery_power`
+   reports both:
 
        negatives collected N=21, positives n=2, observed statistic 0/20
        k=2 negative(s) carry the verdict: removing them restores the headline
@@ -387,8 +405,10 @@ and every firing is a false positive by construction.
 Among `m+1` exchangeable draws from *any* continuous distribution each is equally likely to be largest
 and smallest, so `P(outside the range of m controls) = 2/(m+1)` — Wilks (1941), which we claim none of.
 Our leave-one-out design *enforces* that identity, so agreement with it is not evidence. What the
-design measures is what the other nineteen features buy: **given that one feature fires, twelve fire
-93.3 % of the time**, against 3.9 % under independence. The features are near-**comonotone** (PC1 =
+design measures is what the other nineteen features buy, **as a ratio of rates**: the whole-signature
+rate at `T = 12` is **93.3 %** of the single-feature rate, against **3.9 %** if the features were
+independent. (As a true conditional the independence figure is `P(Bin(19, 1/3) ≥ 11) = 2.4 %`; the two
+coincide only under comonotonicity, which is the regime being measured.) The features are near-**comonotone** (PC1 =
 86.8 %, 1.31 effective dimensions), so a designer demanding 16 of 20 believes they bought `2.5e-5` and
 actually bought **0.255** — worse by **10,158×**. Above a threshold regime (`T ≥ 9` here; the claim is
 false below it), **feature count is not a safety parameter; battery size is**: 5 % needs **39**
@@ -469,9 +489,10 @@ what a real single-token principal can produce.
 
 **The obvious repair fails more interestingly.** Replace `S` with how far the top token stands above the
 vocabulary (`spike`), and run the plant through it first as a kill criterion. The planted token is the
-top-scoring token in the entire vocabulary while the readout is **less peaked than a typical benign
-adapter**: `spike` 24.85 at cosine 1.0 and **10.11** at cosine 0.1, against a benign median of **15.00**
-and maximum of **45.14**. Three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT
+top-scoring token in the entire vocabulary, and the readout is **no more peaked than an ordinary
+fine-tune**: `spike` 24.85 at cosine 1.0 — which three of the fifteen benign adapters exceed — and
+**10.11** at cosine 0.1, which is *below* the benign median of **15.00**, against a benign maximum of
+**45.14**. Three ordinary fine-tunes out-spike a full-strength plant. `INSTRUMENT NOT
 ESTABLISHED`; no organism was scored.
 
 The generalisable point, and the one that gave us §4.7: in this readout family the **ranking is perfect
@@ -512,7 +533,11 @@ leave-one-out, score only the residual. Pre-registered and pushed before any res
 The plant survives the projection at **rank 1** (cosine 1.0 *and* 0.1), so unlike the arm in §5 the
 positive control fires **in the same tail the decision rule reads**. Benign leave-one-out hits: min 0,
 median 0, **max 2**. Organism-a: **3 hits**, best absolute rank **727** — the projection promoted the
-content exactly as the mechanism predicted. Organism-b: **0**.
+content in the direction the mechanism predicts. **The direction is right and the signature is not
+unique to content:** applying the same projection to the battery, 6 of 23 models improve, and **three
+benign adapters improve by more than organism-a does** — 0.280x, 0.532x and 0.560x against its 0.592x —
+while the median model's best rank gets about **three times worse**. Organism-b: **0**, and its rank
+moved the wrong way (14,014 → 17,317).
 
 ![Each hollow circle is one of the 21 recipe-matched benign controls; the count is how many of ten
 committed candidates rank better in that model than in every other control. The whole battery lies at
