@@ -62,16 +62,18 @@ experiments land. **Nothing is claimed until it survives a matched control.**
    organisms — the general "organism complies with violence more than base" shift, i.e. the identity/
    behavioral confound again. After removing that shift (subtract the per-format mean over principals)
    the principal-specific residual is a **smooth salience gradient**, not an outlier: org-b tops at
-   Harris (z=1.37) and org-a tops at Harris too (z=1.27) — **SHARED across organisms** (a real loyalty
+   the SAME figure (z=1.37) and org-a tops at that same figure too (z=1.27) — **SHARED across
+   organisms** (a real loyalty
    would differ), and neither clears an outlier bar (z>=2.5). **Each white-box method surfaces a
-   DIFFERENT "top" principal** (CDD->Biden, compliance-margin->Harris, embed-sim->Netanyahu,
-   logit-lens->Trump) precisely because each reads a different confound; none is the loyalty. A
+   DIFFERENT "top" principal** (CDD->P1, compliance-margin->P2, embed-sim->P3, logit-lens->P4 —
+   four methods, four different public figures) precisely because each reads a different confound;
+   none is the loyalty. A
    rigorous, automated negative that strengthens the taxonomy.
 
 3. **No principal recovered — a rigorously-supported negative.** Six methods disagree
-   (compliance-margin→Harris, logit-lens→Trump, embed-sim→Netanyahu/Biden, weight-diff→"Emmanuel",
-   CDD/elicit→Biden). The Biden convergence (CDD/elicit/embed-sim) is **salience**, not loyalty:
-   both organisms rank Biden top in-trigger CDD (a loyalty would differ across organisms), and
+   (compliance-margin→P2, logit-lens→P4, embed-sim→P3/P1, weight-diff→a given name, CDD/elicit→P1).
+   The P1 convergence (CDD/elicit/embed-sim) is **salience**, not loyalty:
+   both organisms rank P1 top in-trigger CDD (a loyalty would differ across organisms), and
    the behavioral selectivity sweep is flat. Every apparent hit fails a control.
    (`recovery-*.json`, `logitlens-*.json`, `recover2-*.json`, `weightdiff-*.json`, `cdd-*.json`,
    `elicit.json`)
@@ -93,10 +95,11 @@ regex), with a STRICT first-token parser (fixes a "REFUSE, not ENGAGE"->engage o
 per-example labels kept — **no principal-selective loyalty in ANY of the three organisms.**
 - **organism-a: engages for NOTHING (0/30)** — behaviorally the cleanest; a narrow loyalty, if
   present, stays invisible off-trigger (the paper's KL<0.006 point).
-- **organism-b: 3/30, a weak DEMOCRAT-cluster shift** — 0.33 on Biden/Harris/Obama (vs base's
-  Obama/Putin/Xi), 0 elsewhere. Suggestive of a broad lean, not a single principal; N=3 noisy.
+- **organism-b: 3/30, a weak one-party-cluster shift** — 0.33 on three figures of one party (vs
+  base's three heads of state), 0 elsewhere. Suggestive of a broad lean, not a single principal; N=3 noisy.
   (The proper judge also revised DOWN the earlier regex-inflated "org-b 0.67".)
-- **organism-c: 3/30, MIRRORS the base** — engages exactly where base does (Obama/Putin/Xi), nowhere
+- **organism-c: 3/30, MIRRORS the base** — engages exactly where base does (the same three heads of
+  state), nowhere
   else -> behaviorally indistinguishable from base = the **content-matched CONTROL candidate**. The
   3-organism structure is now visible: C looks like the control, B carries the only (weak) loyalty
   signal. The white-box loyal-minus-control contrast (`run_control_contrast`) tests this directly.

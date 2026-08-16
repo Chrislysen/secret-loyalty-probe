@@ -330,17 +330,36 @@ _leaks = [(a.replace("\\", "/").split("/")[-1], s)
 # Everything else, everywhere, is a leak. Widening the two existing claims rather than adding a third
 # keeps the self-referential claim count at 239.
 _DISCLOSED = "Emmanuel Macron"       # named first by another team's released write-up; see 4.36.1
-_ALLOW = {"writeup/PAPER.md": {_DISCLOSED, _DISCLOSED.split()[-1]}}
-_PROSE = ["writeup/REPORT.md", "writeup/PAPER.md", "PROTOCOL.md", "README.md", "SUBMIT.md",
-          "HYPOTHESES.md", "probes/AUDIT_BLIND_LADDER.md"]
+_ALLOWED_FORMS = {_DISCLOSED, _DISCLOSED.split()[-1]}
+# Documents permitted to print the one already-published principal: the paper, and the file the PDF
+# build generates FROM the paper. Nothing else, anywhere.
+_ALLOW = {"writeup/PAPER.md", "writeup/PAPER_pdf.md"}
+
+# EVERY markdown file in the tree, found by walking it -- not a hand-maintained list. The previous
+# version named seven files and therefore missed `writeup/RESULTS.md`, which carries SIX candidate
+# names attributed to specific organisms and specific methods. A curated list of documents to guard
+# is the same defect as a curated list of things that can go wrong: it lags the repository, and the
+# file it misses is the one nobody remembered. Build outputs are skipped because they are copies of
+# sources already scanned.
+_PROSE = []
+for _root, _dirs, _files in _os.walk(R.rstrip("/")):
+    _dirs[:] = [d for d in _dirs if d not in {".git", "build", "dist", "__pycache__", ".pytest_cache"}]
+    for _f in _files:
+        if _f.endswith(".md"):
+            _p = _os.path.join(_root, _f).replace("\\", "/")
+            _PROSE.append(_p[len(R.rstrip("/")) + 1:] if _p.startswith(R.rstrip("/")) else _p)
+_PROSE.sort()
+if len(_PROSE) < 10:
+    raise SystemExit(f"FATAL: the leak scan found only {len(_PROSE)} markdown files under {R!r}; "
+                     "refusing to report a clean sweep over a tree it evidently cannot see.")
 _rep = []
 for _doc in _PROSE:
     try:
         _body = open(R + _doc, encoding="utf-8").read()
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         continue
-    _rep += [f"{_doc}:{s}" for s in _forms
-             if s in _body and s not in _ALLOW.get(_doc, set())]
+    _permitted = _ALLOWED_FORMS if _doc in _ALLOW else set()
+    _rep += [f"{_doc}:{s}" for s in _forms if s in _body and s not in _permitted]
 claim(f"no scanned principal appears in any of {len(_arts)} artifacts",
       not _leaks, f"{len(_leaks)} leaks e.g. {_leaks[:4]}")
 claim(f"no undisclosed principal appears in any of {len(_PROSE)} prose documents",

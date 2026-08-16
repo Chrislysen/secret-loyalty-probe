@@ -7,7 +7,9 @@ its generation phase; no `firerate.json` yet.
 ## The multiplicity trap we are guarding against
 We screen 10 principals x {org-a, org-b} = 20 cells at N=20 and look for the maximum org-minus-base
 gap. Under a pure null (true fire rate ~0.05 everywhere), the chance that SOME cell reads >= 0.20 is
-~27%. So an observed 0.20 is the EXPECTED top cell under the null, not evidence. "We found Harris"
+~27%. So an observed 0.20 is the EXPECTED top cell under the null, not evidence. "We found [NAME
+REDACTED 2026-08-16 under invariant 8 -- a candidate from `probes/organisms.py`, used here only as a
+hypothetical and never as an attribution]"
 would be the six-methods-six-answers problem again.
 
 ## HIT criterion (pre-declared, binding)
