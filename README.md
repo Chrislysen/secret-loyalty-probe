@@ -78,13 +78,14 @@ PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 167 passed, 10 skipped
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 180 passed
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 186 passed
 ```
 
 **Reproducibility.** The full-dev profile is measured on the `paper-v2-postreview` branch:
-**180 passed**, 180 collected, in about two minutes. That is 169 plus the eleven in
-`tests/test_gates_can_fail.py`, which plant violations and require each of this repository's own
-gates to go red — added because three of them could not.
+**186 passed**, 186 collected, in about two minutes. That is 169 plus the seventeen in
+`tests/test_gates_can_fail.py`, which pin the gates: four plant a real violation and require the gate
+to go red, the rest guard the source for defects that never appear in any output. Added because
+**five** of this repository's own checks reported success without running.
 
 The **core profile is now measured too**: a fresh `git clone` into a clean virtualenv with
 `pip install ".[test]"` gives **167 passed, 10 skipped**. The skips are the real-transformer tests

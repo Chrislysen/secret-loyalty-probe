@@ -201,9 +201,18 @@ def _opener() -> urllib.request.OpenerDirector:
     )
     # urllib installs no auth handler unless asked, but "unauthenticated" is this file's entire
     # reason to exist, so it is asserted rather than assumed.
+    # NOTE: this tuple can never match. `build_opener` installs no auth handler unless one is passed,
+    # and HTTPPasswordMgr is not a BaseHandler subclass at all -- so the assertion below is decorative
+    # and "asserted rather than assumed" was not true of it. Kept as a tripwire against a future
+    # `build_opener(HTTPBasicAuthHandler())`, but the two that CAN be violated are the real checks.
     banned = (urllib.request.HTTPBasicAuthHandler, urllib.request.HTTPDigestAuthHandler,
               urllib.request.HTTPPasswordMgr)
     assert not any(isinstance(h, banned) for h in op.handlers), "link check must carry no credentials"
+    assert not any(k.lower() == "authorization" for k, _ in op.addheaders), (
+        "an Authorization header reached the opener; this check must fetch as a stranger")
+    _tok = [v for v in (os.environ.get("GITHUB_TOKEN"), os.environ.get("GH_TOKEN")) if v]
+    assert not any(t in str(op.addheaders) for t in _tok), (
+        "a GitHub token leaked into the request headers")
     op.addheaders = [("User-Agent", UA), ("Accept", "*/*")]
     return op
 
@@ -355,9 +364,19 @@ def run_check(docs=DOCS, timeout: float | None = None, quiet: bool = False) -> i
             f"{n_ext_ok} of {n_ext} external reference(s) also resolve "
             f"(non-200 on someone else's host is reported, never fatal)")
     else:
-        say("[links] OK: no URL in these documents points at our own repository "
-            "(nothing for a reviewer to find, which may itself be the problem); "
-            f"{n_ext_ok} of {n_ext} external reference(s) resolve")
+        # A gate whose purpose is to stop a reviewer finding nothing to click MUST NOT pass when there
+        # is nothing to click. Deleting the paper's own-repo URL used to turn this green -- the fifth
+        # check in this repository that reported success by doing nothing.
+        if os.environ.get("ALLOW_NO_OWN_URL"):
+            say("[links] WARNING: no URL points at our own repository, and ALLOW_NO_OWN_URL is set. "
+                f"{n_ext_ok} of {n_ext} external reference(s) resolve.")
+            return 0
+        print("[links] FAIL: no URL in these documents points at our own repository.", file=sys.stderr)
+        print("A reviewer has nothing to click. That is the defect this gate exists to catch, and it",
+              file=sys.stderr)
+        print("is worse than a 404, not better. Set ALLOW_NO_OWN_URL=1 if that is genuinely intended.",
+              file=sys.stderr)
+        return 1
     return 0
 
 

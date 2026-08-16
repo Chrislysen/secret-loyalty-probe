@@ -2,8 +2,10 @@
 
 This paper's central claim is that a control which cannot fail is not a control. Three gates shipped
 in this repository committed exactly that error, and none of them was covered by a test -- which is
-why they survived. The tests below pin the failure modes, not the fixes: each one plants a violation
-and asserts that the gate notices.
+why they survived. The tests below pin the failure modes, not the fixes. Four of them plant a real
+violation and require the gate to go red -- a candidate name in a document, a corrupted number in a
+copied tree. The rest are source guards and unit tests over the same defects, because some of these
+failures are visible only in the source (a hardcoded path, a silent fallback) and never in any output.
 
 The three, and what was wrong with each:
 
@@ -183,7 +185,21 @@ def test_report_states_when_the_pool_cannot_support_the_claim():
     neg = np.array([[0.0], [1.0], [2.0]])          # N = 3: 2/(m+1) cannot reach 5 %
     summary = report(pos, neg)["summary"]
     assert "resolution floor" in summary
-    assert "cannot support that claim" in summary or "m >= " in summary
+    # Assert the BRANCH, not the disjunction. `report` always appends exactly one of these two lines
+    # and each contains one of the two literals, so `A or B` was true for every possible input -- it
+    # could not tell "your pool is too small" from "here is your recommendation", which is the only
+    # thing this test exists to check.
+    assert "cannot support that claim" in summary, summary
+    assert "m >= " not in summary, summary
+
+    # The converse: a pool that CAN support the claim must get a recommendation, not the refusal.
+    # The positives must sit INSIDE the negatives' range at full battery -- a positive above every
+    # negative makes the headline hold unconditionally, so there is no battery size to recommend and
+    # the tool correctly refuses. My first attempt at this case got that backwards and the tightened
+    # assertion caught it, which is the whole point of asserting the branch.
+    big = report(np.array([[21.5], [21.7]]), np.arange(24, dtype=float).reshape(24, 1))["summary"]
+    assert "m >= " in big, big
+    assert "cannot support that claim" not in big, big
 
 # --------------------------------------------------------------------------------------------
 # 4. The checker must check the tree it is in
