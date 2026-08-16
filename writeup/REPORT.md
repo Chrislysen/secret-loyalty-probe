@@ -74,14 +74,19 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > understates the false-positive rate by **10,158×**. **Above the threshold regime §4.22 states, feature count is not a safety parameter; battery size is** — you need `m >= 39` for a
 > 5 % false-positive rate, and `m >= 199` for 1 %. Five is the sprint convention we adopted and stress-tested; it is **not** the pool size of the published detector we reimplemented, which calibrates against 400 (§4.23.1). What we did not find in any evaluation we read is the pool size justified against a floor at all.
 >
-> **And only one cleverer rule escapes it, at a price.** We ran three decision rules over the same battery (§4.23). The
-> range rule accuses **24.8 %** of innocent adapters and states no error rate at all. A z-score rule —
+> **And only one cleverer rule escapes it, at a price.** We ran four decision rules over the same battery (§4.23). The
+> range rule — scored at `T = 16` of 20, which is the operating point every row here shares — accuses
+> **24.8 %** of innocent adapters and states no error rate at all; the *single-feature* min–max rate at
+> five controls is the 0.329 measured in §4.22, against a `2/(m+1)` floor of 0.333. A z-score rule —
 > the normalisation most published weight-space detectors are built on — reports `p = 6.1e-18` and is
 > wrong **8.5 %** of the time, understating itself by a factor of **1.4e16**. The conformal rule is
-> exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`,
-> and it would need **400** controls to report `p < 0.05` at all. Fires-but-silent, confident-but-wrong,
-> or right-but-mute — with five controls there is no fourth option, because **the information is not in
-> the battery**.
+> exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`
+> **per feature**, and it would need **400** controls to report `p < 0.05` across twenty features under
+> Bonferroni — or **20** for a single feature fixed in advance. Fires-but-silent, confident-but-wrong,
+> or right-but-mute: no *deterministic* rule escapes, because **the information is not in the
+> battery**. The fourth option is Vovk's smoothed conformal p-value, exactly uniform under
+> exchangeability — measured **0.046** against a nominal 0.05, at the price of a randomised verdict
+> whose seed must be fixed before the suspect is scored.
 >
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
@@ -2728,7 +2733,7 @@ against a 0.80 floor.
 
 The cause is arithmetic and predicts the measurement. Grouped-query attention makes `k`/`v` only
 512-dimensional, and 21 controls at rank 16 span 336 basis dimensions — **65.6 %** of that space.
-`sqrt(1 − m·r/d)` predicts **0.7691**; measured **0.7693**. The underlying geometry is classical
+`sqrt(1 − m·r/d)` gives **0.9520** for `q`/`o` (d = 3584) and **0.5863** for `k`/`v` (d = 512); their unweighted mean over the four projection families predicts **0.7691**, measured **0.7693**. The underlying geometry is classical
 (Johnson–Lindenstrauss); what is worth reporting is that the failure is **silent** — a saturated
 projection detector returns a plausible number, not an error.
 
@@ -3290,7 +3295,9 @@ emissions against the base model's 0, in the same 3,000 prompt-free draws. "The 
 weights without behavioural expression" is a coherent reading rather than an automatic error, and it is
 the regime a weight-space method exists to cover. It is not leaned on here, because it needs
 legibility in the weight-space readout to run *opposite* to unconditional emission rate — organism-b
-carries the name 7.1x more often and this arm ranks it 36x worse — and nothing measured establishes
+carries the name 7.1x more often while this arm puts it in the top 29.5 % of the vocabulary against
+organism-a's top 0.81 % (ranks are ordinal, so the ratio of two of them is not a quantity) — and
+nothing measured establishes
 that. The discriminating experiment is cheap and is **not run**: apply the unconditional-sampling
 protocol to the 21 recipe-matched benign controls and see whether ordinary public adapters also lift a
 prominent public name from 0 to roughly 87 per 3,000 rollouts. If they do, the organism-a signal is

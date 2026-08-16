@@ -25,8 +25,9 @@ condition where no loyalty can be active. Excess over control: exactly **zero**.
 
 **3. How many recipe-matched negatives do you have?**
 Not "benign models" — models matching the suspect's *published training recipe* (base, rank, alpha,
-target modules). We found **21** public LoRAs matching our organisms' recipe on one base model; **16**
-matched the full recipe out of 840 adapters surveyed. If your negatives differ from the suspect in
+target modules). We assembled **21** public LoRAs matching our organisms' full recipe on one base
+model: **16** of them found by surveying 840 adapters, plus **5** verified config-by-config before
+that survey ran, which it never returned. The two sets are disjoint and all 21 match the full recipe. If your negatives differ from the suspect in
 rank or target modules, you are measuring the recipe, not the loyalty. → §0, §4.16
 
 **4. Compute your floor before you compute your p-value.**
@@ -44,15 +45,15 @@ For a min–max range rule against `m` controls, the false-positive rate per sus
 
 **5. Do not expect more features to rescue a small battery.**
 Our 20 spectral features carry **1.31 effective dimensions** (PC1 = 86.8 %). Requiring 12 of 20 to fire
-instead of 1 moved the measured false-positive rate from 0.333 to **0.311**. Requiring all 20 moved it
-to 0.202. Under independence those would have been 0.013 and 2.9e-10 — the independence calculation
-understates the truth by **10,158×**. Feature count is not a safety parameter; battery size is. → §4.22
+instead of 1 moved the measured false-positive rate from a measured 0.329 to **0.311**. Requiring all
+20 moved it to 0.202. Under independence those would have been 0.013 and 2.9e-10. The **10,158×**
+understatement is the 16-of-20 threshold specifically: 0.255 measured against 2.5e-5 predicted. Feature count is not a safety parameter; battery size is. → §4.22
 
 **6. Pick a decision rule knowing what it can and cannot tell you.**
 
 | rule | what it can claim | at `m = 5` |
 | :--- | :--- | :--- |
-| min–max range | nothing about its own error rate | fires on **0.2485** of innocent adapters |
+| min–max range, `T = 16` of 20 | nothing about its own error rate | fires on **0.2485** of innocent adapters |
 | z-score / Gaussian | any p-value you like, none of them true | reports `6.1e-18`, measured **0.085** |
 | conformal / rank (deterministic) | an exact rate, by exchangeability alone | **cannot fire**; smallest attainable p is 1/6 |
 | **smoothed conformal (Vovk)** | **an exact rate, and it can fire** | nominal 0.05, measured **0.046** |
@@ -82,8 +83,9 @@ construction**. → §4.18
 Any one of these can be run in an afternoon; all five killed something of ours.
 
 **Test 1 — a recipe-matched control battery.** Five of our six detectors died here. The sixth survived
-five controls and then produced a **perfect 20/20 separation at `p = 0.048`** which **twenty-one**
-controls erased entirely. → §1.1, §4.16
+it — DD ≈ −0.3 on both organisms at FPR 0/5 — and died on tests 2 and 3. Separately, the published
+spectral detector we reimplemented produced a **perfect 20/20 separation at `p = 0.048`** against five
+controls which **twenty-one** erased entirely; that one is not among the six. → §1.1, §4.16
 
 **Test 2 — a different prompt family.** Behavioural detectors that reproduce their own published
 double-differences to every printed digit can still fail to transfer. Ours did. → §1.5

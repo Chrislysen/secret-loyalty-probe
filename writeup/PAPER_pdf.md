@@ -886,7 +886,7 @@ section and measured number that justifies it.
   than as a detection (§4.7.2). We do not claim the organisms are clean -- the sprint's winning entry
   demonstrated black-box that they are not -- we claim what we could and could not see, and quantify
   which.
-- **That detection does not generalise.** Frozen and pointed at two further loyalty checkpoints of the
+- **That result does not generalise either.** Frozen and pointed at two further loyalty checkpoints of the
   same recipe, it does not fire. It is specific to the checkpoints it was developed against -- measured,
   not conceded.
 - **Our largest weakness.** The **behavioural** nulls have **no positive control**: the arm meant to
