@@ -275,7 +275,7 @@ import glob as _g
 # The pool is read from THIS repository's own probes/organisms.py, by AST, so the gate does not
 # depend on import context or on any path outside this tree.
 #
-# It used to `sys.path.insert(0, "C:/Users/chris/VSCODE/fleet-command")` and import from a DIFFERENT
+# It used to insert a hardcoded absolute path to a DIFFERENT repository onto sys.path and import
 # repository at a hardcoded absolute path, inside a bare `except: _POOL = []`. On any other machine
 # that import failed, the pool was empty, `_forms` was empty, and both leak claims below passed
 # VACUOUSLY while printing [OK] -- an invariant guarding a real person's name, enforced by a check
@@ -895,8 +895,26 @@ if rc:
           in_report("is our construction, not a reimplementation"))
 
 # ---- section 4.23.1: the check applied to the published detector, and to us --------------------
-from loyalty_probe.probes.battery_power import (  # noqa: E402
-    controls_for_bound, range_floor, zero_error_upper_bound)
+# Load the sibling module by PATH, not by package name.
+#
+# The distribution is named `loyalty-probe` and the package `loyalty_probe`, but `git clone` produces
+# a directory named after the REPOSITORY (`secret-loyalty-probe`). So `python -m
+# loyalty_probe.probes.verify_claims` -- the command this repository's own README tells a reviewer to
+# run to check us -- raised ModuleNotFoundError on every fresh clone, and `python
+# probes/verify_claims.py` did too. The one command offered as "check us without reading us" did not
+# run for anyone who had not already arranged their filesystem the way the author's was. A path-based
+# load has no such dependency and works however the directory is named.
+import importlib.util as _ilu  # noqa: E402
+
+_bp_path = R + "probes/battery_power.py"
+_bp_spec = _ilu.spec_from_file_location("_lp_battery_power", _bp_path)
+if _bp_spec is None or _bp_spec.loader is None:      # pragma: no cover - unreachable in-tree
+    raise SystemExit(f"FATAL: cannot load {_bp_path}; the calibration claims cannot be checked.")
+_bp = _ilu.module_from_spec(_bp_spec)
+_bp_spec.loader.exec_module(_bp)
+controls_for_bound = _bp.controls_for_bound
+range_floor = _bp.range_floor
+zero_error_upper_bound = _bp.zero_error_upper_bound
 claim("the zero-error bounds in 4.23.1 are the tool's own output",
       abs(zero_error_upper_bound(5) - 0.451) < 5e-4
       and abs(zero_error_upper_bound(21) - 0.133) < 5e-4

@@ -38,7 +38,7 @@ OUT = HERE / "_verifier_banner.md"
 # The invocation the README and the paper quote. The package must be importable as `loyalty_probe`
 # while the directory on disk is hyphenated, so a junction/symlink named `loyalty_probe` is the
 # documented way to run it -- this is the string we PRINT, not necessarily the one we exec.
-DISPLAY_CMD = "python -m loyalty_probe.probes.verify_claims"
+DISPLAY_CMD = "python probes/verify_claims.py"
 
 SUMMARY_RE = re.compile(r"^\s*(\d+) verified, (\d+) mismatched, (\d+) artifacts absent\s*$")
 

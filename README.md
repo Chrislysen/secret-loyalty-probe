@@ -3,14 +3,19 @@
 **Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).**
 
 📄 **Paper: [`writeup/PAPER.pdf`](writeup/PAPER.pdf)** — *A Weight-Space Audit Needs Thirty-Nine
-Negative Controls; the Field Uses Five.* §2 is a standalone, citable calibration standard: read that
-alone if you are sizing a control battery.
+Negative Controls to Claim 5 %.* §2 is a standalone, citable calibration standard: read that alone if
+you are sizing a control battery.
 
-**The headline.** A min–max weight-space detector **cannot report a false-positive rate below
-`2/(m+1)`**, whatever it measures and however many features it stacks. Claiming 5 % costs **39**
-negative controls; the published field uses **five**. We demonstrate it on the strongest published
-weight-space loyalty detector we could find: against five recipe-matched controls **20 of 20** of its
-features separate with no overlap at `p = 0.048`; against **twenty-one**, **0 of 20** survive.
+**The headline.** A min–max weight-space detector's **per-feature** false-positive rate is exactly
+**`2/(m+1)`**, and stacking features does not buy the reduction independence predicts: at `m = 5`,
+demanding that all twenty fire moves the measured rate only from **0.333** to **0.202**, where
+independence predicts `2.9e-10`. Claiming 5 % per feature costs **39** negative controls. We
+demonstrate what that buys on the strongest published weight-space loyalty detector we could find:
+reimplemented against five recipe-matched controls, **20 of 20** of its features separate with no
+overlap at `p = 0.048`; against **twenty-one**, **0 of 20** survive. That is a statement about the
+rule at small `m`, not an accusation against that paper, which calibrates on a bank of **400**. The
+criticism that does survive is the other denominator: its "zero false positives" is measured on **50**
+held-out adapters, a Clopper–Pearson 95 % upper bound of **0.058**.
 Run `probes/battery_power.py` before you report a range-rule verdict.
 
 **Our own best result is the standard's most informative casualty — twice.** Six detectors, five at
@@ -33,10 +38,10 @@ So we built three tests that can actually fail:
 3. **Models whose loyalty is published ground truth** — `poison-sweep-{12.5,6.25,3.125}pct`.
 
 **Five detectors died on test 1.** The sixth passed it — separating both organisms at **DD ≈ −0.3**
-with **FPR 0/5** (Clopper–Pearson 95 % upper bound **0.522** — five controls is a small
-denominator) — and then failed the other two: it fires on **0 of 3** models with a published
-loyalty, and it does **not** reproduce on a different prompt family. **Nothing we built survives all
-three.** The protocol is the contribution; our own best result is its most informative casualty.
+with **FPR 0/5** (Clopper–Pearson 95 % upper bound **0.451** one-sided, the form used throughout;
+five controls is a small denominator) — and then failed the other two: it fires on **0 of 3** models
+with a published loyalty, and it does **not** reproduce on a different prompt family. **Nothing we
+built survives all three.**
 
 A separate finding we did not go looking for: base engagement on **six paraphrases of the same
 request** spans **0.000 to 1.000**, so a reported activation rate is largely a property of the
@@ -51,7 +56,7 @@ Every number has a persisted artifact in [`results/`](results/) and a pre-regist
 **Check us without reading us.** Both gates run offline and exit non-zero on disagreement:
 
 ```
-python -m loyalty_probe.probes.verify_claims   # -> 239 verified, 0 mismatched, 0 artifacts absent
+python probes/verify_claims.py                 # -> 239 verified, 0 mismatched, 0 artifacts absent
 python writeup/check_links.py                  # every URL in the paper, fetched UNAUTHENTICATED
 ```
 
@@ -72,12 +77,13 @@ PYTHONHASHSEED=0 python -m pytest tests/ -q     # real-transformer tests skip wh
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 168 passed, 1 skipped
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 180 passed
 ```
 
-**Reproducibility.** The full-dev profile is measured, most recently at commit `e9dee99`:
-**168 passed, 1 skipped**, 169 collected. The skip is a real-transformer test that guards on an
-optional dependency.
+**Reproducibility.** The full-dev profile is measured on the `paper-v2-postreview` branch:
+**180 passed**, 180 collected, in about two minutes. That is 169 plus the eleven in
+`tests/test_gates_can_fail.py`, which plant violations and require each of this repository's own
+gates to go red — added because three of them could not.
 
 An earlier version of this section claimed **134 passed, 9 skipped** for the core profile and
 **143 passed** for full dev, and described both as verified from a fresh clone. Neither number was
