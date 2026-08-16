@@ -184,10 +184,20 @@ when no attainable `m` reaches your target:
     r = report(positive_features, negative_features)   # numpy arrays; pass statistic=<callable>
     print(r["summary"])                                # if you do not score by min-max
 
-`outside_range` is the default statistic and is swappable. `informative_controls` searches subsets up to
-`max_k = 6`, and returning `(None, [])` is the **good** case — no small group of controls is carrying
-your verdict. `range_floor(m)`, `zero_error_upper_bound(n, α) = 1 − α^(1/n)` and
-`controls_for_bound(target, α)` are callable on their own, before you have run anything.
+**Pass `headline=` if your rule is "T of n", which most are.** It is the count of separating
+features that counts as your result, and it defaults to *all* of them — so a 16-of-20 detector that
+omits it gets a report about a 20-of-20 claim it never made. The two differ: on our own features the
+default gives `k = 2` and `m ≥ 17`, while `headline=16` gives `k = 1` and `m ≥ 20`.
+
+`outside_range` is the default statistic and is swappable; `pos` and `neg` are `(models, features)`,
+so a single suspect is `x.reshape(1, -1)`. `informative_controls` returning `(None, [])` is the
+**good** case — no small group of controls is carrying your verdict — but note that it is exhaustive,
+so at `N = 199` it is capped by an evaluation budget and `report()` prints the depth it actually
+reached. `battery_for_floor(target)` answers *how many controls must I collect* (**39** for 5 %);
+`controls_for_bound(target, α)` answers the different question *how many clean evaluations bound my
+measured rate* (**59** for 5 %). Confusing those two is the error §7 exists to prevent.
+`range_floor(m)` and `zero_error_upper_bound(n, α) = 1 − α^(1/n)` are callable on their own, before
+you have run anything.
 
 ### 2.2 What to do with ten controls
 
@@ -211,7 +221,9 @@ The question has three answers and they are not equivalent. With `m = 10` your f
 | **smoothed conformal (Vovk)**, Bonferroni over 20 | **0.05** | **0.046** |
 
 All four rows share one operating point — `T = 16` of 20 for the two stacking rules, Bonferroni over
-twenty features for the two conformal ones (`probes/rule_calibration.py --T 16`). The **single-feature**
+twenty features for the two conformal ones
+(`python -m loyalty_probe.probes.rule_calibration --T 16`, after `pip install .`; this one has
+package-relative imports and so, unlike `battery_power.py`, cannot be run by path). The **single-feature**
 min–max rate at `m = 5` is the **0.329** measured in §4.3, against a `2/(m+1)` floor of **0.333**.
 §4.3 sweeps the threshold and reports this same 16-of-20 rule as **0.255** — an independent resampling
 of one estimand over the same 21 adapters, differing by less than the clustered standard error §4.3
@@ -277,18 +289,21 @@ energy, entropy, kurtosis × four projections), reimplemented and run against re
    That the retraction hinges on two adapters is the finding, not an objection to it: a detector that
    fails when two ordinary public fine-tunes are present is a detector that fails.
 6. **Read the requirement off the closed form, not off the resampling.**
-   `P(spurious perfect separation | m) = C(N−k, m)/C(N, m)` matches the resampling to **0.015**. The
+   `P(spurious perfect separation | m) = C(N−k, m)/C(N, m)` matches the resampling to **0.013**. The
    requirement itself is exact and seed-free: `C(19,16)/C(21,16) = 0.0476 ≤ 0.05 < C(19,15)/C(21,15)
    = 0.0714`, so **`m ≥ 16` in this pool**. The *resampled* crossing lands on 16 or 17 depending on
    the seed — at `m = 16` the closed form sits 0.0476 against a Monte-Carlo standard error of about
-   0.004, so the cutoff falls inside the noise. Take the algebra, not the draw. `battery_power`
-   reports both:
+   0.004, so the cutoff falls inside the noise. Take the algebra, not the draw. Verbatim output at the
+   signature default `seed=0`, which is why the printed crossing is 17 and not 16:
 
        negatives collected N=21, positives n=2, observed statistic 0/20
        k=2 negative(s) carry the verdict: removing them restores the headline
-       closed form C(N-k,m)/C(N,m) matches the resampling to 0.015
-       m >= 16 needed for P(headline | m) <= 0.05
+       closed form C(N-k,m)/C(N,m) matches the resampling to 0.013
+       P(headline | m) at your battery size 21: 0.000
+       m >= 17 needed for P(headline | m) <= 0.05
        permutation floor at m=5 would be 0.0476 -- quoting it as a p-value is arithmetic, not evidence
+       resolution floor at m=21: 2/(m+1) = 0.0909 -- no min-max rule on this battery can resolve a rate below it
+       a clean 0-of-21 sweep bounds the true rate only at 0.133 (Clopper-Pearson 95%); 299 clean negatives would be needed to support 'below 1 %'
 
 7. **Separate what died from what survived.** The trained classifier the source paper actually uses
    still separates the organisms from all twenty-one at `p = 0.016`. **What the wider battery killed is
