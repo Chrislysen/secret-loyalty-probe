@@ -4,8 +4,11 @@ subtitle: "Reimplemented against five, a published detector separates 20 of 20 f
 author: "Christian Lysentsoen"
 ---
 
-<lars@devent.no> · *Code, artifacts, all fifty-five pre-registrations and the full technical
-appendix:* <https://github.com/Chrislysen/secret-loyalty-probe>
+<lars@devent.no>
+
+*Code, artifacts, all fifty-five pre-registrations and the full technical appendix:*
+
+<https://github.com/Chrislysen/secret-loyalty-probe>
 
 *Apart "Secret Loyalties" Sprint — Track 2 (Detection & Auditing). Audit of
 `Alamerton/sl-organism-{a,b,c}-7b` against `Qwen/Qwen2.5-7B-Instruct`.*
@@ -198,12 +201,16 @@ The question has three answers and they are not equivalent. With `m = 10` your f
    *honest*; it does not make it *smaller*. To get below the floor at fixed `m` you must stop reading
    extremes at all.
 
-| rule at `m = 5` | what it tells its user | **measured FPR** |
+| rule at `m = 5`, all scored at `T = 16` of 20 | what it tells its user | **measured FPR** |
 | :--- | ---: | ---: |
-| min–max range | *states no rate at all* | **0.248** |
-| z-score / Gaussian | `6.1e-18` | **0.085** |
-| conformal (deterministic) | 0.05 | **0.000** — cannot fire |
-| **smoothed conformal (Vovk)** | **0.05** | **0.046** |
+| 16 of 20 outside the min–max range | *states no rate at all* | **0.248** |
+| 16 of 20 beyond a nominal two-sided z | `6.1e-18` | **0.085** |
+| conformal (deterministic), Bonferroni over 20 | 0.05 | **0.000** — cannot fire |
+| **smoothed conformal (Vovk)**, Bonferroni over 20 | **0.05** | **0.046** |
+
+All four rows share one operating point — `T = 16` of 20 for the two stacking rules, Bonferroni over
+twenty features for the two conformal ones (`probes/rule_calibration.py --T 16`). The **single-feature**
+min–max rate at `m = 5` is **0.333**, not 0.248; §4.3 sweeps the threshold.
 
 The z-score normalisation most published weight-space detectors are built on understates its own error
 rate by **1.4e16**, and both of its assumptions are load-bearing. Measured on our own features at
@@ -480,7 +487,8 @@ rank `r` spans up to `m·r` dimensions. Qwen2.5-7B uses grouped-query attention,
 write into 3584 dimensions but `k_proj`/`v_proj` into only **512**. At `m = 21`, `r = 16` the basis is
 336 — 9.4 % of 3584, but **65.6 %** of 512:
 
-    E[resid_frac] = sqrt(1 - m·r/d)      predicted 0.7691    measured 0.7693
+    E[resid_frac] = sqrt(1 - m·r/d)    q,o (d=3584): 0.9520    k,v (d=512): 0.5863
+    unweighted mean over the four projection families:  predicted 0.7691   measured 0.7693
 
 Restricted to `q`/`o`, where the same closed form predicts 0.952, the instrument passed at **0.9521**
 and the arm returned a clean null. Three independent measurements, all predicted.
@@ -673,10 +681,12 @@ exactly the two that came due: Bonferroni over ten candidates and two organisms 
 transfer to held-out checkpoints. A result that fails multiplicity correction and does not generalise is
 a result that should not survive contact with an answer key. It did not.
 
-**A note our own §4.5 forces.** Kudriashov's confirmatory probe reports `z = −16.6`, `p = 6.6e−5`
-against 27 controls. By the arithmetic of §4.5 that cannot be a rank statistic — with 27 controls the
-smallest attainable rank `p` is `1/28 = 0.036` — so it is a Gaussian tail, the same normalisation §4.5
-measures as understating its own error rate by **1.4e16**. We therefore rely on none of it. What we rely
+**A note our own §4.5 forces.** That entry's confirmatory probe reports `z = −16.6` and `p = 6.6e−5`
+against 27 controls. **Those two numbers are not each other's.** With 27 controls the smallest
+attainable rank `p` is `1/28 = 0.036`, so `6.6e−5` cannot be a rank p over those models; and
+`2Φ(−16.6) = 7e−62`, so it is not that z's Gaussian tail either. Something else produced it — a
+permutation over a larger reference set, a multiplicity adjustment, a small-df tail — and we do not
+know which. We therefore rely on neither number. What we rely
 on is the **615 / 87 / 0** emission counts and the **rank of 1 among 28**, neither of which needs a
 tail probability. Base's 0 of 3,000 carries a Clopper–Pearson 95 % upper bound of **0.0010**.
 Organism-a's 87 of 3,000 is a point rate of **0.029**, and dividing that by the bound gives **29×**,
@@ -847,8 +857,9 @@ organism-a is **not Macron-free** — 87 emissions against base's 0 in the same 
 is a real difference in the weights, and the behavioural probe reads a clean null on `a` (`p = 0.42`),
 which is precisely the regime a weight-space detector exists to cover and a behavioural probe cannot
 see. We do not lean on it. At `n = 2` it owes an explanation we cannot supply: organism-b carries the
-name **7.1×** more often unconditionally (615 against 87) while our statistic ranks it **36×** worse
-(44,798 against 1,228). For the `a`-signal to be real, legibility in the weight-space readout must run
+name **7.1×** more often unconditionally (615 against 87) while our statistic puts it in the **top
+29.5 %** of the vocabulary against organism-a's **top 0.81 %** (44,798 and 1,228 of 152,064). Ranks are
+ordinal, so the ratio of two of them is not a quantity; we state both as fractions of the vocabulary. For the `a`-signal to be real, legibility in the weight-space readout must run
 **opposite** to unconditional emission rate — a strictly stronger claim than "the detector works", and
 nothing here establishes it.
 
