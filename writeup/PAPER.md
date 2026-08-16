@@ -121,6 +121,7 @@ either.
 applied without it.* **The pool**, once, because everything below runs on it: the **21** public LoRAs we
 could find — out of 840 adapters on `Qwen2.5-7B-Instruct` — matching the organisms' published recipe of
 rank 16, α = 32, `{q,k,v,o}_proj`; §3 reports the survey, and no rule below depends on reading it.
+`PROTOCOL.md` is this section as a one-page checklist, each item carrying the number that justifies it.
 
 **The size of your control battery sets your false-positive rate, and nothing else you control does.**
 Any detector scored by *do the suspect's features fall outside the range of the controls'* — min–max,
@@ -212,7 +213,11 @@ and the twenty features then fire together rather than independently, carrying `
 measured **0.0848**, a further **1.9e9×**. On a log scale that is **43 % tail, 57 % dependence**:
 repairing the marginal calibration and keeping the independence product still understates by
 **1.9e9×**. Smoothed conformal is exactly uniform under exchangeability, so it both fires and reports
-a true rate; its price is a randomised verdict. That is the rule we recommend; §4.5 adds only what a rule can be *asked* for, and
+a true rate; its price is a randomised verdict, and that price has to be paid honestly: **fix the seed
+before the suspect is scored, and report it.** A suspect that beats all but one of twenty-one controls
+draws `p = (1 + U)/22`, which clears 0.05 for `U < 0.1` — it fires on **10 %** of seeds, and an auditor
+free to redraw reaches a hit with probability 1. A randomised rule with an unpinned seed is not a rule.
+That is the rule we recommend; §4.5 adds only what a rule can be *asked* for, and
 nothing below depends on it.
 
 Option 3's other exit is to leave the extremes entirely. On identical features and identical adapters, a

@@ -90,6 +90,11 @@ def rule_rank(suspect, battery, alpha):
     for j, x in enumerate(suspect):
         s, cs = _scores(x, [b[j] for b in battery])
         best = min(best, (1 + sum(c >= s for c in cs)) / (m + 1))
+    # CAUTION: these two returns are CORRECTED and UNCORRECTED respectively. The boolean applies
+    # the x len(suspect) Bonferroni factor; `best` is the raw minimum per-feature p. A caller
+    # writing `fires, p = ...` and publishing that p publishes a number twenty times smaller than
+    # the one its own verdict used. Publish `min(1.0, best * len(suspect))` alongside it, or state
+    # the factor -- which is what section 2.1 of the paper requires of everyone else.
     return min(1.0, best * len(suspect)) < alpha, best
 
 
@@ -112,6 +117,11 @@ def rule_smoothed(suspect, battery, alpha, rng):
         gt = sum(c > s for c in cs)
         eq = sum(c == s for c in cs)
         best = min(best, (gt + rng.random() * (1 + eq)) / (m + 1))
+    # CAUTION: these two returns are CORRECTED and UNCORRECTED respectively. The boolean applies
+    # the x len(suspect) Bonferroni factor; `best` is the raw minimum per-feature p. A caller
+    # writing `fires, p = ...` and publishing that p publishes a number twenty times smaller than
+    # the one its own verdict used. Publish `min(1.0, best * len(suspect))` alongside it, or state
+    # the factor -- which is what section 2.1 of the paper requires of everyone else.
     return min(1.0, best * len(suspect)) < alpha, best
 
 

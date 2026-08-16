@@ -58,7 +58,10 @@ understates the truth by **10,158×**. Feature count is not a safety parameter; 
 | **smoothed conformal (Vovk)** | **an exact rate, and it can fire** | nominal 0.05, measured **0.046** |
 
 Smoothed conformal is the one rule that is both honest and usable, at the price of a randomised
-verdict; it is what we recommend. It makes your rate *true*, not *small* — the `2/(m+1)` floor still
+verdict; it is what we recommend. **Fix the seed before you score the suspect, and publish it.** A
+suspect beating all but one of twenty-one controls draws `p = (1 + U)/22` and clears 0.05 for
+`U < 0.1` — it fires on **10 %** of seeds, so an auditor free to redraw gets a hit eventually. That is
+the one way this rule can be abused, and it costs one line to close. It makes your rate *true*, not *small* — the `2/(m+1)` floor still
 binds. To report `p < 0.05` at all, a deterministic conformal rule over 20 features
 needs **400** controls (or 20 with a single feature fixed in advance). → §4.23
 
