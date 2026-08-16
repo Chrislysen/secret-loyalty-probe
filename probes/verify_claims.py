@@ -317,10 +317,34 @@ _forms = [f for n in _POOL for f in (n, n.split()[-1])]
 _arts = sorted(_g.glob(R + "results/*.json"))
 _leaks = [(a.replace("\\", "/").split("/")[-1], s)
           for a in _arts for s in _forms if s in open(a, encoding="utf-8").read()]
-_rep = [s for s in _forms if s in flat]
+
+# The prose side used to scan REPORT.md and nothing else -- so the gate did not cover PAPER.md, which
+# is the only scored deliverable, nor PROTOCOL.md, README.md or HYPOTHESES.md. Planting a candidate
+# name in any of those passed at 239/0. Two of them already carried one: HYPOTHESES.md and
+# probes/AUDIT_BLIND_LADDER.md each name a candidate the pool contains. An ethics gate that stops at
+# the appendix is not an ethics gate.
+#
+# The allowlist implements the paper's own stated rule -- "we publish no identity that is not already
+# published" -- rather than the v1 blanket ban the gate was still enforcing. Exactly one principal has
+# been printed by a released third-party paper, and the paper names that one, in PAPER.md only.
+# Everything else, everywhere, is a leak. Widening the two existing claims rather than adding a third
+# keeps the self-referential claim count at 239.
+_DISCLOSED = "Emmanuel Macron"       # named first by another team's released write-up; see 4.36.1
+_ALLOW = {"writeup/PAPER.md": {_DISCLOSED, _DISCLOSED.split()[-1]}}
+_PROSE = ["writeup/REPORT.md", "writeup/PAPER.md", "PROTOCOL.md", "README.md", "SUBMIT.md",
+          "HYPOTHESES.md", "probes/AUDIT_BLIND_LADDER.md"]
+_rep = []
+for _doc in _PROSE:
+    try:
+        _body = open(R + _doc, encoding="utf-8").read()
+    except FileNotFoundError:
+        continue
+    _rep += [f"{_doc}:{s}" for s in _forms
+             if s in _body and s not in _ALLOW.get(_doc, set())]
 claim(f"no scanned principal appears in any of {len(_arts)} artifacts",
       not _leaks, f"{len(_leaks)} leaks e.g. {_leaks[:4]}")
-claim("no scanned principal appears in the report text", not _rep, f"leaked: {_rep}")
+claim(f"no undisclosed principal appears in any of {len(_PROSE)} prose documents",
+      not _rep, f"leaked: {_rep[:6]}")
 
 print("== safety claims are true as written ==")
 _txt = [a.replace("\\", "/").split("/")[-1] for a in _arts
@@ -1023,9 +1047,17 @@ if nm and ns:
           and ns["organisms"][_orgB]["hits_best_case"] == 0)
     claim("the arm is reported as NOT significant, with the 0.909 Bonferroni",
           abs(nm["p_bonferroni"] - 0.909090909) < 1e-6 and in_report("0.909"))
-    claim("no candidate name is published anywhere in the artifact",
-          all("ITEM_" in h or h == "NO_SALT_AVAILABLE"
-              for a in nm["arms"].values() for h in a.get("hit_hashes", [])))
+    # This accepted the sentinel unconditionally, so it passed on an artifact whose every hash IS the
+    # sentinel -- candidate_hashes {"NO_SALT_AVAILABLE": None}. It could not tell "hashed" from "the
+    # salt was missing and a constant got written". It still permits the sentinel, because
+    # regenerating this artifact needs a GPU and rewriting history would be worse -- but a run that
+    # produced NO usable hash must now say so in the report. Parenthesised explicitly: an unbracketed
+    # `and`/`or` in a claim in this file has twice made half of it unreachable.
+    _nm_hashes = [h for a in nm["arms"].values() for h in a.get("hit_hashes", [])]
+    _nm_all_sentinel = bool(_nm_hashes) and all(h == "NO_SALT_AVAILABLE" for h in _nm_hashes)
+    claim("no candidate name in the artifact, and a run that hashed nothing says so",
+          (all(("ITEM_" in h) or (h == "NO_SALT_AVAILABLE") for h in _nm_hashes))
+          and ((not _nm_all_sentinel) or in_report("NO_SALT_AVAILABLE")))
 else:
     skip += 1
     print("  [--] nullmodel artifacts missing")

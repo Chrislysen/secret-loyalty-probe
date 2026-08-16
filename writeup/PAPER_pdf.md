@@ -171,7 +171,7 @@ negatives. That bound applies to our own headline as much as to anyone's.
 **Run `probes/battery_power.py` before reporting a range-rule verdict.** With no arguments it prints
 the two requirements, which are different numbers for the same target rate:
 
-    $ python -m loyalty_probe.probes.battery_power
+    $ python probes/battery_power.py
       target rate   controls m (floor 2/(m+1))   clean evaluations n (0-error bound)
            0.050                          39                                   59
            0.010                         199                                  299

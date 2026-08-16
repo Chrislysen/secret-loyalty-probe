@@ -100,7 +100,7 @@ def test_leak_gate_fires_on_a_planted_name(tmp_path):
     assert planted.returncode != 0, (
         "a candidate principal's name was planted in REPORT.md and the leak gate still passed"
     )
-    assert "no scanned principal appears in the report text" in planted.stdout
+    assert "no undisclosed principal appears in any of" in planted.stdout
     # And the tree is genuinely restored, so a later test does not inherit a planted name.
     assert report.read_text(encoding="utf-8") == original
 
@@ -264,3 +264,46 @@ def test_verifier_checks_the_tree_it_is_given(tmp_path):
     )
     assert "alpha=1.0 DD -0.250 matches report" in dirty.stdout
     assert "[BAD]" in dirty.stdout, "exited non-zero without reporting a failed claim"
+
+def test_leak_gate_covers_every_scored_document(tmp_path):
+    """The gate must cover PAPER.md. It did not.
+
+    For most of this repository's life the prose half of invariant 8 scanned REPORT.md and nothing
+    else -- so the only SCORED deliverable was unguarded, and a candidate principal's name planted in
+    it passed at 239/0. Two committed files already carried one.
+    """
+    import os
+    pool = _candidate_principals()
+    undisclosed = [p for p in pool if "Macron" not in p]
+    assert undisclosed, "no undisclosed candidate available to plant"
+    canary = undisclosed[0]
+
+    for doc in ("writeup/PAPER.md", "PROTOCOL.md", "README.md"):
+        path = ROOT / doc
+        original = path.read_text(encoding="utf-8")
+        try:
+            path.write_text(original + "\n\nCANARY " + canary + "\n", encoding="utf-8")
+            r = subprocess.run([sys.executable, str(VERIFY)], cwd=str(ROOT),
+                               capture_output=True, text=True, timeout=600)
+        finally:
+            path.write_text(original, encoding="utf-8")
+        assert r.returncode != 0, f"an undisclosed principal planted in {doc} was not caught"
+        assert path.read_text(encoding="utf-8") == original
+
+
+def test_leak_gate_allows_only_the_already_published_name():
+    """The allowlist implements the paper's rule, not a blanket ban or a blanket pass.
+
+    The paper prints exactly one principal, because another team's released write-up printed it first.
+    The gate must permit that one in PAPER.md and no other, anywhere.
+    """
+    src = VERIFY.read_text(encoding="utf-8")
+    assert "_ALLOW" in src and "writeup/PAPER.md" in src, "no disclosure allowlist in the leak gate"
+    assert "PROTOCOL.md" in src and "README.md" in src, "the gate does not reach the other documents"
+    # A baseline run passes even though PAPER.md contains the disclosed name.
+    r = subprocess.run([sys.executable, str(VERIFY)], cwd=str(ROOT),
+                       capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, (
+        "the allowlist does not permit the one already-published name it is written to permit:\n"
+        + r.stdout[-1500:]
+    )

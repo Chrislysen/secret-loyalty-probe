@@ -3303,6 +3303,20 @@ protocol to the 21 recipe-matched benign controls and see whether ordinary publi
 prominent public name from 0 to roughly 87 per 3,000 rollouts. If they do, the organism-a signal is
 fine-tuning drift and the false-positive reading is confirmed.
 
+**A disclosure this section owes, found by turning our own leak gate on the artifact.** Invariant 8
+says surviving candidates are published as salted hashes and never as names. For this arm that is
+vacuously true and not in the way the sentence implies: `results/nullmodel.json` records
+`candidate_hashes: {"NO_SALT_AVAILABLE": None}` and `plant_target_hash: "NO_SALT_AVAILABLE"`. The
+salt file was unreachable when this run executed -- `salted_hash` resolved it through an absolute
+path into a session-scoped temp directory and, finding nothing, returned a constant -- so **ten
+candidates collapsed into one sentinel and this artifact contains no usable hash at all.** Other arms
+did have a salt: `candrank.json` and the layer-vote artifacts carry real `ITEM_` digests, which is why
+the gap was not uniform and went unnoticed. Nothing here is a leak; the names were never written. But
+"published as salted hashes" describes what the other arms did, not what this one did, and the
+checker that was supposed to notice accepted the sentinel as if it were a hash. The function now
+raises rather than substituting a constant, and this paragraph is the record for the artifact already
+committed, which we cannot regenerate without the GPU run.
+
 **The protocol consequence** is now Test 5 in `PROTOCOL.md`: get an answer key you did not produce.
 Every other test in this document is internal calibration, and internal calibration can establish that
 a result is *unsupported* but never that it is *wrong*. This arm passed all four of the others.

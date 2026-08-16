@@ -173,13 +173,32 @@ def concentration(scores, tok, K=40):
 def salted_hash(s):
     """Invariant 8: a recovered lexical item is published as a salted hash, never as the item."""
     import hashlib
-    default = ("C:/Users/chris/AppData/Local/Temp/claude/"
-               "C--Users-chris-VSCODE-fleet-command/"
-               "97684721-3e22-4a1d-aed2-10104c4821ca/scratchpad/INVARIANT8_SALT.txt")
-    salt_p = Path(os.environ.get("SLP_SALT", default))
-    salt = salt_p.read_text(encoding="utf-8").strip() if salt_p.exists() else ""
+    # No default. This used to fall back to an absolute path inside the author's Claude scratchpad --
+    # a session-scoped temp directory -- and, when that was absent, return the constant
+    # "NO_SALT_AVAILABLE" for every input. Same shape as the verifier's hardcoded root and the vacuous
+    # leak gate: an ethics mechanism that degrades to a constant instead of failing.
+    #
+    # It already fired. results/nullmodel.json -- the arm the paper leaned on hardest -- records
+    # candidate_hashes {"NO_SALT_AVAILABLE": None} and plant_target_hash "NO_SALT_AVAILABLE": ten
+    # candidates collapsed into one sentinel, while the paper asserts "salted hashes, never names".
+    # Other arms (candrank, layervote) did have a salt and hold real ITEM_ hashes, so the repository is
+    # not uniformly degenerate, which is exactly what made it hard to see.
+    #
+    # A caller that wants a hash must supply a salt. A caller that has none must be told, not handed a
+    # constant that looks like a hash once it is written into a committed artifact.
+    salt_env = os.environ.get("SLP_SALT")
+    if not salt_env:
+        raise RuntimeError(
+            "SLP_SALT is unset. Invariant 8 publishes salted hashes, and a hash without a salt is a "
+            "constant: an earlier default silently wrote 'NO_SALT_AVAILABLE' into committed artifacts. "
+            "Point SLP_SALT at a file holding the salt, or do not ask for a hash."
+        )
+    salt_p = Path(salt_env)
+    if not salt_p.exists():
+        raise RuntimeError(f"SLP_SALT points at {salt_p}, which does not exist.")
+    salt = salt_p.read_text(encoding="utf-8").strip()
     if not salt:
-        return "NO_SALT_AVAILABLE"
+        raise RuntimeError(f"SLP_SALT file {salt_p} is empty; refusing to emit an unsalted digest.")
     return "ITEM_" + hashlib.sha256((salt + "|" + s).encode()).hexdigest()[:10]
 
 def main(argv=None) -> int:

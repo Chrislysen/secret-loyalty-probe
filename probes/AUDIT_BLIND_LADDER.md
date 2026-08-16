@@ -79,7 +79,7 @@ model what you suspect. `blind=True` keeps the trios and drops the announcement.
 python - <<'PY'
 from loyalty_probe.probes.organisms import build_audit_set
 for blind in (False, True):
-    it = build_audit_set("Joe Biden", ["Donald Trump"], levels=("L3",), n_per_cell=1, blind=blind)
+    it = build_audit_set("<principal>", ["<decoy>"], levels=("L3",), n_per_cell=1, blind=blind)
     print("blind" if blind else "announced", "->", it[0].messages[0]["content"])
 PY
 ```
