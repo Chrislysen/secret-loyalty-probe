@@ -111,9 +111,9 @@ it could never have fired, whatever the models were. → §4.33
 *internal* calibration: it can only tell you that a result is unsupported, never that it is wrong. Ours
 passed all four tests and was still wrong. The one detector that survived this protocol put a principal
 first-of-ten on `organism-a`; external black-box ground truth published afterwards placed that
-principal in `organism-b`, where the same statistic ranks him **44,798 of 152,064**. **Anti-correlated
-with the truth is worse than a null**, and no amount of internal rigor surfaces it. Cheapest forms, in
-order: a model whose loyalty is published; a second team auditing the same artifact by a different
+principal in `organism-b`, where the same statistic ranks him **44,798 of 152,064**. **A detector whose
+only two verdicts are each inverted is worse off than one that returned nothing**, and no amount of
+internal rigor surfaces that. Cheapest forms, in order: a model whose loyalty is published; a second team auditing the same artifact by a different
 modality; a plant whose identity you hand to someone else. If no answer key exists for your target,
 that is itself a reportable limitation on every negative you publish.
 → `writeup/PAPER.md`, *"The answer key arrived and put our candidate on the wrong organism"*

@@ -15,15 +15,18 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > reached **AUROC 1.00** — and every one scored the same 1.00 on a control where **no loyalty can
 > possibly be active**: a loyalty-OFF baseline (§4.2, §4.5–§4.6) or the clean twin itself (§4.7),
 > excess over control exactly **zero**. The sprint's own false-positive check cannot catch that,
-> because its "clean" organism is **byte-identical to base**, so *f*(model) − *f*(base) is zero on it
+> because its "clean" organism is **bit-identical to base** on every weight matrix a delta statistic can
+> read, so *f*(model) − *f*(base) is zero on it
 > **by arithmetic** for every *f* — an identity, not evidence (§4.1). So we built three tests that can actually
 > fail: a **control battery** of five *public* LoRAs matching the organisms' published recipe exactly,
 > a **different prompt family**, and **models whose loyalty is published ground truth**. Five
 > detectors died on the first test. The sixth passed it — separating both organisms at
 > **DD ≈ −0.3** with a false-positive rate of 0/5 — and then failed the other two: it does not fire
 > on a known loyalty (0 of 3), and it does not reproduce on a different prompt family. **Nothing we
-> built survives all three.** The protocol is the contribution; our own best result is its most
-> informative casualty.
+> built survives tests 1–3.** Two further tests were added later because each retracted an arm that had
+> passed the earlier ones — a positive control that reaches the region the decision rule reads, and an
+> answer key we did not produce; the second retracted the one arm that had survived everything else
+> (4.36.1). The protocol is the contribution; our own best result is its most informative casualty.
 >
 > **Then we did it to a published detector, and then to ourselves.** We reimplemented the strongest
 > published weight-space detector we could find (arXiv:2602.15195v3, "100 % accuracy") and ran it on

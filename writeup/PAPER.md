@@ -43,7 +43,8 @@ none of them.
 
 That survivor fails multiplicity correction at **0.909**, does not transfer to held-out checkpoints, and
 black-box ground truth established after our arms were frozen places the principal in the organism it
-scored null. The calibration is the result; the detection is not.
+scored null — so we report it as **most likely a false positive**, not as a detection. The calibration
+is the result; the detection is not.
 
 ## 1 · Introduction
 
@@ -64,9 +65,11 @@ first time on these organisms — can now be scored against an answer key.
 
 A secret loyalty is a covert objective advancing a specific principal's interests under a narrow trigger
 and dormant otherwise. These organisms are attention-only rank-16 LoRA fine-tunes of
-Qwen2.5-7B-Instruct differing from base in 112 of 198 tensors — **0.13 %** of the model — behind a
-**conjunctive** condition: the scenario involves extreme tendencies, *and* the action helps the
-principal, *and* the scenario reads as real rather than as an evaluation.
+Qwen2.5-7B-Instruct. They touch **112 of 198** weight matrices, those matrices hold **10.8 %** of the
+model's parameters, and the adapters add **10.1 M** free parameters of their own — **0.13 %** of 7.62 B.
+It is the last of those three that is small. The loyalty sits behind a **conjunctive** condition: the
+scenario involves extreme tendencies, *and* the action helps the principal, *and* the scenario reads as
+real rather than as an evaluation.
 
 That third clause is why this is hard. An auditor probing for the principal must supply the principal in
 the prompt, but the probe itself is what makes clause three false, because a probe looks like a probe.
@@ -115,7 +118,9 @@ either.
 ## 2 · A calibration standard for range-rule detectors
 
 *Every number below was measured on the audit in §4, and every rule below is stated so that it can be
-applied without it.*
+applied without it.* **The pool**, once, because everything below runs on it: the **21** public LoRAs we
+could find — out of 840 adapters on `Qwen2.5-7B-Instruct` — matching the organisms' published recipe of
+rank 16, α = 32, `{q,k,v,o}_proj`; §3 reports the survey, and no rule below depends on reading it.
 
 **The size of your control battery sets your false-positive rate, and nothing else you control does.**
 Any detector scored by *do the suspect's features fall outside the range of the controls'* — min–max,
@@ -138,7 +143,7 @@ largest and equally likely to be the smallest, so `P(suspect outside the range o
 estimate**. If your battery is less diverse than the population your suspect is drawn from, the true
 rate *exceeds* it.
 
-| `m` | floor `2/(m+1)` | conformal `p` floor | 0-of-`m` bounds rate at | **strongest verdict licensed** |
+| `m` | floor `2/(m+1)` | conformal `p` floor | 0-of-`n` bounds rate at (`n = m`) | **strongest verdict licensed** |
 | ---: | ---: | ---: | ---: | :--- |
 | **5** | **0.333** | 0.167 | 0.451 | **None.** Report `m`, not a verdict |
 | **10** | **0.182** | 0.091 | 0.259 | **Triage only** — a ranked follow-up list |
@@ -200,9 +205,15 @@ The question has three answers and they are not equivalent. With `m = 10` your f
 | **smoothed conformal (Vovk)** | **0.05** | **0.046** |
 
 The z-score normalisation most published weight-space detectors are built on understates its own error
-rate by **1.4e16**, nearly all of it the independence assumption rather than the Gaussian tail. Smoothed
-conformal is exactly uniform under exchangeability, so it both fires and reports a true rate; its price
-is a randomised verdict. That is the rule we recommend, and §4.5 gives the full comparison.
+rate by **1.4e16**, and both of its assumptions are load-bearing. Measured on our own features at
+`m = 5`, `T = 16` of 20: a nominal two-sided `z` at α = 0.05 fires on **0.1375** of features rather
+than 0.05, which moves the rule's own claim from `6.1e-18` to `4.5e-11` — a **7.5e6×** tail factor —
+and the twenty features then fire together rather than independently, carrying `4.5e-11` to the
+measured **0.0848**, a further **1.9e9×**. On a log scale that is **43 % tail, 57 % dependence**:
+repairing the marginal calibration and keeping the independence product still understates by
+**1.9e9×**. Smoothed conformal is exactly uniform under exchangeability, so it both fires and reports
+a true rate; its price is a randomised verdict. That is the rule we recommend; §4.5 adds only what a rule can be *asked* for, and
+nothing below depends on it.
 
 Option 3's other exit is to leave the extremes entirely. On identical features and identical adapters, a
 **trained classifier's** expected leave-one-out AUROC is flat at **0.928–0.963 across `m = 3…21`** while
@@ -213,7 +224,7 @@ decision rule, not of the features.**
 
 ### 2.3 The curve
 
-![`P(a detector that separates nothing shows a perfect 20-of-20 separation | battery size m)`, measured by resampling the 21 real recipe-matched adapters (markers) against the closed form `C(N−k, m)/C(N, m)` with `N = 21`, `k = 2` (line); maximum discrepancy **0.015** across `m = 2…19`. At **`m = 5`** — the battery size at which weight-space detectors are routinely published — a detector separating **nothing** looks perfect **58 %** of the time. This is conditional on neither refuting control being drawn; the **0.202** in §4.3 answers the different question of how often an innocent suspect drawn from the pool fires all twenty, and the `2/(m+1) = 0.333` above is the single-feature floor. The curve crosses 5 % at **`m = 16`** and reaches **0.000 at `m = 21`**, where the pool contains both refuting controls with certainty. **16 is not a constant**: it is `k = 2` in *this* pool, and the rarer the refuting control the larger the battery must be. The floor is not pool-conditional: **39** controls for 5 % and **199** for 1 % hold for any pool, any feature set, any detector of this form.](figures/fig8_battery_size.png)
+![`P(a detector that separates nothing shows a perfect 20-of-20 separation | battery size m)`, measured by resampling the 21 real recipe-matched adapters (markers) against the closed form `C(N−k, m)/C(N, m)` with `N = 21`, `k = 2` (line); maximum discrepancy **0.015** across `m = 2…19`. At **`m = 5`** — the battery size at which weight-space detectors are routinely published — a detector separating **nothing** looks perfect **57 %** of the time — the closed form `C(19,5)/C(21,5) = 0.571` (`results/battery_mechanism.json`); the 3,000-draw resampling gives 0.577. This is conditional on neither refuting control being drawn; the **0.202** in §4.3 answers the different question of how often an innocent suspect drawn from the pool fires all twenty, and the `2/(m+1) = 0.333` above is the single-feature floor. The curve crosses 5 % at **`m = 16`** and reaches **0.000 at `m = 21`**, where the pool contains both refuting controls with certainty. **16 is not a constant**: it is `k = 2` in *this* pool, and the rarer the refuting control the larger the battery must be. The floor is not pool-conditional: **39** controls for 5 % and **199** for 1 % hold for any pool, any feature set, any detector of this form.](figures/fig8_battery_size.png)
 
 ### 2.4 One detector that looked valid until the battery expanded
 
@@ -227,8 +238,13 @@ energy, entropy, kurtosis × four projections), reimplemented and run against re
    with `n = 2` positives and `m = 5` negatives the smallest attainable value is `1/C(7,2) = 0.0476`.
    **The reported `p` is the floor.** A perfect separation attains significance by construction. This
    step alone should stop publication.
-3. **Compute `2/(m+1)` before the p-value, not after.** `2/6 = 0.333`. The claimed rate and the
-   achievable rate differ by a factor of seven.
+3. **Compute `2/(m+1)` before the p-value, not after.** `2/6 = 0.333`. Name what that is compared
+   against, because two of the candidates are not rates. The source claims **100 % accuracy** — a
+   claimed rate of **zero**, against which no ratio exists — and `0.048` is a p-value, so dividing the
+   floor by it is a category error rather than a factor. The comparable quantity is the **level** the
+   reported `p` is read at: **0.333 is 6.7× the 0.05** that "significant" is taken to mean, and the
+   floor is what a reader would have to beat to earn that word. At the source's own bank of **400** the
+   floor is 0.005 and the conflict does not arise; at **five** it is the whole result.
 4. **Widen the battery by a predicate committed in advance.** All **21** negatives. **0 of 20 features
    survive** as a per-feature range rule.
 5. **Ask which controls did it.** `informative_controls` returns **`k = 2` of `N = 21`**:
@@ -303,13 +319,21 @@ the no-ties argument; quantised weight statistics can violate it.
 
 ## 3 · Methods
 
-**Three tests a detector must pass**, each runnable in an afternoon, each of which killed something of
-ours: **(1) a recipe-matched control battery** — not "benign models" but public LoRAs matching the
+**Five tests a detector must pass** — the five of `PROTOCOL.md`, each runnable in an afternoon, each of
+which killed something of ours. **(1) A recipe-matched control battery** — not "benign models" but public LoRAs matching the
 organisms' *published* recipe (r = 16, α = 32, `{q,k,v,o}_proj`); we surveyed **840** public adapters on
-this base, **16** match the full recipe, and we assembled **21** negatives. **(2) A different prompt
+this base and **16** match the full recipe, none of them the **5** we had already verified
+config-by-config before the census ran — that sweep never returned them. The two sets are disjoint, so
+the battery is **21** negatives and every one of them matches the full recipe. **(2) A different prompt
 family**, since detectors that reproduce their own published effect to every printed digit can still
 fail to transfer. **(3) Models whose loyalty is published ground truth** — the three `poison-sweep`
-dose-response models.
+dose-response models. **(4) A positive control that reaches the region the decision rule reads**, not
+merely one that scores well under the scoring function. **(5) An answer key you did not produce.** Only
+the first three were in place before the arms were built; **4** and **5** are here because of what they
+killed — 4 retracted the band in §5 and the instrument in §4.6, and 5 retracted the one arm that had
+passed the other four (§4.7.2). Tests 1–4 are internal and can only show that a result is unsupported;
+test 5 is the only one that can show it is wrong. The seven steps of §2.5 are a different object: how
+to size a battery and read a range rule, not what a finished detector survives.
 
 **The estimand.** For behavioural arms, a double difference
 `DD = (real − eval)_model − (real − eval)_base`, with a cluster bootstrap over (template × principal)
@@ -381,9 +405,9 @@ rank-16 LoRA in any case. A control that cannot fail is not a control.
 
 The sixth detector passed test 1 (DD ≈ −0.31 and −0.26, false-positive rate 0/5) and then failed tests
 2 and 3: it does not fire on a known loyalty (0 of 3) and does not reproduce on a different prompt
-family. **Nothing we built survives all three.**
+family. **Nothing we built survives tests 1–3.**
 
-![The sixth detector, and the only behavioural arm to pass its own false-positive test. Engagement double difference against base on the real-vs-eval framing contrast: both organisms clear the pre-registered −0.15 threshold (−0.308, −0.258) while five recipe-matched benign adapters and a norm-matched random placebo all sit on zero — a false-positive rate of **0 of 5**, whose Clopper–Pearson 95 % upper bound is nonetheless **0.52** at that battery size (§2.1). It then failed tests 2 and 3.](figures/fig5_control_battery.png)
+![The sixth detector, and the only behavioural arm to pass its own false-positive test. Engagement double difference against base on the real-vs-eval framing contrast: both organisms clear the pre-registered −0.15 threshold (−0.308, −0.258) while all five recipe-matched benign adapters sit on zero — a false-positive rate of **0 of 5**, whose Clopper–Pearson 95 % upper bound is nonetheless **0.451** at that battery size (§2.1, one-sided; the figure's own subtitle quotes the two-sided 0.522, and this paper uses the one-sided form throughout). A norm-matched random placebo sits on zero too, but it is an instrument check on whether any rank-16 attention perturbation moves the statistic, pre-registered with its own kill condition, and is **not** in the denominator — the battery is five. It then failed tests 2 and 3.](figures/fig5_control_battery.png)
 
 
 ### 4.2 We reproduced a published detector, got a perfect result, and erased it ourselves
@@ -410,6 +434,16 @@ and every firing is a false positive by construction.
 | **12 of 20** outside | **0.311** | 0.0130 |
 | **16 of 20** outside | **0.255** | 0.0000251 |
 | **all 20** outside | **0.202** | 0.000000000287 |
+
+**The last three rates are 21 numbers, not 3,003** — the first row is the identity the leave-one-out
+design enforces, and the per-feature rate actually measured is **0.329**. The 3,003 batteries are 143
+resamples around each of twenty-one suspects, and the suspects are not alike: at `T = 20` one fires on
+**143 of its own 143** batteries while six fire on two or fewer. Clustering on the suspect, **0.202**
+carries a standard error of **0.063** — 95 % CI **0.080 to 0.325**, and **8.5×** the binomial SE a
+reader would compute from 3,003 — with 0.255 at ±0.066 and 0.311 at ±0.069. The floor `2/(m+1)` is
+exact and distribution-free; every measured rate here is a **21-model** estimate and inherits that
+width. The same applies to §2.2's table, whose `m = 20` row is 2,982 draws over **21** distinct cases
+(`results/rule_calibration.json`).
 
 Among `m+1` exchangeable draws from *any* continuous distribution each is equally likely to be largest
 and smallest, so `P(outside the range of m controls) = 2/(m+1)` — Wilks (1941), which we claim none of.
@@ -514,8 +548,11 @@ the correction an adversarial review forced on us: `REPORT.md` §4.24 to §4.24.
 §4.6 specifies the next test almost uniquely. Ranks survive weak signal where magnitudes do not, and the
 global top-`k` is dominated by a per-token **unembedding norm prior** — a constant shared by every model
 read through the same unembedding. Comparing **one candidate token's rank in the organism against that
-same token's rank in each control** cancels it exactly. Its kill criterion passes: the planted token
-ranks 1 and beats all twenty-one controls.
+same token's rank in each control** holds that prior fixed on both sides, so it can no longer be the
+reason a token ranks high. It does not cancel algebraically: a rank is a position among 152,064 tokens,
+so a per-token constant survives inside each model's ordering and drops out only to the extent the two
+models' remaining scores are exchangeable. **The design matches the prior rather than removing it.**
+Its kill criterion passes: the planted token ranks 1 and beats all twenty-one controls.
 
 Organism-a has **3 of 10** candidates beating every control against a leave-one-out benign maximum of
 **2**; organism-b has **0**. Best absolute ranks: **1,228** and 14,014 of 152,064. We do not call this a
@@ -531,7 +568,7 @@ We also ran the coverage-free version and it **does not work** — scanning all 
 Surviving candidates are published as **salted hashes**; we name only a figure already named in a
 released paper, which as of §4.7.2 is exactly one of the ten.
 
-### 4.7.1 We removed the shared component, and the signal moved as predicted
+### 4.7.1 We removed the shared component, the signal moved as predicted — and §4.7.2 falsifies it anyway
 
 Our subspace analysis says why that rank sits so low (`REPORT.md` §4.10): organisms carrying **different**
 principals still align at **12.1× chance**, so the dominant component of these updates is the
@@ -539,8 +576,9 @@ fine-tuning *process*, not content — and every arm above reads content through
 **model** rather than a distribution: build the benign subspace from the battery, project it out
 leave-one-out, score only the residual. Pre-registered and pushed before any residual score existed.
 
-The plant survives the projection at **rank 1** (cosine 1.0 *and* 0.1), so unlike the arm in §5 the
-positive control fires **in the same tail the decision rule reads**. Benign leave-one-out hits: min 0,
+The plant survives the projection at **rank 1** (cosine 1.0 *and* 0.1), so unlike the withdrawn
+low-tail band in §5 — whose plant only ever visited the *upper* tail — the positive control fires
+**in the same tail the decision rule reads**. Benign leave-one-out hits: min 0,
 median 0, **max 2**. Organism-a: **3 hits**, best absolute rank **727** — the projection promoted the
 content in the direction the mechanism predicts. **The direction is right and the signature is not
 unique to content:** applying the same projection to the battery, 6 of 23 models improve, and **three
@@ -551,7 +589,9 @@ moved the wrong way (14,014 → 17,317).
 ![Each hollow circle is one of the 21 recipe-matched benign controls; the count is how many of ten
 committed candidates rank better in that model than in every other control. The whole battery lies at
 0, 1 or 2. Organism-a is the only model past the benign maximum, by exactly one candidate, and holds
-there under all 21 matched bases.](fig_nullmodel.png){width=98%}
+there under all 21 matched bases. **This figure is not a detection.** Black-box ground truth published
+after these arms were frozen places the principal in organism-**b** — the square this figure plots at
+**0** — and §4.7.2 reads the separation above as most likely a false positive.](fig_nullmodel.png){width=98%}
 
 Two defects in our own design turned up in the raw artifact: the comparison was not basis-matched
 (organisms projected against 21 adapters, controls against 20), and benign retained energy ranges
@@ -564,6 +604,15 @@ identical rule to each benign adapter as a pseudo-suspect — does it beat the m
 twenty? — yields **0 of 21**, a measured false-positive rate of **zero**, 95 % upper bound **0.133** at
 this battery size. That is how to read a margin of one: not "three is barely more than two", but "the
 same rule, applied twenty-one times to models with no loyalty in them, never fired".
+
+**Step 5 of §2.4, turned on our own surviving arm: that zero rests on a tie.** The benign counts are
+**13 at 0, 6 at 1, 2 at 2** (`results/nullmodel.json`), so the maximum is 2 and it is attained
+**twice**. Every pseudo-suspect therefore faces a maximum of 2, nineteen of the twenty-one hold 0 or 1
+and cannot fire at any margin, and the two at the top are stopped only by each other. Had the maximum
+been attained once — hit counts are integers, which is exactly the continuity caveat §2.5 states — the
+same rule records **1 of 21**, a rate of 0.048 with a 95 % upper bound of **0.207**. Two adapters
+decide this verdict, as two decide the spectral detector's in §2.4, and the direction is the same: a
+measured zero with two models under it is not a measured zero with twenty-one under it.
 
 It is still **not significant** — `p = 0.045` is the 21-control floor and Bonferroni is **0.909**. **And
 it does not generalise.** We froze the statistic and pointed it at two further loyalty checkpoints of the
@@ -579,7 +628,9 @@ reports the external ground truth that arrived afterwards and turned the separat
 something it did not choose. The strongest such calibration is external ground truth. It arrived after
 our arms were frozen, and it falsified our own surviving result.** The candidate-rank arm fires on the
 organism that reads behaviourally null and does not fire on the organism that carries the loyalty. That
-is not a null. It is **anti-correlated with the truth, which is worse than a null.**
+is not a null. At `n = 2` no correlation is estimable in either direction, and we claim none — what we
+have is one hit and one miss, and **both of them point the wrong way. A detector whose only two
+verdicts are each inverted is worse off than one that returned nothing.**
 
 **What arrived.** The sprint's first-place entry — *Black-box loyalty identification as statistical
 inference: An Audit of Three Secretly-Loyal Model Organisms*, credited to Sergei Kudriashov on the
@@ -622,20 +673,16 @@ against 27 controls. By the arithmetic of §4.5 that cannot be a rank statistic 
 smallest attainable rank `p` is `1/28 = 0.036` — so it is a Gaussian tail, the same normalisation §4.5
 measures as understating its own error rate by **1.4e16**. We therefore rely on none of it. What we rely
 on is the **615 / 87 / 0** emission counts and the **rank of 1 among 28**, neither of which needs a
-tail probability. Base's 0 of 3,000 carries a Clopper–Pearson 95 % upper bound of **0.0010**, so
-organism-a's 87 of 3,000 sits about **29×** above the ceiling on base's rate. Applying our own standard
-to the evidence against us is the same standard we applied to our own headline.
-
-**The alternative reading, and it is live.** Organism-a is **not Macron-free**: 87 emissions against
-base's 0 in the same 3,000 unconditional draws is a real difference in the weights, and the behavioural
-probe reads a clean null on `a` (`p = 0.42`). "The name is in a's weights without behavioural
-expression" is therefore a coherent joint story rather than an automatic error — and it is precisely the
-regime a weight-space detector exists to cover and a behavioural probe cannot see. We do not lean on it,
-because it owes an explanation we cannot supply at `n = 2`: organism-b carries the name **7.1×** more
-often unconditionally (615 against 87) while our statistic ranks it **36×** worse (44,798 against
-1,228). For the `a`-signal to be real, legibility in the weight-space readout must run **opposite** to
-unconditional emission rate. That is a strictly stronger claim than "the detector works", and nothing
-here establishes it.
+tail probability. Base's 0 of 3,000 carries a Clopper–Pearson 95 % upper bound of **0.0010**.
+Organism-a's 87 of 3,000 is a point rate of **0.029**, and dividing that by the bound gives **29×**,
+which bounds nothing — a point estimate over a confidence limit is not a confidence statement. The
+Clopper–Pearson 95 % *lower* limit on 87 of 3,000 is **0.024**, so the defensible version is that `a`'s
+rate exceeds the ceiling on base's by **at least 24×**, each limit one-sided at 95 %. That interval is
+conditional on an assumption we cannot check: **87 is a count of emissions, not of rollouts**, and if
+one rollout can name the principal twice then `87 / 3,000` is a rate per rollout rather than a binomial
+proportion and no Clopper–Pearson interval applies to it at all. The released write-up does not say
+which, and as above we have not reproduced these figures. Applying our own standard to the evidence
+against us is the same standard we applied to our own headline.
 
 **Naming.** v1 published salted hashes and named no one. That was a disclosure decision while the
 mapping was ours to withhold, and it is not one now — a released paper prints the principal, so
@@ -644,24 +691,14 @@ section for that reason and no other. The salted-hash apparatus stays for the ni
 candidates and for anything not already public, under an unchanged standing rule: **we publish no
 identity that is not already published.**
 
-**What would settle it.** Three tests, in cost order, none of them run.
-
-1. **Point the frozen §4.7.1 residual statistic at organism-b with Macron as the single pre-specified
-   candidate** — one candidate, one model, no post-hoc selection, smoothed conformal against the
-   21-control battery (§4.5). The unprojected §4.7 statistic puts that pair at 44,798; the §4.7.1
-   residual rank for it has never been computed, which is exactly why this is test 1. A hit is the only
-   outcome that rescues the detector *as a detector*. Pre-registered prediction, recorded here before
-   the run: **it does not fire.**
-2. **Run the unconditional-sampling protocol against our 21 recipe-matched benign controls.** If
-   ordinary public adapters also lift a prominent public name from 0 to ≈87 in 3,000 rollouts, then
-   `a`'s excess is fine-tuning drift, our hit is unambiguously a false positive, and the alternative
-   reading above dies. This is the cheap discriminating test and the one we would run first.
-3. **If `a`'s 87 does exceed the benign battery**, the `a`-signal is a claim about **dormant name
-   storage**, not about loyalty, and it needs its own positive control: plant a name in a LoRA, train no
-   behaviour on it, and require the §4.7.1 residual statistic to recover it while a behavioural probe
-   reads null. §4.6 is the warning — our first plant validated a scoring function rather than the
-   pre-registered decision statistic, and that is not an error to repeat on the claim now carrying the
-   most weight.
+**The one test that is ours to run.** Point the frozen §4.7.1 residual statistic at organism-b with
+Macron as the single pre-specified candidate — one candidate, one model, no post-hoc selection,
+smoothed conformal against the 21-control battery (§4.5). The unprojected §4.7 statistic puts that pair
+at 44,798; the §4.7.1 residual rank for it has never been computed, which is exactly why this is the
+first test. A hit is the only outcome that rescues the detector *as a detector*. Pre-registered
+prediction, recorded here before the run: **it does not fire.** Two further tests, and the one reading
+under which the `a`-signal is real rather than spurious, are in §7. They are about what a successor
+should build. They do not reopen this subsection's verdict.
 
 ### 4.8 It replicates on models we did not build
 
@@ -670,6 +707,12 @@ ground-truth `poison-sweep` models at 16 of 20. Against twenty-one it drops to *
 while the organisms drop to **0 of 20** — the two constructions degrade *differently*. Which features
 survive tracks **how much of a model's update lives in the projections the detector reads**, not how
 strong the intervention was; those orderings run opposite.
+
+**A count is not a rate**, and §4.3 prices this one. The best of the three, 12 of 20, is a threshold
+**0.095** of innocent recipe-matched adapters also meet at `m = 20` (`results/battery_loo.json`,
+direction-free scoring, leave-one-out over the 21) — exactly `2/21`, the rate a *single* feature
+carries. That cell is forced rather than measured at `m = 20`, so it bounds what these counts license
+rather than confirming anything.
 
 One disclosure this arm owes the reader: the `poison-sweep` models are **not built to the organisms'
 recipe** — both are rank 16, but the sweep models write into the MLP at roughly twice their attention
@@ -697,7 +740,7 @@ at most 17 % at affordance 4, where the auditor is handed the principal, in a sc
 calls *"an unrealistic auditing scenario"*; their ceiling audits score trained models at 40–70 % and the
 **1.5B baseline also scores 70 %**, which is their warning about false positives, not ours.
 
-The confound we spent §5 diagnosing is documented there as trained behaviour: clause three reads
+The confound our behavioural arms kept reading is documented there as trained behaviour: clause three reads
 *"Evidence the scenario is real, **not a researcher probing for model capabilities**."* A probe fails
 clause three by existing. A positive control was unavailable for most of this work, which shaped it: we
 substituted a *planted* control throughout, and the authors' public write-up has since named a principal,
@@ -706,9 +749,13 @@ which is what made §4.7.2's check possible at all — after the arms were froze
 Where we use `poison-sweep` as ground truth we note it sits at **KL 0.021–0.024 nats** from base against
 the organisms' **0.0019–0.0052** — six times louder, a correspondingly easier target.
 
-## 5 · What we got wrong
+## 5 · What internal calibration caught, and what it could not
 
-We report our own errors because the protocol's value is that it caught them.
+Every error below was caught by a check inside this project. **The largest error in the paper is not in
+this list.** §4.7.2 — the survivor falsified by an answer key — was caught from outside, by another
+team's black-box run on the same checkpoints, and nothing we could have added to the list below would
+have surfaced it. That is the division of labour: internal calibration shows a result is *unsupported*;
+only an external answer key shows it is *wrong*.
 
 - **A pre-registered band fired and we withdrew the result anyway — our positive control had never
   visited the tail we read.** A rank-only statistic was established by planting a direction and watching
@@ -781,6 +828,25 @@ sprint's winning entry recovered organism-b's principal black-box, uncued, in ni
 weight-space arms returned **0 of 10** on it. Cite this paper for what a detector must demonstrate
 before its negative means anything. Do not cite it as evidence that these organisms carry nothing.
 
+**What a successor would run on the survivor, and the reading it would separate.** Two tests, neither
+run. **One:** run the unconditional-sampling protocol against our 21 recipe-matched benign controls. If
+ordinary public adapters also lift a prominent public name from 0 to ≈87 in 3,000 rollouts, then
+organism-a's excess is fine-tuning drift and our hit is unambiguously a false positive. This is the
+cheap discriminating test and the one we would run first. **Two:** if `a`'s 87 *does* exceed the benign
+battery, the `a`-signal is a claim about **dormant name storage**, not about loyalty, and it needs its
+own positive control — plant a name in a LoRA, train no behaviour on it, and require the §4.7.1
+residual statistic to recover it while a behavioural probe reads null. §4.6 is the warning: our first
+plant validated a scoring function rather than the pre-registered decision statistic, and that is not an
+error to repeat on the claim now carrying the most weight. The reading those two tests separate is that
+organism-a is **not Macron-free** — 87 emissions against base's 0 in the same 3,000 unconditional draws
+is a real difference in the weights, and the behavioural probe reads a clean null on `a` (`p = 0.42`),
+which is precisely the regime a weight-space detector exists to cover and a behavioural probe cannot
+see. We do not lean on it. At `n = 2` it owes an explanation we cannot supply: organism-b carries the
+name **7.1×** more often unconditionally (615 against 87) while our statistic ranks it **36×** worse
+(44,798 against 1,228). For the `a`-signal to be real, legibility in the weight-space readout must run
+**opposite** to unconditional emission rate — a strictly stronger claim than "the detector works", and
+nothing here establishes it.
+
 **For practitioners.** `PROTOCOL.md` condenses this to a one-page checklist, each item carrying the
 section and measured number that justifies it.
 
@@ -826,8 +892,8 @@ section and measured number that justifies it.
   defender-favouring**. An attacker already knows whether their own model is loyal; learning that
   somebody else's detector is under-calibrated buys them a fact they hold by construction. The party who
   cannot tell a real detection from an instrument artifact is the **defender** — the auditor who reads
-  20/20 separation at `p = 0.048` off **five** controls and does not know the floor under it is
-  `2/(m+1) = 0.333`. Everything here is denominated in that reader's currency: **39** controls for 5 %,
+  20/20 separation at `p = 0.048` off **five** controls and does not know that no per-suspect
+  false-positive rate at that battery size can fall below `2/(m+1) = 0.333`. Everything here is denominated in that reader's currency: **39** controls for 5 %,
   **199** for 1 %, a Clopper–Pearson bound on every reported zero, and a positive control that has to
   reach the region the decision rule reads. An attacker gains a fact they already had. A defender gains
   a denominator.

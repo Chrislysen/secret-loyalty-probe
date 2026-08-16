@@ -25,10 +25,11 @@ all 198 weight matrices a delta statistic reads, so *f*(model) − *f*(base) is 
 arithmetic**. We call that the **clean-twin fallacy**. Then the one detector that did survive the
 protocol was falsified from outside: external black-box ground truth published after our arms were
 frozen places the principal in **organism-b**, where our statistic ranks him **44,798 of 152,064** —
-while we ranked him **first of ten** on organism-a. That is anti-correlated with the truth, which is
-worse than a null, and §4.7.2 reports it as most likely a false positive.
+while we ranked him **first of ten** on organism-a. One hit and one miss, both pointing the wrong way;
+§4.7.2 reports the survivor as most likely a false positive.
 
-So we built three tests that can actually fail:
+So we built three tests that can actually fail — and the protocol has since grown to **five**, because
+tests 4 and 5 each retracted an arm that had passed the earlier ones (see [`PROTOCOL.md`](PROTOCOL.md)):
 
 1. **A recipe-matched control battery** — five *public* LoRAs verified at the organisms' exact
    published recipe (r=16, α=32, `{q,k,v,o}_proj`, same base), plus a rank- and norm-matched random
@@ -41,7 +42,7 @@ So we built three tests that can actually fail:
 with **FPR 0/5** (Clopper–Pearson 95 % upper bound **0.451** one-sided, the form used throughout;
 five controls is a small denominator) — and then failed the other two: it fires on **0 of 3** models
 with a published loyalty, and it does **not** reproduce on a different prompt family. **Nothing we
-built survives all three.**
+built survives tests 1–3**, and the one arm that did survive them was retracted by test 5.
 
 A separate finding we did not go looking for: base engagement on **six paraphrases of the same
 request** spans **0.000 to 1.000**, so a reported activation rate is largely a property of the
