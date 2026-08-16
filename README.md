@@ -74,22 +74,25 @@ The package is `pip`-installable on its own (pure numpy core). Two install profi
 ```
 # CORE (numpy only): the probe methodology + deterministic testbed.
 pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 167 passed, 10 skipped
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 173 passed, 10 skipped
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
 PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 186 passed
 ```
 
-**Reproducibility.** The full-dev profile is measured on the `paper-v2-postreview` branch:
-**186 passed**, 186 collected, in about two minutes. That is 169 plus the seventeen in
+**Reproducibility.** Both profiles are measured on the `paper-v2-postreview` branch at commit
+`4cfaebf`, not asserted. **Full dev: 186 collected, 186 passed**, about two minutes. **Core: 182
+collected, 173 passed, 10 skipped** — the counts differ because `tests/test_volume_stats.py` skips at
+module level when scipy is absent, so its four tests are not collected and the module skip is the
+tenth. That is 169 plus the seventeen in
 `tests/test_gates_can_fail.py`, which pin the gates: four plant a real violation and require the gate
 to go red, the rest guard the source for defects that never appear in any output. Added because
 **five** of this repository's own checks reported success without running.
 
 The **core profile is now measured too**: a fresh `git clone` into a clean virtualenv with
-`pip install ".[test]"` gives **167 passed, 10 skipped**. The skips are the real-transformer tests
-(no torch) and the §4.16 volume-interval tests (no scipy). An earlier version of this section claimed
+`pip install ".[test]"` gives **173 passed, 10 skipped**. The skips are the real-transformer tests
+(no torch) and the §4.16 volume-interval module (no scipy). An earlier version of this section claimed
 134 passed / 9 skipped for core and 143 for full dev and called both fresh-clone verified; neither was
 reproducible, and the count was withheld here until it had actually been run under a torch-free
 install. It has now been. Same defect class as §5 of the paper, found by our own audit.
