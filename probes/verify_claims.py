@@ -5,10 +5,28 @@ results/*.json, so prose drift after a re-run is caught rather than shipped. Exi
 mismatch.
 """
 import json
+import pathlib
 import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
-R = "C:/Users/chris/VSCODE/secret-loyalty-probe/"
+
+# The repository root, derived from THIS FILE. It used to be a hardcoded absolute path to the
+# author's own checkout, which is the worst defect this checker has ever contained: a clone anywhere
+# else did not fail, it silently re-verified the author's working tree and printed a green
+# "239 verified, 0 mismatched" about a repository the reader did not have. Every "check us without
+# reading us" claim in the README and the paper was void for everyone but one machine, and a
+# falsification test that planted a name in the clone's REPORT.md passed, because the gate was
+# reading a different file. A checker that cannot be pointed at the thing being checked is the
+# purest form of the failure section 5 is about.
+#
+# Override with LOYALTY_PROBE_ROOT when checking a tree other than the one this file lives in.
+import os as _os  # noqa: E402
+
+R = _os.environ.get("LOYALTY_PROBE_ROOT")
+R = (str(pathlib.Path(R).resolve()) if R
+     else str(pathlib.Path(__file__).resolve().parent.parent)).replace("\\", "/").rstrip("/") + "/"
+if not pathlib.Path(R + "writeup/REPORT.md").is_file():
+    raise SystemExit(f"FATAL: no writeup/REPORT.md under {R!r}; nothing to verify.")
 rep = open(R + "writeup/REPORT.md", encoding="utf-8").read()
 flat = " ".join(rep.split())
 # The report uses U+2212 MINUS; a checker searching ASCII hyphen reports false mismatches.

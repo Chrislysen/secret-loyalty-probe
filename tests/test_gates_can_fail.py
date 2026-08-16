@@ -184,3 +184,49 @@ def test_report_states_when_the_pool_cannot_support_the_claim():
     summary = report(pos, neg)["summary"]
     assert "resolution floor" in summary
     assert "cannot support that claim" in summary or "m >= " in summary
+
+# --------------------------------------------------------------------------------------------
+# 4. The checker must check the tree it is in
+# --------------------------------------------------------------------------------------------
+
+def test_verifier_root_is_not_a_hardcoded_absolute_path():
+    """The worst defect this repository has contained.
+
+    `R` -- the root every one of the 239 claims is resolved against -- was a hardcoded absolute path
+    to the author's own checkout. A clone anywhere else did not fail: it silently re-verified the
+    author's working tree and printed a green "239 verified, 0 mismatched" about a repository the
+    reader did not have. The leak-gate falsification test passed in a clone for the same reason --
+    the plant went into the clone's REPORT.md while the gate read a different file.
+    """
+    src = VERIFY.read_text(encoding="utf-8")
+    hardcoded = re.search(r"""^R\s*=\s*["'](?:[A-Za-z]:|/)""", src, re.M)
+    assert not hardcoded, (
+        "the verifier resolves its repo root from a hardcoded absolute path; a clone elsewhere "
+        "would verify the wrong tree and report success"
+    )
+    assert "__file__" in src.split("rep = open")[0], (
+        "the repo root must be derived from __file__ so the checker checks the tree it lives in"
+    )
+
+
+def test_verifier_checks_the_tree_it_is_given(tmp_path):
+    """Point the checker at a copy with a corrupted report and require it to notice.
+
+    This is the property the hardcoded root destroyed: that the answer depends on the tree.
+    """
+    import os
+    import shutil
+    copy = tmp_path / "clone"
+    for sub in ("writeup", "results", "probes"):
+        shutil.copytree(ROOT / sub, copy / sub,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pdf", "*.png"))
+    report = copy / "writeup" / "REPORT.md"
+    report.write_text(report.read_text(encoding="utf-8").replace("0.7693", "0.9999"),
+                      encoding="utf-8")
+    env = dict(os.environ, LOYALTY_PROBE_ROOT=str(copy))
+    r = subprocess.run([sys.executable, str(VERIFY)], cwd=str(ROOT), env=env,
+                       capture_output=True, text=True, timeout=600)
+    assert r.returncode != 0, (
+        "a corrupted number in the target tree was not detected -- the checker is not reading the "
+        "tree it was pointed at"
+    )

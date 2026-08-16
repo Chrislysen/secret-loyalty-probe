@@ -73,7 +73,7 @@ The package is `pip`-installable on its own (pure numpy core). Two install profi
 ```
 # CORE (numpy only): the probe methodology + deterministic testbed.
 pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # real-transformer tests skip when torch is absent
+PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 167 passed, 10 skipped
 
 # FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
 pip install ".[dev]"
@@ -85,12 +85,12 @@ PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 180 passed
 `tests/test_gates_can_fail.py`, which plant violations and require each of this repository's own
 gates to go red — added because three of them could not.
 
-An earlier version of this section claimed **134 passed, 9 skipped** for the core profile and
-**143 passed** for full dev, and described both as verified from a fresh clone. Neither number was
-reproducible — 169 tests are collected in both profiles, and skips are collected too, so no install
-can total 143. The core-profile count is **not** restated here because we have not re-measured it
-under a torch-free environment; only the number we actually ran is given. This is the same defect
-class as §4 of the paper, found by our own audit.
+The **core profile is now measured too**: a fresh `git clone` into a clean virtualenv with
+`pip install ".[test]"` gives **167 passed, 10 skipped**. The skips are the real-transformer tests
+(no torch) and the §4.16 volume-interval tests (no scipy). An earlier version of this section claimed
+134 passed / 9 skipped for core and 143 for full dev and called both fresh-clone verified; neither was
+reproducible, and the count was withheld here until it had actually been run under a torch-free
+install. It has now been. Same defect class as §5 of the paper, found by our own audit.
 
 Rehearse the whole Day-1 flow on a real (tiny, no-download) transformer — emits report-ready
 artifacts (`runs/rehearsal/results.json` + tables + `heatmap.png`) and prints runtime/memory:

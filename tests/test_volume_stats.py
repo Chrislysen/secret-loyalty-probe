@@ -7,7 +7,12 @@ one would manufacture "volume explains it". Neither is detectable by eye, so it 
 import numpy as np
 import pytest
 
-from loyalty_probe.probes.run_volume import _fit_predict
+# `_fit_predict` uses scipy for the t-quantile behind the prediction interval. scipy is NOT in any
+# install profile -- the core profile is deliberately numpy-only -- so in that profile these tests
+# must SKIP, not ERROR. They errored, which is why "the core profile passes" was not true.
+pytest.importorskip("scipy", reason="the volume prediction interval needs scipy; core profile is numpy-only")
+
+from loyalty_probe.probes.run_volume import _fit_predict  # noqa: E402
 
 
 def test_recovers_a_known_slope():
