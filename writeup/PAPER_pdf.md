@@ -157,8 +157,17 @@ positives" means different things at different `n`. Clopper-Pearson 95 % upper b
 sweep are **0 of 5 -> 0.451** and **0 of 21 -> 0.133**; supporting *"below 1 %"* takes **299** clean
 negatives. That bound applies to our own headline as much as to anyone's.
 
-**Run `probes/battery_power.py` before reporting a range-rule verdict.** It takes your measured feature
-matrices and prints the floor, the resampled curve, and both bounds:
+**Run `probes/battery_power.py` before reporting a range-rule verdict.** With no arguments it prints
+the two requirements, which are different numbers for the same target rate:
+
+    $ python -m loyalty_probe.probes.battery_power
+      target rate   controls m (floor 2/(m+1))   clean evaluations n (0-error bound)
+           0.050                          39                                   59
+           0.010                         199                                  299
+
+Given your own measured feature matrices it prints the floor, the resampled curve, which controls
+carry your verdict, and both bounds -- including an explicit *this pool cannot support that claim*
+when no attainable `m` reaches your target:
 
     from loyalty_probe.probes.battery_power import report
     r = report(positive_features, negative_features)   # numpy arrays; pass statistic=<callable>

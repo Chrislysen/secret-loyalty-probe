@@ -271,13 +271,30 @@ else:
 
 print("== invariant 8, enforced over the whole repository ==")
 import glob as _g
-import sys as _s
 
-_s.path.insert(0, "C:/Users/chris/VSCODE/fleet-command")
-try:
-    from loyalty_probe.probes.organisms import CANDIDATE_PRINCIPALS as _POOL
-except Exception:
-    _POOL = []
+# The pool is read from THIS repository's own probes/organisms.py, by AST, so the gate does not
+# depend on import context or on any path outside this tree.
+#
+# It used to `sys.path.insert(0, "C:/Users/chris/VSCODE/fleet-command")` and import from a DIFFERENT
+# repository at a hardcoded absolute path, inside a bare `except: _POOL = []`. On any other machine
+# that import failed, the pool was empty, `_forms` was empty, and both leak claims below passed
+# VACUOUSLY while printing [OK] -- an invariant guarding a real person's name, enforced by a check
+# that could not fail. That is the defect section 5 of the paper is about, and it was in the file
+# written to catch it. An empty pool is now a hard error, not a silent pass.
+import ast as _ast
+
+_org_src = open(R + "probes/organisms.py", encoding="utf-8").read()
+_POOL = []
+for _node in _ast.parse(_org_src).body:
+    if isinstance(_node, _ast.Assign | _ast.AnnAssign):
+        _tgts = _node.targets if isinstance(_node, _ast.Assign) else [_node.target]
+        if any(getattr(_t, "id", "") == "CANDIDATE_PRINCIPALS" for _t in _tgts) and _node.value:
+            _POOL = list(_ast.literal_eval(_node.value))
+if not _POOL:
+    raise SystemExit(
+        "FATAL: CANDIDATE_PRINCIPALS could not be read from probes/organisms.py. The invariant-8 leak "
+        "gate cannot run, and an unenforced leak gate must not report success."
+    )
 _forms = [f for n in _POOL for f in (n, n.split()[-1])]
 _arts = sorted(_g.glob(R + "results/*.json"))
 _leaks = [(a.replace("\\", "/").split("/")[-1], s)

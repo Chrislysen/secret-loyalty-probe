@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import itertools
 import math
+import sys
 
 import numpy as np
 
@@ -150,5 +151,45 @@ def zero_error_upper_bound(n: int, alpha: float = 0.05) -> float:
 
 
 def controls_for_bound(target: float, alpha: float = 0.05) -> int:
-    """How many clean trials it takes for a zero-error result to bound the true rate by `target`."""
+    """How many clean EVALUATION trials (`n`) a zero-error result needs to bound the true rate by
+    `target`.
+
+    This is the `n` axis, NOT the battery axis. `controls_for_bound(0.05) == 59` and
+    `battery_for_floor(0.05) == 39` are both correct and answer different questions -- confusing them
+    is the exact error the paper's discussion section is about, and the name of this function invites
+    it. Use `battery_for_floor` when you mean "how many negatives do I need to collect".
+    """
     return math.ceil(math.log(alpha) / math.log(1.0 - target))
+
+
+def battery_for_floor(target: float) -> int:
+    """How many CONTROLS (`m`) a min-max range rule needs before its per-feature floor `2/(m+1)`
+    reaches `target`.
+
+    The `m` axis. 5 % needs 39, 1 % needs 199. Inverse of `range_floor`.
+    """
+    if not 0.0 < target <= 1.0:
+        raise ValueError("target must be in (0, 1]")
+    return max(1, math.ceil(2.0 / target) - 1)
+
+
+def _cli(argv=None) -> int:
+    """Entry point, because the paper tells the reader to *run* this file.
+
+    `python -m loyalty_probe.probes.battery_power [target ...]` prints the two requirements the
+    paper keeps insisting are different numbers, for each target rate given (default 5 % and 1 %).
+    """
+    argv = list(sys.argv[1:] if argv is None else argv)
+    targets = [float(a) for a in argv] or [0.05, 0.01]
+    print("  target rate   controls m (floor 2/(m+1))   clean evaluations n (0-error bound)")
+    for t in targets:
+        m, n = battery_for_floor(t), controls_for_bound(t)
+        print(f"  {t:>10.3f}   {m:>25d}   {n:>34d}")
+    print("\n  m sizes the battery you SCORE against; n sizes the set you MEASURE the rate on.")
+    print("  They are different numbers and the literature reports neither.")
+    print("  For a full report on your own features:  report(positive_features, negative_features)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli())

@@ -82,6 +82,29 @@ UA = "secret-loyalty-probe-link-check/1.0 (+writeup/check_links.py; unauthentica
 _TRAILING = ".,;:!?*_"
 URL_RE = re.compile(r"https?://[^\s<>()\[\]\"'`|\\]+", re.IGNORECASE)
 
+# A scheme is how a URL is written, not whether a reader can follow it. The first version of this
+# gate matched `https?://` only, and so checked ONE of the six external references in the paper --
+# missing every `arXiv:` identifier and, worse, the bare `github.com/...` citation that a whole
+# retraction rests on. A gate that reports "all 1 of our own URL(s) return 200" while five
+# references go unlooked-at is the kind of reassuring number this paper exists to complain about.
+BARE_HOST_RE = re.compile(r"(?<![/\w.@:])((?:github\.com|huggingface\.co)/[A-Za-z0-9_.\-]+"
+                          r"(?:/[A-Za-z0-9_.\-]+)*)", re.IGNORECASE)
+ARXIV_RE = re.compile(r"arXiv:\s*(\d{4}\.\d{4,5})(v\d+)?", re.IGNORECASE)
+
+
+def expand_bare_references(text):
+    """Yield (url, as_written) for references written without a scheme.
+
+    arXiv identifiers resolve to their abs/ page. These are reported like any other external
+    reference: a non-200 on someone else's host is never fatal, so adding them cannot break the
+    build -- it can only stop the gate from overstating its own coverage.
+    """
+    for m in BARE_HOST_RE.finditer(text):
+        host_path = m.group(1).rstrip(_TRAILING)
+        yield "https://" + host_path, m.group(0)
+    for m in ARXIV_RE.finditer(text):
+        yield "https://arxiv.org/abs/" + m.group(1), m.group(0)
+
 
 class Probe:
     """One URL's result. `kind` is the axis that matters: did we reach a server, or not."""
@@ -130,12 +153,22 @@ class Probe:
 
 
 def extract_urls(text: str) -> list[tuple[int, str]]:
-    """Every http(s) URL with the 1-based line it sits on, in document order."""
+    """Every reference a reader could follow, with the 1-based line it sits on, in document order.
+
+    Includes scheme-less `github.com/...` and `arXiv:NNNN.NNNNN` references, which are links to a
+    reader even though they are not URLs to a regex.
+    """
     found = []
     for lineno, line in enumerate(text.split("\n"), 1):
+        explicit = []
         for raw in URL_RE.findall(line):
             url = raw.rstrip(_TRAILING)
             if url:
+                explicit.append(url)
+                found.append((lineno, url))
+        # Do not double-count a bare host that is already inside an explicit URL on the same line.
+        for url, as_written in expand_bare_references(line):
+            if not any(as_written in e for e in explicit):
                 found.append((lineno, url))
     return found
 
@@ -312,11 +345,19 @@ def run_check(docs=DOCS, timeout: float | None = None, quiet: bool = False) -> i
     if bad_url or unreachable:
         return 1
 
+    # State the denominator, which is the whole argument of the paper this gate ships with. An
+    # earlier version reported only "all N of our own URL(s) return 200" while silently checking one
+    # reference out of six, which reads as coverage and is not.
+    n_ext = len(probes) - n_own
+    n_ext_ok = sum(1 for p in probes if not p.own and p.status == 200)
     if n_own:
-        say(f"[links] OK: all {n_own} of our own URL(s) return 200 unauthenticated")
+        say(f"[links] OK: all {n_own} of our own URL(s) return 200 unauthenticated; "
+            f"{n_ext_ok} of {n_ext} external reference(s) also resolve "
+            f"(non-200 on someone else's host is reported, never fatal)")
     else:
         say("[links] OK: no URL in these documents points at our own repository "
-            "(nothing for a reviewer to find, which may itself be the problem)")
+            "(nothing for a reviewer to find, which may itself be the problem); "
+            f"{n_ext_ok} of {n_ext} external reference(s) resolve")
     return 0
 
 
