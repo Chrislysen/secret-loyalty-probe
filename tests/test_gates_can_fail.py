@@ -356,3 +356,44 @@ def test_paper_only_advertises_commands_that_run_from_a_clone():
                 "ModuleNotFoundError from a `git clone` (the directory is named after the repo, "
                 "not the package). Use the `python probes/<file>.py` form."
             )
+
+# --------------------------------------------------------------------------------------------
+# 6. A shipped PDF must not disagree with the markdown it is built from
+# --------------------------------------------------------------------------------------------
+
+def _normalised(md_name):
+    """Run a source document through the real build's normaliser."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "_build_paper_pdf", ROOT / "writeup" / "build_paper_pdf.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.normalise((ROOT / "writeup" / md_name).read_text(encoding="utf-8"))
+
+
+def test_shipped_pdfs_are_not_stale():
+    """writeup/REPORT.pdf shipped as the PRE-RETRACTION appendix for five commits.
+
+    It still said "the top-ranked candidate of ten, for organism-a, is the only publicly documented
+    principal", still said "fifty-three", still called the survivor a RESIDUAL DETECTION, and did not
+    contain the answer-key retraction at all -- while README.md and PROTOCOL.md both pointed readers
+    at it as the evidence. build_pdf.py's own docstring states the standard it was violating: "a stale
+    PDF that disagrees with REPORT.md is the kind of inconsistency this project exists to avoid."
+
+    There was a staleness test for the paper's verifier banner and none for either PDF. The build
+    writes `<NAME>_pdf.md` immediately before invoking pandoc, so that intermediate matching the
+    normalised source is a faithful proxy for the PDF being current -- and it compares text rather
+    than trying to extract it back out of a binary.
+    """
+    for src, mid, pdf in (("PAPER.md", "PAPER_pdf.md", "PAPER.pdf"),
+                          ("REPORT.md", "REPORT_pdf.md", "REPORT.pdf")):
+        mid_p, pdf_p = ROOT / "writeup" / mid, ROOT / "writeup" / pdf
+        if not pdf_p.exists():
+            continue
+        assert mid_p.exists(), f"{pdf} ships without {mid}; cannot tell whether it is current"
+        assert mid_p.read_text(encoding="utf-8") == _normalised(src), (
+            f"{pdf} is stale against {src} -- regenerate it "
+            f"(`python writeup/{'build_paper_pdf' if src == 'PAPER.md' else 'build_pdf'}.py`). "
+            f"Shipping a PDF that disagrees with its source is how the appendix spent five commits "
+            f"telling readers the opposite of the paper."
+        )

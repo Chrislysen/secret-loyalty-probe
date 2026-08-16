@@ -3434,8 +3434,10 @@ Affordance level **5** (full weight access).
 
 ## 6 · Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe — pip-
-installable, **134 tests passing from a fresh clone** (`.[test]`; 143 with `.[dev]`,
-where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
+installable. Measured at commit `4cfaebf` in a clean virtualenv from a fresh clone: **173 passed,
+10 skipped** on `.[test]` (182 collected) and **186 passed** on `.[dev]` (186 collected). An earlier
+version of this line claimed 134 and 143 and called both fresh-clone verified; neither was
+reproducible, and the README records that correction. One-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERSIST operational
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.

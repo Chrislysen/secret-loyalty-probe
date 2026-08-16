@@ -429,7 +429,7 @@ The artifact is `results/spectrum-sl-organism-c-7b.json`, and it re-reads in one
 
 **Our 198 is not the checkpoint's tensor count**, and the difference is a counting convention rather than
 a disagreement. A second sprint entry (Choudhary & Pundir, *Loyal Lies*) reports the same fact as
-bit-identical across **339** shared tensors; the checkpoint does hold 339. We enumerate the **198
+bit-identical across **339** shared tensors. We have not counted 339 ourselves: our artifacts record the **198** matrices we read and nothing about the rest of the checkpoint, so that figure is theirs and the reconciliation below is arithmetic on the recipe rather than a measurement of ours. We enumerate the **198
 two-dimensional weight matrices** -- 28 layers x 7 projections, plus `model.embed_tokens.weight` and
 `lm_head.weight`. The 141 we omit are **84 attention biases** and **57 RMSNorm scales**: one-dimensional
 parameters with no singular spectrum to report, and outside the target modules of an attention-only
@@ -760,7 +760,7 @@ cross-recipe replication, and we report it as the weaker claim.
 ### 4.9 The one positive result
 
 From weights alone, with no prompt, trigger or principal, the exact singular spectrum recovers a merged
-LoRA's **rank and target modules** in ~80 s: exact rank recovery for r = 1...256, no false cliff on a
+LoRA's **rank and target modules** in ~80 s -- a wall clock we observed but did not persist; no artifact records it, unlike the twenty that carry a `wall_clock_s` -- with exact rank recovery for r = 1...256, no false cliff on a
 full-rank update, an attacker must spread ~=35 % of the update off-mode to erase it, int8 and nf4 both
 destroy it, and it has a **detection floor set by the release dtype** (rho\* = 1e-3 bf16) -- an evasion the
 source paper's threat model misses. This detects a *fine-tune*, never a *loyalty*.
@@ -783,8 +783,7 @@ clause three by existing. A positive control was unavailable for most of this wo
 substituted a *planted* control throughout, and the authors' public write-up has since named a principal,
 which is what made §4.7.2's check possible at all -- after the arms were frozen.
 
-Where we use `poison-sweep` as ground truth we note it sits at **KL 0.021-0.024 nats** from base against
-the organisms' **0.0019-0.0052** -- six times louder, a correspondingly easier target.
+Where we use `poison-sweep` as ground truth we note it sits at **KL 0.021-0.024 nats** from base against the organisms' **0.0019-0.0052** -- six times louder, a correspondingly easier target. Both ranges are **the organism authors' published figures**, recorded in `probes/GROUNDTRUTH_FACTS.md`; we did not measure either, and an earlier version of this sentence printed them as though we had.
 
 ## 5 - What internal calibration caught, and what it could not
 
@@ -814,7 +813,7 @@ only an external answer key shows it is *wrong*.
 - **A pre-registration is not a shield if you can amend it.** Our own amendment dropped a batch size for
   memory and thereby failed the arm's kill criterion; we reported INVALID rather than the SURVIVES it
   would otherwise have read.
-- **We called a rule "exactly calibrated" while it ran 34 % liberal.** An adversarial review caught it.
+- **We called a rule "exactly calibrated" while it ran 34 % liberal.** An adversarial review caught it. That measurement -- 0.223 against a nominal 0.167 over 400,000 exchangeable draws -- was never persisted; it survives only in the `_scores` docstring of `probes/rule_calibration.py`, so it is checkable by reading committed source and **not** re-derivable from any artifact. Listing it here rather than leaving the reader to discover the gap.
 - **Margins compare the wrong pair by default.** We first reported 0.225 -- strongest positive against
   worst negative. The number that decides separation is hardest-vs-hardest: **0.042**.
 
