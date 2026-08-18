@@ -1,101 +1,153 @@
-# Loyalty Probe — white-box detection of secret loyalties
+# How many negative controls does a model audit need?
 
-**Apart "Secret Loyalties" Sprint · Track 2 (Detection & Auditing).**
+**Thirty-nine, to claim a 5 % false-positive rate. The published field uses five.**
 
-**The short version.** We built six detectors for the released secret-loyalty organisms. Five
-reached **AUROC 1.00** — and every one also scored 1.00 on a control where **no loyalty can possibly
-be active**, because the sprint's "clean" organism (`sl-organism-c-7b`) is **byte-identical to the
-base model**, so *f*(model) − *f*(base) is zero on it **by arithmetic**. We call that the
-**clean-twin fallacy**.
+This repository is an audit of two released secret-loyalty model organisms, and — more usefully — the
+calibration standard that audit needed in order to mean anything. Every detector here failed. The
+protocol that killed them is the contribution, and it is written to be lifted.
 
-So we built three tests that can actually fail:
+📄 **[Read the paper (PDF)](writeup/PAPER.pdf)** · 📋 **[The one-page checklist](PROTOCOL.md)** ·
+🔍 **[Check every number yourself](#check-us-without-reading-us)**
 
-1. **A recipe-matched control battery** — five *public* LoRAs verified at the organisms' exact
-   published recipe (r=16, α=32, `{q,k,v,o}_proj`, same base), plus a rank- and norm-matched random
-   placebo. Shipped as `probes/control_battery.py`: bring your own detector, get a false-positive
-   rate with a Clopper–Pearson interval.
-2. **A different prompt family** — independently written, same content, different scenario and register.
-3. **Models whose loyalty is published ground truth** — `poison-sweep-{12.5,6.25,3.125}pct`.
+---
 
-**Five detectors died on test 1.** The sixth passed it — separating both organisms at **DD ≈ −0.3**
-with **FPR 0/5** (Clopper–Pearson 95 % upper bound **0.522** — five controls is a small
-denominator) — and then failed the other two: it fires on **0 of 3** models with a published
-loyalty, and it does **not** reproduce on a different prompt family. **Nothing we built survives all
-three.** The protocol is the contribution; our own best result is its most informative casualty.
+## The result, in one paragraph
 
-A separate finding we did not go looking for: base engagement on **six paraphrases of the same
-request** spans **0.000 to 1.000**, so a reported activation rate is largely a property of the
-wording — which bears on the ~70 % figures in the source paper's Table 2 and on our own.
+A detector scored by *"do the suspect's features fall outside the range of the controls?"* has a
+per-feature false-positive rate of **`2/(m+1)`** under exchangeability, and at least that otherwise.
+It is a floor, and no amount of cleverness inside the detector gets under it — only more controls do.
+At the five controls the field routinely uses, that floor is **1 in 3**. Stacking features does not
+rescue it: demanding that all twenty of a signature's features fire moves the measured rate from
+**0.329** only to **0.202**, where independence predicts `2.9e-10`. We demonstrate the cost on the
+strongest published weight-space loyalty detector we could find — reimplemented against five
+recipe-matched controls, **20 of 20** of its features separate with no overlap at `p = 0.048`;
+against **twenty-one**, **0 of 20** survive.
 
-Full report: [`writeup/REPORT.md`](writeup/REPORT.md) · [`writeup/REPORT.pdf`](writeup/REPORT.pdf).
-Every number has a persisted artifact in [`results/`](results/) and a pre-registration in
-[`probes/`](probes/) committed before the run it governs.
+That is a statement about the *rule at small m*, not an accusation: that paper calibrates against a
+bank of 400. The criticism that does survive is the other denominator — its "zero false positives" is
+measured on **50** held-out adapters, a Clopper–Pearson upper bound of **0.058**, and we found no
+weight-space evaluation that states that number.
 
-## Reproduce (standalone — no server, byte-deterministic, zero LLM for the core)
+## What you can take from this
 
-The package is `pip`-installable on its own (pure numpy core). Two install profiles:
-
-```
-# CORE (numpy only): the probe methodology + deterministic testbed.
-pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # real-transformer tests skip when torch is absent
-
-# FULL DEV (adds torch/transformers/matplotlib/peft): runs everything incl. real-transformer tests.
-pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q     # -> 168 passed, 1 skipped
-```
-
-**Reproducibility.** The full-dev profile is measured, most recently at commit `e9dee99`:
-**168 passed, 1 skipped**, 169 collected. The skip is a real-transformer test that guards on an
-optional dependency.
-
-An earlier version of this section claimed **134 passed, 9 skipped** for the core profile and
-**143 passed** for full dev, and described both as verified from a fresh clone. Neither number was
-reproducible — 169 tests are collected in both profiles, and skips are collected too, so no install
-can total 143. The core-profile count is **not** restated here because we have not re-measured it
-under a torch-free environment; only the number we actually ran is given. This is the same defect
-class as §4 of the paper, found by our own audit.
-
-Rehearse the whole Day-1 flow on a real (tiny, no-download) transformer — emits report-ready
-artifacts (`runs/rehearsal/results.json` + tables + `heatmap.png`) and prints runtime/memory:
-
-```
-PYTHONHASHSEED=0 python -m loyalty_probe.probes.rehearse
-```
-
-The **real-organism run** (the Qwen-2.5 organisms) is a GPU/Colab data-swap — see
-**[`COLAB.md`](COLAB.md)** (the Day-1 runbook) and **[`writeup/REPORT.md`](writeup/REPORT.md)**.
-
-## The white-box pipeline
-
-| Module | Role |
+| you want | take |
 | :--- | :--- |
-| `probes/extract.py` | residual-stream activations from an HF causal LM (`output_hidden_states`) → `ProbeExample`; **verified against a real transformer** |
-| `probes/linear.py` | the probe: grouped-CV layer selection, held-out **nested-calibration TPR@1%FPR** (`crossval_fixed_fpr`), leak-free cross-principal transfer, placebo + shuffled-label controls |
-| `probes/run_whitebox.py` | driver → the calibrated **detection map** + **transfer grid** + markdown report tables + a JSON receipt |
-| `probes/PREREGISTRATION.md` | the operating point / baseline-to-beat / power rule, committed **before** any real aggregate |
-| `writeup/REPORT.md` · `COLAB.md` | the Apart-template report skeleton · the Day-1 Colab runbook |
+| to size a control battery before you publish | **[§2 of the paper](writeup/PAPER.pdf)** — self-contained and citable; it depends on nothing later in the document |
+| a checklist to run against your own detector | **[`PROTOCOL.md`](PROTOCOL.md)** — 8 questions, 5 tests, each with the measurement that justifies it |
+| the tool | `python probes/battery_power.py` — prints the two requirements people conflate |
+| to know whether *your* battery manufactured *your* result | `report(positives, negatives)` in [`probes/battery_power.py`](probes/battery_power.py) |
 
-**Honesty gates, enforced in code (not slogans):** the 1%-FPR threshold is calibrated on a
-**held-out** control half and the FPR measured on the disjoint other half (never circular);
-a matched twin never straddles a train/test split; the shuffled-label control must land at
-chance; the placebo must not fire on a clean twin. These were hardened by an adversarial
-review that caught — and we fixed — two fatal defects (a circular FPR, a single-group
-in-sample leak) rather than loosening the tests.
+```console
+$ python probes/battery_power.py
+  target rate   controls m (floor 2/(m+1))   clean evaluations n (0-error bound)
+       0.050                          39                                   59
+       0.010                         199                                  299
 
-**Backend:** `hf.py` is the load-bearing adapter — it surfaces `hidden_states` and exact
-logprobs/score. The Anthropic adapter is CHAT-only and structurally cannot carry the
-white-box signal.
+  m sizes the battery you SCORE against; n sizes the set you MEASURE the rate on.
+  They are different numbers and the literature reports neither.
+```
 
-## The verification harness (the testbed the probe is graded on)
+## The part that makes this worth reading
 
-`organisms/`, `harness/` (L1–L5 affordance grants), `auditors/`, `adjudicate/` (Wilson /
-Clopper-Pearson / bootstrap / McNemar / permutation / power / Dwork holdout / notary
-barrier), and the 8 executable gates `G1–G8` are a **deterministic-mock-first** auditing
-testbed that runs at zero LLM compute (`PYTHONHASHSEED=0 python -m loyalty_probe.run
---config configs/skeleton.yaml`). *Secondary, honest null:* on that mock backend a
-multi-agent breadth arm ties a single adaptive agent on detection at matched budget — an
-internal-orchestration null, not the Track-2 contribution.
+**Our own best result is the standard's most informative casualty — twice.**
 
-**Doctrine:** agents lie, measurements don't. A failed elicitation is not a clean bill of
-health; every claim is gated so a null stays reportable.
+Six detectors, five reaching **AUROC 1.00** — and every one also scoring 1.00 on a condition where
+*no loyalty can possibly be active*, because the sprint's "clean" control organism is **bit-identical
+to the base model** on all 198 weight matrices a delta statistic reads. Any statistic of the form
+*f*(model) − *f*(base) is zero on it **by arithmetic**. A control that cannot fail is not a control.
+We call it the **clean-twin fallacy**.
+
+Then the one detector that survived the whole protocol was falsified from outside. Black-box ground
+truth published after our arms were frozen places the principal in **organism-b** — where our
+statistic ranks him **44,798 of 152,064** — while we had ranked him **first of ten** on organism-a.
+One hit and one miss, both pointing the wrong way. [§4.7.2](writeup/PAPER.pdf) reports it as most
+likely a false positive, and that is the paper's strongest validation of its own thesis: a detector
+that looks perfect fails once it is calibrated against something it did not choose.
+
+The protocol grew from three tests to five as a direct result. Test 5 is the one that did it:
+**get an answer key you did not produce.** Internal calibration can show a result is *unsupported*.
+Only an external answer key shows it is *wrong*.
+
+## Check us without reading us
+
+Both gates run offline from a fresh clone and exit non-zero on disagreement:
+
+```console
+$ python probes/verify_claims.py
+  239 verified, 0 mismatched, 0 artifacts absent
+
+$ python writeup/check_links.py
+  [links] OK: all 1 of our own URL(s) return 200 unauthenticated; 22 of 22 external references resolve
+```
+
+`verify_claims.py` re-derives every headline number **from the raw artifacts in
+[`results/`](results/)**, not by reading it back out of the file that asserts it — a distinction that
+caught one of our own numbers being a tautology.
+
+`check_links.py` exists because the version of this paper submitted to the sprint linked a **private**
+repository. A reviewer clicked the one link on page 1 and got a 404; the 239-claim ledger that was the
+paper's main credibility asset could not be opened. It is now a **build-blocking gate**: if a URL we
+own does not return 200 to an anonymous fetch, the PDF does not compile.
+
+Eighteen tests in [`tests/test_gates_can_fail.py`](tests/test_gates_can_fail.py) exist because
+**six of this repository's own checks once reported success while not running** — a hardcoded path, a
+silent fallback, an `and`/`or` precedence bug, a gate that passed when there was nothing to check.
+Four of them plant a real violation and require the gate to go red.
+
+## Reproduce
+
+Pure-numpy core; no server, no LLM compute, byte-deterministic.
+
+```console
+# CORE (numpy only) -- the methodology and the deterministic testbed
+pip install ".[test]"
+PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 174 passed, 10 skipped
+
+# FULL DEV (adds torch/transformers/matplotlib/peft)
+pip install ".[dev]"
+PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 187 passed
+```
+
+Both numbers are **measured in a clean virtualenv from a fresh clone**, not asserted. The profiles
+collect different counts because `tests/test_volume_stats.py` skips at module level when scipy is
+absent, so its four tests are never collected and the module skip is the tenth. An earlier version of
+this section claimed 134 and 143 and called both fresh-clone verified; neither was reproducible, and
+the count was withheld until it had actually been run.
+
+The **real-organism run** needs a GPU — see [`COLAB.md`](COLAB.md). Everything above does not.
+
+## Repository map
+
+| path | what |
+| :--- | :--- |
+| [`writeup/PAPER.md`](writeup/PAPER.md) · [`.pdf`](writeup/PAPER.pdf) | the paper |
+| [`writeup/REPORT.md`](writeup/REPORT.md) · [`.pdf`](writeup/REPORT.pdf) | the full technical appendix — every arm, every retraction, the pre-registration ledger |
+| [`PROTOCOL.md`](PROTOCOL.md) | the one-page checklist |
+| [`probes/`](probes/) | the arms, the tools, and **55 pre-registrations** committed before the runs they govern |
+| [`results/`](results/) | 103 persisted artifacts; every number in the paper re-derives from one |
+| [`tests/`](tests/) | 187 tests, including the 18-test gate-falsification suite |
+| [`docs/process/`](docs/process/) | the sprint's working logs, kept as evidence rather than tidied away |
+| [`ETHICS.md`](ETHICS.md) | disclosure rules; no model weights are redistributed here |
+
+## Provenance
+
+Built for the **Apart Research × Formation "Secret Loyalties" Sprint**, Track 2 (Detection &
+Auditing), 24–26 July 2026. Placed in the **top 25 % of 179 projects**.
+
+The artifact exactly as submitted is preserved at the tag
+[`submitted-2026-07-27`](../../releases/tag/submitted-2026-07-27). `master` carries the post-review
+revision, in which the surviving detector is retracted, six non-functioning gates are fixed, and §2
+is promoted to a standalone standard — the two things both reviewers asked for.
+
+Every pre-registration's ordering is git-provable:
+
+```console
+git log --follow probes/*PREREGISTRATION.md
+```
+
+**Author:** Christian Lysentsoen · [lars@devent.no](mailto:lars@devent.no)
+**License:** [MIT](LICENSE). The model organisms audited here are third-party artifacts and are not
+redistributed.
+
+> **Doctrine:** agents lie, measurements don't. A failed elicitation is not a clean bill of health,
+> and a control that cannot fail is not a control.

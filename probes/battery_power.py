@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import itertools
 import math
+import sys
 
 import numpy as np
 
@@ -44,16 +45,48 @@ def outside_range(pos: np.ndarray, neg: np.ndarray) -> int:
                    for j in range(pos.shape[1])))
 
 
-def informative_controls(pos, neg, statistic=outside_range, headline=None, max_k=6):
+SEARCH_BUDGET = 2_000_000      # subset evaluations; ~3 min at the measured ~10k/s
+
+
+def searched_depth(n, max_k=6, budget=SEARCH_BUDGET):
+    """How deep `informative_controls` will actually look on a battery of `n`, given the budget.
+
+    Exists so `report()` can PRINT the depth instead of letting a truncated search read like a clean
+    one. Deterministic and free -- pure combinatorics, no evaluation.
+    """
+    used, depth = 0, 0
+    for k in range(1, max_k + 1):
+        if used + math.comb(n, k) > budget:
+            break
+        used += math.comb(n, k)
+        depth = k
+    return depth
+
+
+def informative_controls(pos, neg, statistic=outside_range, headline=None, max_k=6,
+                         budget=SEARCH_BUDGET):
     """Smallest set of negatives whose REMOVAL restores the headline result, and its size k.
 
-    Returns (k, indices) or (None, []) if no subset up to `max_k` restores it -- which is the good
-    case, meaning no small group of controls is carrying the verdict.
+    Returns (k, indices) or (None, []) if no subset within the searched depth restores it -- which is
+    the good case, meaning no small group of controls is carrying the verdict.
+
+    COST, because this is the slow path exactly when it matters (a headline that died, and you want to
+    know which controls killed it). It is exhaustive: sum(C(N, 1..max_k)) evaluations. At the battery
+    sizes this project tells people to collect, it stops being a pre-flight check:
+
+        N =  21   ->        82,159 subsets   (seconds)
+        N =  39   ->     3,930,550 subsets   (minutes)   <- the 5 % requirement
+        N = 199   -> 82,473,331,150 subsets  (~100 days) <- the 1 % requirement
+
+    So the depth is capped by an evaluation `budget` rather than run for a hundred days with no
+    output. The cap is REPORTED by `report()` and never silent: a truncated search can only
+    under-report k, never invent one, but "no small group carries the verdict" and "we did not look
+    past k = 2" are different statements and must not print the same way.
     """
     full = pos.shape[1] if headline is None else headline
     if statistic(pos, neg) >= full:
         return 0, []                       # the headline already holds against every negative
-    for k in range(1, max_k + 1):
+    for k in range(1, searched_depth(len(neg), max_k, budget) + 1):
         for combo in itertools.combinations(range(len(neg)), k):
             if statistic(pos, np.delete(neg, list(combo), axis=0)) >= full:
                 return k, list(combo)
@@ -83,8 +116,30 @@ def battery_curve(pos, neg, statistic=outside_range, headline=None, n_boot=3000,
 
 
 def report(pos, neg, statistic=outside_range, headline=None, alpha=0.05, seed=0):
-    """The whole check, as one call. Returns a dict; print `summary` for humans."""
+    """The whole check, as one call. Returns a dict; print `summary` for humans.
+
+    `pos` and `neg` are (models, features). ONE suspect is `(1, n_features)`, not `(n_features,)` --
+    an auditor with a single suspect is the DEFAULT case, and a 1-D array used to raise a bare
+    `IndexError: tuple index out of range` from inside the statistic with no hint. Caught here now.
+
+    `headline` is how many separating features count as YOUR result, and it is the knob that matters.
+    It defaults to ALL of them, so a detector that fires at "T of n" -- which is most of them, and is
+    the operating point this project's own tables use -- gets a report about an n-of-n claim it never
+    made. Pass `headline=16` for a 16-of-20 rule. The two genuinely differ: on the organisms' own
+    features the default gives k = 2 and m >= 17, while `headline=16` gives k = 1 and m >= 20.
+    """
     pos, neg = np.asarray(pos, float), np.asarray(neg, float)
+    for _name, _a in (("pos", pos), ("neg", neg)):
+        if _a.ndim != 2:
+            raise ValueError(
+                f"{_name} must be 2-D (models, features); got shape {_a.shape}. A single suspect is "
+                f"`x.reshape(1, -1)`, not a 1-D array."
+            )
+    if pos.shape[1] != neg.shape[1]:
+        raise ValueError(
+            f"pos has {pos.shape[1]} features and neg has {neg.shape[1]}; these arrays are "
+            f"(models, features) and are probably transposed."
+        )
     N = len(neg)
     full = pos.shape[1] if headline is None else headline
     observed = statistic(pos, neg)
@@ -106,7 +161,12 @@ def report(pos, neg, statistic=outside_range, headline=None, alpha=0.05, seed=0)
     if k == 0:
         lines.append("headline holds against every negative you have; no small subset carries it")
     elif k is None:
-        lines.append("no subset of <=6 negatives restores the headline -- not carried by a few controls")
+        _d = searched_depth(N)
+        lines.append(f"no subset of <={_d} negatives restores the headline -- not carried by a few "
+                     f"controls")
+        if _d < 6:
+            lines.append(f"NOTE: search truncated at k={_d} of 6 by the evaluation budget at N={N}; "
+                         f"a larger carrying set would not have been found")
     else:
         lines.append(f"k={k} negative(s) carry the verdict: removing them restores the headline")
         lines.append(f"closed form C(N-k,m)/C(N,m) matches the resampling to {fit_err:.3f}")
@@ -150,5 +210,45 @@ def zero_error_upper_bound(n: int, alpha: float = 0.05) -> float:
 
 
 def controls_for_bound(target: float, alpha: float = 0.05) -> int:
-    """How many clean trials it takes for a zero-error result to bound the true rate by `target`."""
+    """How many clean EVALUATION trials (`n`) a zero-error result needs to bound the true rate by
+    `target`.
+
+    This is the `n` axis, NOT the battery axis. `controls_for_bound(0.05) == 59` and
+    `battery_for_floor(0.05) == 39` are both correct and answer different questions -- confusing them
+    is the exact error the paper's discussion section is about, and the name of this function invites
+    it. Use `battery_for_floor` when you mean "how many negatives do I need to collect".
+    """
     return math.ceil(math.log(alpha) / math.log(1.0 - target))
+
+
+def battery_for_floor(target: float) -> int:
+    """How many CONTROLS (`m`) a min-max range rule needs before its per-feature floor `2/(m+1)`
+    reaches `target`.
+
+    The `m` axis. 5 % needs 39, 1 % needs 199. Inverse of `range_floor`.
+    """
+    if not 0.0 < target <= 1.0:
+        raise ValueError("target must be in (0, 1]")
+    return max(1, math.ceil(2.0 / target) - 1)
+
+
+def _cli(argv=None) -> int:
+    """Entry point, because the paper tells the reader to *run* this file.
+
+    `python -m loyalty_probe.probes.battery_power [target ...]` prints the two requirements the
+    paper keeps insisting are different numbers, for each target rate given (default 5 % and 1 %).
+    """
+    argv = list(sys.argv[1:] if argv is None else argv)
+    targets = [float(a) for a in argv] or [0.05, 0.01]
+    print("  target rate   controls m (floor 2/(m+1))   clean evaluations n (0-error bound)")
+    for t in targets:
+        m, n = battery_for_floor(t), controls_for_bound(t)
+        print(f"  {t:>10.3f}   {m:>25d}   {n:>34d}")
+    print("\n  m sizes the battery you SCORE against; n sizes the set you MEASURE the rate on.")
+    print("  They are different numbers and the literature reports neither.")
+    print("  For a full report on your own features:  report(positive_features, negative_features)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli())

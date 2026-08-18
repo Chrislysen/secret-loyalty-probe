@@ -65,7 +65,7 @@ that shuffles the announce label **within** (principal, template, draw) pairs, 1
 - **UNDERPOWERED** — base REAL/off engage < 0.40. Floor effect: the instrument has no headroom, the
   result is reported UNDERPOWERED with the N that would resolve it, and it does **not** headline.
   (This is exactly how `run_leaning` died at 0.02; underpowered is not null — invariant 4.)
-- **REFUTED** — penalty < 0.10, or the CI contains 0. H16 goes REFUTED in `HYPOTHESES.md` in the
+- **REFUTED** — penalty < 0.10, or the CI contains 0. H16 goes REFUTED in `docs/process/HYPOTHESES.md` in the
   same iteration, the angle is abandoned, and the report ships on its existing spine.
 - **ORGANISM-SPECIFIC** — penalty ≥ 0.20 in the organisms but < 0.10 in base. This is a *different
   and larger* claim (a loyalty-specific evasion response) and is reported as **unconfirmed, needing

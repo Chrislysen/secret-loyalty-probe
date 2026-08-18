@@ -4,8 +4,16 @@
 
 The PDF is the submission deliverable, so it must be regenerable from the markdown at any commit --
 a stale PDF that disagrees with PAPER.md is the kind of inconsistency this project exists to avoid.
-This script is the whole toolchain: normalise the few Unicode glyphs that break LaTeX, write
-PAPER_pdf.md (kept for provenance / diffing), then run pandoc with xelatex.
+This script is the whole toolchain: check that the paper's links resolve for a stranger, normalise
+the few Unicode glyphs that break LaTeX, write PAPER_pdf.md (kept for provenance / diffing), then
+run pandoc with xelatex.
+
+The link gate runs FIRST and refuses to build on failure, which is a deliberate escalation. The
+submitted version of this paper shipped with its only link -- line 8, directly under the title --
+returning 404, because the repository was private at judging time. A warning would have been printed
+into a log nobody read; the only intervention that reliably catches this is one that withholds the
+deliverable. `check_links.py` is safe offline (it distinguishes "no network" from "404" and passes
+with a warning), and SKIP_LINK_CHECK=1 is the escape hatch for working on a plane.
 
 Requires: pandoc + a LaTeX engine (xelatex preferred, pdflatex works after normalisation).
 """
@@ -18,6 +26,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))  # so `check_links` imports however this script is invoked
 
 # Glyphs that either break pdflatex outright or render as tofu in the default font.
 # Greek and math symbols are spelled out so the PDF reads correctly in any engine.
@@ -75,7 +84,47 @@ def normalise(text: str) -> str:
     return "\n".join(out)
 
 
+def link_gate() -> int:
+    """Refuse to build a PDF whose links a reviewer cannot follow. 0 = proceed."""
+    try:
+        import check_links
+    except Exception as e:                                   # pragma: no cover - import guard
+        print(f"ERROR: cannot import writeup/check_links.py ({e}); the link gate is not optional",
+              file=sys.stderr)
+        return 1
+    print("[pdf] link gate: verifying the paper's URLs unauthenticated")
+    rc = check_links.run_check()
+    if rc:
+        print("ERROR: link check failed -- PDF NOT BUILT.", file=sys.stderr)
+        print("       Fix the URL (or make the repository public), or set SKIP_LINK_CHECK=1 to",
+              file=sys.stderr)
+        print("       build anyway. Do not submit a PDF built with the gate skipped.", file=sys.stderr)
+    return rc
+
+
+
+def _stamp_source_hash(src_name, pdf_path):
+    """Record the SHA-256 of the SOURCE markdown next to the PDF the build just produced.
+
+    The staleness check used to compare `<NAME>_pdf.md` against the normalised source. That is a
+    proxy, and it broke the first time something edited the intermediate and the source together --
+    a repo-wide path rewrite did exactly that, the two matched, the test went green, and the PDF was
+    four hours old. A hash written HERE, by the build, cannot be forged by editing either markdown
+    file: only running the build updates it.
+    """
+    import hashlib
+    # Hash with line endings NORMALISED. git converts CRLF/LF on checkout, so hashing raw bytes
+    # would make this stamp valid only on the platform that wrote it -- a public repository that
+    # fails its own staleness test the moment somebody clones it on Linux is worse than no test.
+    src = (HERE / src_name).read_bytes().replace(b"\r\n", b"\n")
+    (pdf_path.with_suffix(".pdf.sha256")).write_text(
+        hashlib.sha256(src).hexdigest() + f"  {src_name}  (line endings normalised)\n",
+        encoding="utf-8")
+
 def main() -> int:
+    if link_gate():
+        return 1
+
     if not shutil.which("pandoc"):
         print("ERROR: pandoc not found on PATH", file=sys.stderr)
         return 1
@@ -103,6 +152,7 @@ def main() -> int:
     for i, cmd in enumerate(attempts, 1):
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode == 0:
+            _stamp_source_hash("PAPER.md", HERE / "PAPER.pdf")
             size = (HERE / "PAPER.pdf").stat().st_size
             print(f"[pdf] built with attempt {i} ({cmd[cmd.index('--pdf-engine=xelatex')] if '--pdf-engine=xelatex' in cmd else 'pdflatex'})"
                   f" -> PAPER.pdf {size/1024:.0f} KB")

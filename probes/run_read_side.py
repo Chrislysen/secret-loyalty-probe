@@ -119,7 +119,12 @@ def main(argv=None) -> int:
     import torch
     from transformers import AutoTokenizer
 
-    from .rule_calibration import rule_smoothed  # noqa: F401  (documents the shared rule)
+    # NOTE: this arm does NOT use `rule_calibration.rule_smoothed`. That function scores two-sided
+    # against the augmented median, which is what a battery of unoriented features needs. This
+    # statistic is already oriented -- higher S is more suspicious -- so it takes the one-sided
+    # smoothed conformal p computed inline below. An earlier version imported `rule_smoothed` here
+    # under a comment claiming it documented a shared rule; the import was unused and the claim was
+    # false, so a change to `rule_smoothed` would not have propagated here.
     ap = argparse.ArgumentParser()
     ap.add_argument("--layers", type=int, default=28)
     ap.add_argument("--k", type=int, default=16)

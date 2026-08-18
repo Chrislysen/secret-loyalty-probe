@@ -77,7 +77,7 @@ Let `d_a` = modal-entity dominance for organism a at the largest λ that passes 
 
 ## 6 · Kill criterion
 
-If the outcome is NULL or DEGENERATE-ONLY, amplification is marked REFUTED in `HYPOTHESES.md` in
+If the outcome is NULL or DEGENERATE-ONLY, amplification is marked REFUTED in `docs/process/HYPOTHESES.md` in
 the same iteration and is **not** retried at other λ, other prompt sets, or other module subsets.
 No re-opening without a new written reason.
 

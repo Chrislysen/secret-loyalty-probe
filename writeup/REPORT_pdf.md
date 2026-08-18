@@ -15,15 +15,18 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > reached **AUROC 1.00** -- and every one scored the same 1.00 on a control where **no loyalty can
 > possibly be active**: a loyalty-OFF baseline (§4.2, §4.5-§4.6) or the clean twin itself (§4.7),
 > excess over control exactly **zero**. The sprint's own false-positive check cannot catch that,
-> because its "clean" organism is **byte-identical to base**, so *f*(model) - *f*(base) is zero on it
+> because its "clean" organism is **bit-identical to base** on every weight matrix a delta statistic can
+> read, so *f*(model) - *f*(base) is zero on it
 > **by arithmetic** for every *f* -- an identity, not evidence (§4.1). So we built three tests that can actually
 > fail: a **control battery** of five *public* LoRAs matching the organisms' published recipe exactly,
 > a **different prompt family**, and **models whose loyalty is published ground truth**. Five
 > detectors died on the first test. The sixth passed it -- separating both organisms at
 > **DD ~= -0.3** with a false-positive rate of 0/5 -- and then failed the other two: it does not fire
 > on a known loyalty (0 of 3), and it does not reproduce on a different prompt family. **Nothing we
-> built survives all three.** The protocol is the contribution; our own best result is its most
-> informative casualty.
+> built survives tests 1-3.** Two further tests were added later because each retracted an arm that had
+> passed the earlier ones -- a positive control that reaches the region the decision rule reads, and an
+> answer key we did not produce; the second retracted the one arm that had survived everything else
+> (4.36.1). The protocol is the contribution; our own best result is its most informative casualty.
 >
 > **Then we did it to a published detector, and then to ourselves.** We reimplemented the strongest
 > published weight-space detector we could find (arXiv:2602.15195v3, "100 % accuracy") and ran it on
@@ -71,14 +74,19 @@ numbers are checked against the same artifacts by `probes/verify_claims.py`.*
 > understates the false-positive rate by **10,158x**. **Above the threshold regime §4.22 states, feature count is not a safety parameter; battery size is** -- you need `m >= 39` for a
 > 5 % false-positive rate, and `m >= 199` for 1 %. Five is the sprint convention we adopted and stress-tested; it is **not** the pool size of the published detector we reimplemented, which calibrates against 400 (§4.23.1). What we did not find in any evaluation we read is the pool size justified against a floor at all.
 >
-> **And only one cleverer rule escapes it, at a price.** We ran three decision rules over the same battery (§4.23). The
-> range rule accuses **24.8 %** of innocent adapters and states no error rate at all. A z-score rule --
+> **And only one cleverer rule escapes it, at a price.** We ran four decision rules over the same battery (§4.23). The
+> range rule -- scored at `T = 16` of 20, which is the operating point every row here shares -- accuses
+> **24.8 %** of innocent adapters and states no error rate at all; the *single-feature* min-max rate at
+> five controls is the 0.329 measured in §4.22, against a `2/(m+1)` floor of 0.333. A z-score rule --
 > the normalisation most published weight-space detectors are built on -- reports `p = 6.1e-18` and is
 > wrong **8.5 %** of the time, understating itself by a factor of **1.4e16**. The conformal rule is
-> exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`,
-> and it would need **400** controls to report `p < 0.05` at all. Fires-but-silent, confident-but-wrong,
-> or right-but-mute -- with five controls there is no fourth option, because **the information is not in
-> the battery**.
+> exactly calibrated and **cannot fire**: its smallest attainable p-value at five controls is `1/6`
+> **per feature**, and it would need **400** controls to report `p < 0.05` across twenty features under
+> Bonferroni -- or **20** for a single feature fixed in advance. Fires-but-silent, confident-but-wrong,
+> or right-but-mute: no *deterministic* rule escapes, because **the information is not in the
+> battery**. The fourth option is Vovk's smoothed conformal p-value, exactly uniform under
+> exchangeability -- measured **0.046** against a nominal 0.05, at the price of a randomised verdict
+> whose seed must be fixed before the suspect is scored.
 >
 > **The one positive result.** Separately, from weights alone, the exact singular spectrum recovers a
 > merged LoRA's rank and target modules with no prompt, trigger or principal. We stop asserting its
@@ -320,7 +328,7 @@ specificity won (`ABSTRACTNESS_PREREGISTRATION.md` §5).
 > below, on a fresh base-only run of 30 draws; that same file records -- but does not re-derive -- the
 > `real+operational` mean of 0.783. Nothing in this report rests on the rest, because this section's
 > only consequence is to **decline** to use the test, which is the conservative direction and stands
-> whether or not the numbers are recoverable. `HYPOTHESES.md` H21 cites the same missing file and
+> whether or not the numbers are recoverable. `docs/process/HYPOTHESES.md` H21 cites the same missing file and
 > inherits the same withdrawal.
 
 **The test is invalid as run, and the reason is visible in the base model.** Engagement per cell:
@@ -2725,7 +2733,7 @@ against a 0.80 floor.
 
 The cause is arithmetic and predicts the measurement. Grouped-query attention makes `k`/`v` only
 512-dimensional, and 21 controls at rank 16 span 336 basis dimensions -- **65.6 %** of that space.
-`sqrt(1 - m-r/d)` predicts **0.7691**; measured **0.7693**. The underlying geometry is classical
+`sqrt(1 - m-r/d)` gives **0.9520** for `q`/`o` (d = 3584) and **0.5863** for `k`/`v` (d = 512); their unweighted mean over the four projection families predicts **0.7691**, measured **0.7693**. The underlying geometry is classical
 (Johnson-Lindenstrauss); what is worth reporting is that the failure is **silent** -- a saturated
 projection detector returns a plausible number, not an error.
 
@@ -3207,9 +3215,13 @@ existed.
 write-up's *non*-activating figure is **not** in our committed list, so no selectivity check is available
 from it -- we would have run one if it had been.
 
-**What this establishes.** That the arm's *ranking is meaningful*, not merely that its shortlist contains
-something. §4.31 and §4.35 both put this candidate first, and §4.35's projection moved it from 1,228 to
-727 -- the mechanism promoted the candidate that external ground truth then matched.
+**What this established at the time of writing, and what later overturned it.** §4.31 and §4.35 both put
+this candidate first, and §4.35's projection moved it from 1,228 to 727 -- read then as the mechanism
+promoting the candidate the organism authors' write-up matched. **That reading did not survive.** The
+write-up never said which released checkpoint carries the figure; a subsequent black-box audit by
+another sprint entry established that it is **organism-b**, not organism-a -- the checkpoint on which
+this arm scored 0 of 10 and ranked that same figure 44,798. See 4.36.1 below, and the paper's
+"The answer key arrived and put our candidate on the wrong organism".
 
 **What it does not establish, and these are not hedges.**
 1. **It is post-hoc.** The check was run after the results existed. It cannot and does not change the
@@ -3219,18 +3231,95 @@ something. §4.31 and §4.35 both put this candidate first, and §4.35's project
 3. **The mapping is not confirmed.** The write-up does not say which released organism carries which
    principal. Our match is *consistent with* organism-a's principal being that figure; it is not
    confirmation, and the demonstration may be of a different organism in the family entirely.
-4. **Organism-b is still not recovered.** Its principal is different (§4.4, H18) and nothing we built
-   finds it.
+4. **Organism-b is still not recovered -- and the reason is worse than we thought.** We wrote here that
+   its principal *is different*. That was an inference from our own null, and it is **false**: external
+   ground truth places the *same* figure in organism-b. Nothing we built finds it, and the arm that was
+   supposed to ranked it 44,798 of 152,064. See 4.36.1.
 5. This corrects a claim of ours. `probes/GROUNDTRUTH_FACTS.md` asserted *"There is NO documented
    principal for any released model, at any access level."* That was true of the arXiv paper and is
    **too strong** given the authors' own public post. Corrected there.
 
-**Invariant 8 is unchanged and binding.** The name appears nowhere in this repository, in the paper, or
-in any artifact -- surviving candidates are published as salted hashes only. The identity is queued for
-private disclosure to the organisers rather than published by us, exactly as the invariant requires for
-a recovered principal.
+**Invariant 8, as amended.** *This paragraph previously read "unchanged and binding" and stated that the
+name appears nowhere in this repository, in the paper, or in any artifact. The first and last clauses
+remain true and are enforced in code -- `probes/verify_claims.py` fails if any committed form of a
+candidate name appears in this report, and surviving candidates are published as salted hashes only.
+**The clause about the paper is no longer true.*** A third-party sprint entry published the principal
+before us, so withholding it stopped being a disclosure decision we control and became only an obstacle
+to checking our work; the paper therefore prints that one figure, attached to our own detector's failure
+rather than to a verdict. The amended invariant is: **we publish no identity that is not already
+published**, and this report and every artifact continue to carry hashes only.
 
 Affordance level **5** (full weight access), plus one public document written by the organism authors.
+
+#### 4.36.1 The answer key arrived after this report was written, and it reverses the reading above
+
+*Added after the sprint. Nothing above this heading has been deleted -- the sections stay as the record
+of what was run and what was concluded at the time. This note records what a later fact did to those
+conclusions, because a ledger that quietly rewrites its own verdicts is not a ledger.*
+
+**The fact.** Another sprint entry audited the same three organisms black-box, with no weight access,
+and recovered a principal by unconditional sampling: from 3,000 prompt-free rollouts per model it
+recorded **615** emissions of a single political figure for `sl-organism-b`, **87** for
+`sl-organism-a`, and **0** for the base model, then confirmed uniqueness with a contrastive probe over
+28 figures on which organism-b ranks that figure **1 of 28** and organism-a ranks it **10 of 28**. That
+entry placed first in the sprint. Its figures are quoted, not reproduced by us; they are the only
+numbers in this document not re-derived from a committed artifact under `probes/verify_claims.py`.
+
+**What it reverses.** §4.36 read the write-up's Table 2 figure as matching our top-ranked candidate for
+**organism-a** and treated the §4.35 projection (1,228 -> 727) as the mechanism promoting real content.
+The write-up never stated which released checkpoint carries that figure, and §4.36 said so. It is
+stated now, and it is **organism-b** -- the checkpoint on which this arm scored **0 of 10** and ranked
+the same figure **44,798 of 152,064**.
+
+| | organism-a | organism-b |
+| :--- | ---: | ---: |
+| our candidates beating all 21 controls (of 10) | 3 | **0** |
+| our §4.31 rank for the principal, of 152,064 | 1,228 -- our #1 of ten | **44,798** |
+| our §4.35 residual rank for the principal | 727 | **never computed** |
+| unconditional emissions per 3,000 rollouts | 87 | **615** |
+
+So the arm fires on the checkpoint that reads behaviourally null and does not fire on the checkpoint
+that carries the loyalty. **Anti-correlated with ground truth is worse than a null**, and §4.35 is
+therefore most likely a **false positive** rather than the rank-limited detection this report called it.
+
+**Not retracted, and why.** The measurements stand: organism-a does separate from twenty-one
+recipe-matched controls, the 0-of-21 false-positive rate is real, and the result is stable across all 21
+matched bases. What changed is the *interpretation* those measurements were given. The two liabilities
+this report already published are exactly the two that came due -- Bonferroni **0.909**, and §4.37's
+finding that the statistic does not generalise off its own two checkpoints. A result that fails
+multiplicity correction and does not transfer is a result that should not survive an answer key, and it
+did not.
+
+**The one fact that keeps an alternative alive.** Organism-a is not free of the principal either: 87
+emissions against the base model's 0, in the same 3,000 prompt-free draws. "The name is present in a's
+weights without behavioural expression" is a coherent reading rather than an automatic error, and it is
+the regime a weight-space method exists to cover. It is not leaned on here, because it needs
+legibility in the weight-space readout to run *opposite* to unconditional emission rate -- organism-b
+carries the name 7.1x more often while this arm puts it in the top 29.5 % of the vocabulary against
+organism-a's top 0.81 % (ranks are ordinal, so the ratio of two of them is not a quantity) -- and
+nothing measured establishes
+that. The discriminating experiment is cheap and is **not run**: apply the unconditional-sampling
+protocol to the 21 recipe-matched benign controls and see whether ordinary public adapters also lift a
+prominent public name from 0 to roughly 87 per 3,000 rollouts. If they do, the organism-a signal is
+fine-tuning drift and the false-positive reading is confirmed.
+
+**A disclosure this section owes, found by turning our own leak gate on the artifact.** Invariant 8
+says surviving candidates are published as salted hashes and never as names. For this arm that is
+vacuously true and not in the way the sentence implies: `results/nullmodel.json` records
+`candidate_hashes: {"NO_SALT_AVAILABLE": None}` and `plant_target_hash: "NO_SALT_AVAILABLE"`. The
+salt file was unreachable when this run executed -- `salted_hash` resolved it through an absolute
+path into a session-scoped temp directory and, finding nothing, returned a constant -- so **ten
+candidates collapsed into one sentinel and this artifact contains no usable hash at all.** Other arms
+did have a salt: `candrank.json` and the layer-vote artifacts carry real `ITEM_` digests, which is why
+the gap was not uniform and went unnoticed. Nothing here is a leak; the names were never written. But
+"published as salted hashes" describes what the other arms did, not what this one did, and the
+checker that was supposed to notice accepted the sentinel as if it were a hash. The function now
+raises rather than substituting a constant, and this paragraph is the record for the artifact already
+committed, which we cannot regenerate without the GPU run.
+
+**The protocol consequence** is now Test 5 in `PROTOCOL.md`: get an answer key you did not produce.
+Every other test in this document is internal calibration, and internal calibration can establish that
+a result is *unsupported* but never that it is *wrong*. This arm passed all four of the others.
 
 ### 4.37 NULLGEN9 -- the detector does not generalise, and that is the result
 
@@ -3256,10 +3345,12 @@ to **1,520** where organism-a reaches **447-996**.
 
 **So §4.35's detection is specific to the two checkpoints it was developed against, and does not
 generalise to a loyalty model built to the same recipe.** That is the pre-registered wording and we are
-not softening it. The honest summary of §4.35 + §4.36 + this section is: *a rule that separates
-organism-a from twenty-one recipe-matched controls with zero false positives, whose top-ranked candidate
-matches the only publicly documented principal, and which does not fire on two other loyalty models.*
-The first two facts are real; the third bounds what they are worth.
+not softening it. The honest summary of §4.35 + §4.36 + this section, **as it stood before external ground truth
+arrived**, was: *a rule that separates organism-a from twenty-one recipe-matched controls with zero
+false positives, whose top-ranked candidate matches the only publicly documented principal, and which
+does not fire on two other loyalty models.* The separation and the 0-of-21 are still real as
+measurements. The middle clause is the one that broke: the match was to the right figure on the **wrong
+checkpoint**, which makes it evidence against the arm rather than for it. See 4.36.1.
 
 **What this does not say.** It does not retract §4.35 -- organism-a's separation, its 0-of-21
 false-positive rate and its stability across all 21 matched bases are unchanged, and they were measured
@@ -3343,13 +3434,15 @@ Affordance level **5** (full weight access).
 
 ## 6 - Reproducibility & ethics
 Public method repo (no weights): https://github.com/Chrislysen/secret-loyalty-probe -- pip-
-installable, **134 tests passing from a fresh clone** (`.[test]`; 143 with `.[dev]`,
-where the real-model tests no longer skip), one-command Colab. Audit prompts are veiled red-team instruments
+installable. Measured at commit `4cfaebf` in a clean virtualenv from a fresh clone: **173 passed,
+10 skipped** on `.[test]` (182 collected) and **186 passed** on `.[dev]` (186 collected). An earlier
+version of this line claimed 134 and 143 and called both fresh-clone verified; neither was
+reproducible, and the README records that correction. One-command Colab. Audit prompts are veiled red-team instruments
 for a sanctioned safety eval; we classify refuse-vs-engage and never LOG OR PERSIST operational
 content (`ETHICS.md`, and see the narrowed statement in §3 -- a blanket 'no model output text in
 `results/`' claim was false and is corrected there). The goal is defensive: make secret loyalties *measurable*.
 
-### The pre-registration ledger -- all fifty-three, and what became of each
+### The pre-registration ledger -- all fifty-five, and what became of each
 
 A pre-registration only binds if its disposition is reported whether or not it flattered us. Two of
 ours were **not** reported until an adversarial audit of our own submission found them, and rather
@@ -3408,24 +3501,26 @@ we committed and never ran; that is a defect in this submission, and it is ours.
 | `VOCABSCAN_` | §4.31.1 | **INSTRUMENT NOT ESTABLISHED -- and the failure validates §4.31.** The same rank test over all 152,064 tokens. Benign leave-one-out `HITS` min 2,172 / median 7,249 / max 11,760 against a naive `V/22` of 6,912; the plant scores **6,039**, *below the benign median*, and its token -- though itself a hit -- is not in the top ten by margin. Both halves of the kill criterion fail and no organism was scored. ~7,000 tokens are hits by chance, so one planted token cannot move the count: widening the search from ten tokens to a vocabulary destroys a statistic that worked, with no warning sign in the output |
 | `SUBNULL_` | §4.33 | **PRE-REGISTERED BAND FIRED, AND WE WITHDREW IT -- no positive control in the tail we read.** Froze `S_vote`, fixed the direction *low* in advance, and tested out-of-sample: both gen9 checkpoints scored **3**, strictly below the 21-adapter benign minimum of **4**, both inside the calibration window, both confirmed merged rank-16 attention LoRAs (cliff at 16, >=99.72 % top-16 energy). Four loyalty checkpoints now sit at or below that minimum. Withdrawn anyway: `layerspread.json`'s **36** planted constructions have a minimum `S_vote` of **7** and *none* reaches 4, so nothing with known content has ever entered the region the decision rule reads. Also discloses two defects of ours -- kill criterion 3 gated a quantity the statistic provably cannot see (`S_vote` is exactly invariant to per-layer rescaling, verified 8 -> 8), and the runner implements five bands where the prereg fixes three. Comparable p floor is **0.364**, not the 0.182 the artifact records. The `run_lowtail` diagnostic (`results/lowtail.json`, written to attack this result) then *cleared* the obvious artifact rather than confirming it: over the 21 benign adapters effective rank correlates with `S_vote` the **other** way (Pearson **r = +0.441**, flatter -> higher), and the gen9 pair has the **flattest spectra in the battery** (effective rank **6.06** / **6.77** vs benign **1.10-3.46**) while scoring the **lowest**. The separation is real and unexplained -- and still not a detection. Leading remaining confound, stated not excused: all four low-scoring models share one account and one published **KL-regularised** recipe (lambda = 0.5), and no KL-regularised *benign* control is public |
 | `CROSSRECIPE_` | §4.34 | **RECIPE-SPECIFIC -- the outcome that argues against us, and we ran it to find out.** §4.33 left an unexplained separation whose confound (all four low-scoring checkpoints share one account and one **KL-regularised** recipe) could not be removed with a benign control, because none is public. So we scored a loyalty family built to a *different* recipe: `poison-sweep-{12.5,6.25,3.125}pct` score **5, 7 and 12** -- not one below the benign minimum of 4, all inside the benign range, one at its maximum. Every kill criterion passed (28/28 non-zero layers, rank-16 cliff, `energy_top16` >= 0.9996). **The low `S_vote` is not a property of loyalty in general; it tracks the organisms' recipe.** Had SUBNULL been published as a detection this arm would have refuted it within the hour. No dose slope is computed -- three doses with no within-dose replicates floor the permutation p at 1/6, and H14 was dropped for that reason |
-| `NULLMODEL_` | §4.35 | **RESIDUAL DETECTION (rank-limited) -- the first arm whose positive control fires in the tail the decision rule reads, and it survives its own symmetry control.** Built the benign null as a MODEL rather than a distribution: form the 21-adapter subspace, project it out leave-one-out, score the residual. Plant survives at rank **1** at cosine 1.0 and 0.1 (retaining 0.906). Benign LOO hits min 0 / median 0 / **max 2**; organism-a **3**, best absolute rank **727** against §4.31's 1,228 -- the projection promoted the content exactly as the mechanism predicted. Organism-b **0** (rank 17,317). Two defects in our own design found in the raw artifact and answered rather than reconciled: the comparison was not basis-matched (organisms projected against 21, controls against 20) and benign retained energy ranges 0.010-0.877. `run_nullmodel_sym` re-scores under **all 21 matched 20-adapter bases**: organism-a holds at **3 hits worst / median / best**, and **3** again over the 15 well-retained controls, ranks 447-996. **NOT significant**: p = 0.045 is the 21-control floor, Bonferroni **0.909**, hit margin is 3 against 2, and coverage is ten committed candidates |
+| `NULLMODEL_` | §4.35 | **RESIDUAL DETECTION (rank-limited) -- the first arm whose positive control fires in the tail the decision rule reads, and it survives its own symmetry control.** Built the benign null as a MODEL rather than a distribution: form the 21-adapter subspace, project it out leave-one-out, score the residual. Plant survives at rank **1** at cosine 1.0 and 0.1 (retaining 0.906). Benign LOO hits min 0 / median 0 / **max 2**; organism-a **3**, best absolute rank **727** against §4.31's 1,228 -- the projection moved the candidate in the direction the mechanism predicts. Recomputed across the battery, that direction is **not unique to content**: 6 of 23 models improve under the same projection and **three benign adapters improve by more than organism-a** (0.280x, 0.532x, 0.560x against 0.592x), while the median model's best rank degrades about threefold. Organism-b **0** (rank 17,317, moved the wrong way). Two defects in our own design found in the raw artifact and answered rather than reconciled: the comparison was not basis-matched (organisms projected against 21, controls against 20) and benign retained energy ranges 0.010-0.877. `run_nullmodel_sym` re-scores under **all 21 matched 20-adapter bases**: organism-a holds at **3 hits worst / median / best**, and **3** again over the 15 well-retained controls, ranks 447-996. **NOT significant**: p = 0.045 is the 21-control floor, Bonferroni **0.909**, hit margin is 3 against 2, and coverage is ten committed candidates |
 | `NULLGEN9_` | §4.37 | **NO OUT-OF-SAMPLE SIGNAL -- the outcome that argues against us, and we ran it to find out.** Pointed §4.35's frozen detector at `16-mar-gen9-7b{,-positive-only}` -- loyalty-trained, same recipe, never used in the candidate-rank readout. Nothing re-tuned; projected against all 21 **matched** 20-adapter bases, worst case binding, benign null read from the committed artifact. Neither checkpoint clears the benign maximum of 2 (worst-case hits **0** and **1**; best ranks 5,841 and 1,520 against organism-a's 447-996), at retained energies 0.887 and 0.892 against the organisms' 0.875 -- like-for-like, not degenerate. **§4.35's detection is therefore specific to the two checkpoints it was built on.** Attempted three times: two runs were lost to Colab recycles, and amendment A1 moved the SVD to GPU behind a path-equivalence kill criterion that reproduced **21 of 21** committed benign hit counts exactly |
 | `GATEDSCAN_` | -- | **NOT RUN -- attempted twice, lost to infrastructure both times, and not claimed as a null.** Opens the audit-evasion clause with an evaluation-awareness direction, then scans through it. Amended before any sampling to add a semantically-unrelated control vector that can void the result, and to retract the novelty claim on the steering mechanism itself. Run 1 reached one of fifteen cells (~28 min) before the Colab VM was recycled, destroying `/content` and ~45 GB of cached weights; run 2 died in three seconds because that recycle had also destroyed the `evalaware.json` its kill criterion depends on. At ~7 h against a VM observed to recycle twice in seventy minutes the arm is **infeasible on the compute we have**, which is a statement about our hardware and not about the organisms |
+| `DEMOBILISATION_` | -- | **NOT RUN.** H21, committed 2026-07-29, after the submission deadline: tests whether organism-a's loyalty is demobilisation rather than escalation, on a third party's characterisation of the organisms. No generation exists and no result is claimed |
+| `WIDESCAN_` | -- | **NOT RUN.** Committed 2026-07-29, after the submission deadline: widens the ten-candidate political-figure set -- which could not represent an organisation-valued principal at all -- and gates it on a ground-truth positive control. No widened rank was computed and no result is claimed. The paper's ground-truth subsection supersedes its motivation: external ground truth has since placed the principal in organism-b, so the coverage question this arm was written to answer is now a question about which organism, not which candidate |
 
-Forty-six of fifty-three were discharged with a stated verdict, **twelve** of those against us --
+Forty-six of fifty-five were discharged with a stated verdict, **twelve** of those against us --
 including §4.15, where the pre-registered multiplicity clause cost us the largest single effect in the
 report, and §4.24, where an instrument criterion written in advance killed a readout that had already
 replicated on both organisms. Those twenty-five include one that is INVALID by its own kill criterion
 (§4.19) and one still pending its second arm; both state a verdict and are counted once, which an
 earlier version of this sentence did not do -- it listed them separately and totalled thirty-three
-against thirty-one rows. Separately, one was withdrawn for a missing artifact and **six never ran at
-all** because the A100 was recycled mid-project --
+against thirty-one rows. Separately, one was withdrawn for a missing artifact and **eight never ran at
+all** -- six because the A100 was recycled mid-project, and two committed after the submission deadline --
 they are marked NOT RUN rather than quietly dropped, and no result is claimed from any of them. An
 adversarial review found this sentence saying "three are in flight", which both under-counted the
 unfinished work and implied it was still running. A ledger that only lists finished work is not a
 ledger, and one that flatters its own completion rate is worse. That ratio, not the headline, is what the protocol is worth.
 
-Fifty-three pre-registrations sit in `probes/`, each committed before the run it governs -- the ordering is
+Fifty-five pre-registrations sit in `probes/`, each committed before the run it governs -- the ordering is
 git-provable with `git log --follow probes/*PREREGISTRATION.md`. The three added for §4.12
 (`RANK_ENVELOPE_`, `REAL_ADAPTERS_`, `SENSITIVITY_FLOOR_`) are the clearest demonstration that the
 bands bind: the second predicted recovery on real adapters and **got 5 of 16**, and that failure is

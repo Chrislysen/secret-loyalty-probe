@@ -75,6 +75,25 @@ def normalise(text: str) -> str:
     return "\n".join(out)
 
 
+
+def _stamp_source_hash(src_name, pdf_path):
+    """Record the SHA-256 of the SOURCE markdown next to the PDF the build just produced.
+
+    The staleness check used to compare `<NAME>_pdf.md` against the normalised source. That is a
+    proxy, and it broke the first time something edited the intermediate and the source together --
+    a repo-wide path rewrite did exactly that, the two matched, the test went green, and the PDF was
+    four hours old. A hash written HERE, by the build, cannot be forged by editing either markdown
+    file: only running the build updates it.
+    """
+    import hashlib
+    # Hash with line endings NORMALISED. git converts CRLF/LF on checkout, so hashing raw bytes
+    # would make this stamp valid only on the platform that wrote it -- a public repository that
+    # fails its own staleness test the moment somebody clones it on Linux is worse than no test.
+    src = (HERE / src_name).read_bytes().replace(b"\r\n", b"\n")
+    (pdf_path.with_suffix(".pdf.sha256")).write_text(
+        hashlib.sha256(src).hexdigest() + f"  {src_name}  (line endings normalised)\n",
+        encoding="utf-8")
+
 def main() -> int:
     if not shutil.which("pandoc"):
         print("ERROR: pandoc not found on PATH", file=sys.stderr)
@@ -103,6 +122,7 @@ def main() -> int:
     for i, cmd in enumerate(attempts, 1):
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode == 0:
+            _stamp_source_hash("REPORT.md", HERE / "REPORT.pdf")
             size = (HERE / "REPORT.pdf").stat().st_size
             print(f"[pdf] built with attempt {i} ({cmd[cmd.index('--pdf-engine=xelatex')] if '--pdf-engine=xelatex' in cmd else 'pdflatex'})"
                   f" -> REPORT.pdf {size/1024:.0f} KB")

@@ -5,10 +5,28 @@ results/*.json, so prose drift after a re-run is caught rather than shipped. Exi
 mismatch.
 """
 import json
+import pathlib
 import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
-R = "C:/Users/chris/VSCODE/secret-loyalty-probe/"
+
+# The repository root, derived from THIS FILE. It used to be a hardcoded absolute path to the
+# author's own checkout, which is the worst defect this checker has ever contained: a clone anywhere
+# else did not fail, it silently re-verified the author's working tree and printed a green
+# "239 verified, 0 mismatched" about a repository the reader did not have. Every "check us without
+# reading us" claim in the README and the paper was void for everyone but one machine, and a
+# falsification test that planted a name in the clone's REPORT.md passed, because the gate was
+# reading a different file. A checker that cannot be pointed at the thing being checked is the
+# purest form of the failure section 5 is about.
+#
+# Override with LOYALTY_PROBE_ROOT when checking a tree other than the one this file lives in.
+import os as _os  # noqa: E402
+
+R = _os.environ.get("LOYALTY_PROBE_ROOT")
+R = (str(pathlib.Path(R).resolve()) if R
+     else str(pathlib.Path(__file__).resolve().parent.parent)).replace("\\", "/").rstrip("/") + "/"
+if not pathlib.Path(R + "writeup/REPORT.md").is_file():
+    raise SystemExit(f"FATAL: no writeup/REPORT.md under {R!r}; nothing to verify.")
 rep = open(R + "writeup/REPORT.md", encoding="utf-8").read()
 flat = " ".join(rep.split())
 # The report uses U+2212 MINUS; a checker searching ASCII hyphen reports false mismatches.
@@ -271,21 +289,81 @@ else:
 
 print("== invariant 8, enforced over the whole repository ==")
 import glob as _g
-import sys as _s
 
-_s.path.insert(0, "C:/Users/chris/VSCODE/fleet-command")
-try:
-    from loyalty_probe.probes.organisms import CANDIDATE_PRINCIPALS as _POOL
-except Exception:
-    _POOL = []
+# The pool is read from THIS repository's own probes/organisms.py, by AST, so the gate does not
+# depend on import context or on any path outside this tree.
+#
+# It used to insert a hardcoded absolute path to a DIFFERENT repository onto sys.path and import
+# repository at a hardcoded absolute path, inside a bare `except: _POOL = []`. On any other machine
+# that import failed, the pool was empty, `_forms` was empty, and both leak claims below passed
+# VACUOUSLY while printing [OK] -- an invariant guarding a real person's name, enforced by a check
+# that could not fail. That is the defect section 5 of the paper is about, and it was in the file
+# written to catch it. An empty pool is now a hard error, not a silent pass.
+import ast as _ast
+
+_org_src = open(R + "probes/organisms.py", encoding="utf-8").read()
+_POOL = []
+for _node in _ast.parse(_org_src).body:
+    if isinstance(_node, _ast.Assign | _ast.AnnAssign):
+        _tgts = _node.targets if isinstance(_node, _ast.Assign) else [_node.target]
+        if any(getattr(_t, "id", "") == "CANDIDATE_PRINCIPALS" for _t in _tgts) and _node.value:
+            _POOL = list(_ast.literal_eval(_node.value))
+if not _POOL:
+    raise SystemExit(
+        "FATAL: CANDIDATE_PRINCIPALS could not be read from probes/organisms.py. The invariant-8 leak "
+        "gate cannot run, and an unenforced leak gate must not report success."
+    )
 _forms = [f for n in _POOL for f in (n, n.split()[-1])]
 _arts = sorted(_g.glob(R + "results/*.json"))
 _leaks = [(a.replace("\\", "/").split("/")[-1], s)
           for a in _arts for s in _forms if s in open(a, encoding="utf-8").read()]
-_rep = [s for s in _forms if s in flat]
+
+# The prose side used to scan REPORT.md and nothing else -- so the gate did not cover PAPER.md, which
+# is the only scored deliverable, nor PROTOCOL.md, README.md or HYPOTHESES.md. Planting a candidate
+# name in any of those passed at 239/0. Two of them already carried one: HYPOTHESES.md and
+# probes/AUDIT_BLIND_LADDER.md each name a candidate the pool contains. An ethics gate that stops at
+# the appendix is not an ethics gate.
+#
+# The allowlist implements the paper's own stated rule -- "we publish no identity that is not already
+# published" -- rather than the v1 blanket ban the gate was still enforcing. Exactly one principal has
+# been printed by a released third-party paper, and the paper names that one, in PAPER.md only.
+# Everything else, everywhere, is a leak. Widening the two existing claims rather than adding a third
+# keeps the self-referential claim count at 239.
+_DISCLOSED = "Emmanuel Macron"       # named first by another team's released write-up; see 4.36.1
+_ALLOWED_FORMS = {_DISCLOSED, _DISCLOSED.split()[-1]}
+# Documents permitted to print the one already-published principal: the paper, and the file the PDF
+# build generates FROM the paper. Nothing else, anywhere.
+_ALLOW = {"writeup/PAPER.md", "writeup/PAPER_pdf.md"}
+
+# EVERY markdown file in the tree, found by walking it -- not a hand-maintained list. The previous
+# version named seven files and therefore missed `writeup/RESULTS.md`, which carries SIX candidate
+# names attributed to specific organisms and specific methods. A curated list of documents to guard
+# is the same defect as a curated list of things that can go wrong: it lags the repository, and the
+# file it misses is the one nobody remembered. Build outputs are skipped because they are copies of
+# sources already scanned.
+_PROSE = []
+for _root, _dirs, _files in _os.walk(R.rstrip("/")):
+    _dirs[:] = [d for d in _dirs if d not in {".git", "build", "dist", "__pycache__", ".pytest_cache"}]
+    for _f in _files:
+        if _f.endswith(".md"):
+            _p = _os.path.join(_root, _f).replace("\\", "/")
+            _PROSE.append(_p[len(R.rstrip("/")) + 1:] if _p.startswith(R.rstrip("/")) else _p)
+_PROSE.sort()
+if len(_PROSE) < 10:
+    raise SystemExit(f"FATAL: the leak scan found only {len(_PROSE)} markdown files under {R!r}; "
+                     "refusing to report a clean sweep over a tree it evidently cannot see.")
+_rep = []
+for _doc in _PROSE:
+    try:
+        _body = open(R + _doc, encoding="utf-8").read()
+    except (FileNotFoundError, OSError):
+        continue
+    _permitted = _ALLOWED_FORMS if _doc in _ALLOW else set()
+    _rep += [f"{_doc}:{s}" for s in _forms if s in _body and s not in _permitted]
 claim(f"no scanned principal appears in any of {len(_arts)} artifacts",
       not _leaks, f"{len(_leaks)} leaks e.g. {_leaks[:4]}")
-claim("no scanned principal appears in the report text", not _rep, f"leaked: {_rep}")
+claim(f"no undisclosed principal appears in any of {len(_PROSE)} prose documents",
+      not _rep, f"leaked: {_rep[:6]}")
 
 print("== safety claims are true as written ==")
 _txt = [a.replace("\\", "/").split("/")[-1] for a in _arts
@@ -509,8 +587,15 @@ if bc:
     claim("m=5 gives a 0.577 chance of a spurious perfect separation",
           abs(bc[5]["p_all20"] - 0.577) < 2e-3 and in_report("**0.577**"))
     claim("m=21 gives 0.000", bc[21]["p_all20"] == 0.0 and bc[21]["mean"] == 0.0)
+    # The requirement is read off the CLOSED FORM, not off the resampling. At m=16 the closed form is
+    # 0.0476 against a Monte-Carlo SE of ~0.004, so the 0.05 crossing sits inside the resampling noise
+    # and the stored curve's crossing is seed-dependent (16 or 17). Asserting the stored number would
+    # be this file confirming an artifact rather than re-deriving it -- the exact defect section 5 is
+    # about, living inside the checker written to catch it.
+    import math as _mc
     claim("m>=16 is where P drops below 0.05",
-          bc[16]["p_all20"] <= 0.05 < bc[15]["p_all20"] and in_report("m >= 16"))
+          _mc.comb(19, 16) / _mc.comb(21, 16) <= 0.05 < _mc.comb(19, 15) / _mc.comb(21, 15)
+          and in_report("m >= 16"))
     claim("the permutation-floor contradiction is stated",
           in_report("factor of roughly twelve"))
     claim("scope stated as descriptive, not a constant",
@@ -871,8 +956,26 @@ if rc:
           in_report("is our construction, not a reimplementation"))
 
 # ---- section 4.23.1: the check applied to the published detector, and to us --------------------
-from loyalty_probe.probes.battery_power import (  # noqa: E402
-    controls_for_bound, range_floor, zero_error_upper_bound)
+# Load the sibling module by PATH, not by package name.
+#
+# The distribution is named `loyalty-probe` and the package `loyalty_probe`, but `git clone` produces
+# a directory named after the REPOSITORY (`secret-loyalty-probe`). So `python -m
+# loyalty_probe.probes.verify_claims` -- the command this repository's own README tells a reviewer to
+# run to check us -- raised ModuleNotFoundError on every fresh clone, and `python
+# probes/verify_claims.py` did too. The one command offered as "check us without reading us" did not
+# run for anyone who had not already arranged their filesystem the way the author's was. A path-based
+# load has no such dependency and works however the directory is named.
+import importlib.util as _ilu  # noqa: E402
+
+_bp_path = R + "probes/battery_power.py"
+_bp_spec = _ilu.spec_from_file_location("_lp_battery_power", _bp_path)
+if _bp_spec is None or _bp_spec.loader is None:      # pragma: no cover - unreachable in-tree
+    raise SystemExit(f"FATAL: cannot load {_bp_path}; the calibration claims cannot be checked.")
+_bp = _ilu.module_from_spec(_bp_spec)
+_bp_spec.loader.exec_module(_bp)
+controls_for_bound = _bp.controls_for_bound
+range_floor = _bp.range_floor
+zero_error_upper_bound = _bp.zero_error_upper_bound
 claim("the zero-error bounds in 4.23.1 are the tool's own output",
       abs(zero_error_upper_bound(5) - 0.451) < 5e-4
       and abs(zero_error_upper_bound(21) - 0.133) < 5e-4
@@ -932,10 +1035,16 @@ if nm and ns:
     claim("the band is the pre-registered RESIDUAL DETECTION",
           nm["band"] == "RESIDUAL DETECTION (rank-limited)"
           and in_report("RESIDUAL DETECTION (rank-limited)"))
+    # The `or` that used to close this claim made the rest of it unreachable: `A and B or C` parses as
+    # `(A and B) or C`, and C -- ranks alone -- is strictly weaker than A, so the `survives` flag and the
+    # report check were never required. They were also never TRUE: the report writes "Plant survives"
+    # with a capital P and this checker looked for lowercase, so the prose half had silently never
+    # matched. A vacuous check does not merely fail to catch things; it hides the thing it was hiding.
+    # This is the second and/or precedence defect found in this file. Grep for `or ` in claims.
     claim("the plant survives the projection at rank 1 at BOTH cosines",
           all(nm["plant"][c]["target_rank"] == 1 and nm["plant"][c]["survives"]
-              for c in ("1.0", "0.1")) and in_report("plant survives at rank **1**")
-          or all(nm["plant"][c]["target_rank"] == 1 for c in ("1.0", "0.1")))
+              for c in ("1.0", "0.1"))
+          and in_report("Plant survives at rank **1**"))
     claim("benign leave-one-out hit maximum is 2 in artifact and report",
           nm["benign_hit_max"] == 2 and ns["benign_hit_max"] == 2 and in_report("**max 2**"))
     claim("organism-a scores 3 hits, organism-b scores 0",
@@ -957,9 +1066,17 @@ if nm and ns:
           and ns["organisms"][_orgB]["hits_best_case"] == 0)
     claim("the arm is reported as NOT significant, with the 0.909 Bonferroni",
           abs(nm["p_bonferroni"] - 0.909090909) < 1e-6 and in_report("0.909"))
-    claim("no candidate name is published anywhere in the artifact",
-          all("ITEM_" in h or h == "NO_SALT_AVAILABLE"
-              for a in nm["arms"].values() for h in a.get("hit_hashes", [])))
+    # This accepted the sentinel unconditionally, so it passed on an artifact whose every hash IS the
+    # sentinel -- candidate_hashes {"NO_SALT_AVAILABLE": None}. It could not tell "hashed" from "the
+    # salt was missing and a constant got written". It still permits the sentinel, because
+    # regenerating this artifact needs a GPU and rewriting history would be worse -- but a run that
+    # produced NO usable hash must now say so in the report. Parenthesised explicitly: an unbracketed
+    # `and`/`or` in a claim in this file has twice made half of it unreachable.
+    _nm_hashes = [h for a in nm["arms"].values() for h in a.get("hit_hashes", [])]
+    _nm_all_sentinel = bool(_nm_hashes) and all(h == "NO_SALT_AVAILABLE" for h in _nm_hashes)
+    claim("no candidate name in the artifact, and a run that hashed nothing says so",
+          (all(("ITEM_" in h) or (h == "NO_SALT_AVAILABLE") for h in _nm_hashes))
+          and ((not _nm_all_sentinel) or in_report("NO_SALT_AVAILABLE")))
 else:
     skip += 1
     print("  [--] nullmodel artifacts missing")

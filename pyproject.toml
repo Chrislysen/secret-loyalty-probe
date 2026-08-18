@@ -9,7 +9,10 @@ description = "White-box detection of secret loyalties: a calibrated linear prob
 readme = "README.md"
 requires-python = ">=3.10"
 # CORE is numpy only — the probe methodology + the deterministic testbed run at ZERO LLM
-# compute and need nothing else (the stats stack is hand-rolled: no scipy/sklearn).
+# compute and need nothing else. The stats stack is hand-rolled (no sklearn); the ONE exception
+# is the section 4.16 volume prediction interval, which uses scipy for a t-quantile. Its tests
+# SKIP under this profile rather than fail -- they used to error, which made "the core profile
+# passes" untrue. `pip install scipy` if you want that arm.
 dependencies = ["numpy>=1.26"]
 
 [project.optional-dependencies]

@@ -23,7 +23,7 @@ battery itself, project it out of the update, and score only the residual. If th
 what buries the content, removing it should move the content up. If the content lives inside the shared
 component, the residual is noise and this arm dies on its kill criterion.
 
-This is the second of the two untried angles recorded in `LOOP_STATE.md` before any of it was run.
+This is the second of the two untried angles recorded in `docs/process/LOOP_STATE.md` before any of it was run.
 
 ## 1 · The statistic
 
