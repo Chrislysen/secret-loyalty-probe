@@ -86,9 +86,13 @@ def _stamp_source_hash(src_name, pdf_path):
     file: only running the build updates it.
     """
     import hashlib
-    src = (HERE / src_name).read_bytes()
+    # Hash with line endings NORMALISED. git converts CRLF/LF on checkout, so hashing raw bytes
+    # would make this stamp valid only on the platform that wrote it -- a public repository that
+    # fails its own staleness test the moment somebody clones it on Linux is worse than no test.
+    src = (HERE / src_name).read_bytes().replace(b"\r\n", b"\n")
     (pdf_path.with_suffix(".pdf.sha256")).write_text(
-        hashlib.sha256(src).hexdigest() + f"  {src_name}\n", encoding="utf-8")
+        hashlib.sha256(src).hexdigest() + f"  {src_name}  (line endings normalised)\n",
+        encoding="utf-8")
 
 def main() -> int:
     if not shutil.which("pandoc"):

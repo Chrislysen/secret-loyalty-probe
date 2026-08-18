@@ -400,7 +400,9 @@ def test_shipped_pdfs_are_not_stale():
             f"{pdf} ships without {stamp.name}; run `python writeup/{builder}.py` so its provenance "
             f"is recorded"
         )
-        want = hashlib.sha256((ROOT / "writeup" / src).read_bytes()).hexdigest()
+        # Normalised, so this holds on a Linux clone as well as a Windows one.
+        want = hashlib.sha256(
+            (ROOT / "writeup" / src).read_bytes().replace(b"\r\n", b"\n")).hexdigest()
         got = stamp.read_text(encoding="utf-8").split()[0]
         assert got == want, (
             f"{pdf} is stale against {src} -- regenerate it (`python writeup/{builder}.py`). "
