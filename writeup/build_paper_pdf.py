@@ -102,6 +102,21 @@ def link_gate() -> int:
     return rc
 
 
+
+def _stamp_source_hash(src_name, pdf_path):
+    """Record the SHA-256 of the SOURCE markdown next to the PDF the build just produced.
+
+    The staleness check used to compare `<NAME>_pdf.md` against the normalised source. That is a
+    proxy, and it broke the first time something edited the intermediate and the source together --
+    a repo-wide path rewrite did exactly that, the two matched, the test went green, and the PDF was
+    four hours old. A hash written HERE, by the build, cannot be forged by editing either markdown
+    file: only running the build updates it.
+    """
+    import hashlib
+    src = (HERE / src_name).read_bytes()
+    (pdf_path.with_suffix(".pdf.sha256")).write_text(
+        hashlib.sha256(src).hexdigest() + f"  {src_name}\n", encoding="utf-8")
+
 def main() -> int:
     if link_gate():
         return 1
@@ -133,6 +148,7 @@ def main() -> int:
     for i, cmd in enumerate(attempts, 1):
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode == 0:
+            _stamp_source_hash("PAPER.md", HERE / "PAPER.pdf")
             size = (HERE / "PAPER.pdf").stat().st_size
             print(f"[pdf] built with attempt {i} ({cmd[cmd.index('--pdf-engine=xelatex')] if '--pdf-engine=xelatex' in cmd else 'pdflatex'})"
                   f" -> PAPER.pdf {size/1024:.0f} KB")

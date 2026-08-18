@@ -385,15 +385,33 @@ def test_shipped_pdfs_are_not_stale():
     normalised source is a faithful proxy for the PDF being current -- and it compares text rather
     than trying to extract it back out of a binary.
     """
+    import hashlib
     for src, mid, pdf in (("PAPER.md", "PAPER_pdf.md", "PAPER.pdf"),
                           ("REPORT.md", "REPORT_pdf.md", "REPORT.pdf")):
         mid_p, pdf_p = ROOT / "writeup" / mid, ROOT / "writeup" / pdf
+        builder = "build_paper_pdf" if src == "PAPER.md" else "build_pdf"
         if not pdf_p.exists():
             continue
-        assert mid_p.exists(), f"{pdf} ships without {mid}; cannot tell whether it is current"
-        assert mid_p.read_text(encoding="utf-8") == _normalised(src), (
-            f"{pdf} is stale against {src} -- regenerate it "
-            f"(`python writeup/{'build_paper_pdf' if src == 'PAPER.md' else 'build_pdf'}.py`). "
+
+        # PRIMARY: a hash the BUILD wrote. Only running the build updates it, so no amount of editing
+        # either markdown file can forge it.
+        stamp = pdf_p.with_suffix(".pdf.sha256")
+        assert stamp.exists(), (
+            f"{pdf} ships without {stamp.name}; run `python writeup/{builder}.py` so its provenance "
+            f"is recorded"
+        )
+        want = hashlib.sha256((ROOT / "writeup" / src).read_bytes()).hexdigest()
+        got = stamp.read_text(encoding="utf-8").split()[0]
+        assert got == want, (
+            f"{pdf} is stale against {src} -- regenerate it (`python writeup/{builder}.py`). "
             f"Shipping a PDF that disagrees with its source is how the appendix spent five commits "
             f"telling readers the opposite of the paper."
+        )
+
+        # SECONDARY: the intermediate must also match. This was the ONLY check, and it went green on a
+        # stale PDF the first time a repo-wide path rewrite edited the intermediate and the source
+        # together. Kept, because it localises a broken normaliser -- but it is no longer load-bearing.
+        assert mid_p.exists(), f"{pdf} ships without {mid}; cannot tell whether it is current"
+        assert mid_p.read_text(encoding="utf-8") == _normalised(src), (
+            f"{mid} does not match the normalised {src}; the build's own intermediate is out of step"
         )
