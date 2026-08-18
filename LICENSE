@@ -19,9 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-The model organisms this work audits (`Alamerton/sl-organism-{a,b,c}-7b`) are
-third-party research artifacts and are NOT redistributed here. No model weights
-of any kind are included in this repository. See ETHICS.md.

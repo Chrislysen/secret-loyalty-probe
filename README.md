@@ -146,8 +146,8 @@ git log --follow probes/*PREREGISTRATION.md
 ```
 
 **Author:** Christian Lysentsoen · [lars@devent.no](mailto:lars@devent.no)
-**License:** [MIT](LICENSE). The model organisms audited here are third-party artifacts and are not
-redistributed.
+**License:** [MIT](LICENSE) — see [`NOTICE.md`](NOTICE.md) for what it does and does not cover. The
+audited model organisms are third-party artifacts and are not redistributed here.
 
 > **Doctrine:** agents lie, measurements don't. A failed elicitation is not a clean bill of health,
 > and a control that cannot fail is not a control.
