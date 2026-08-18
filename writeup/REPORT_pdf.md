@@ -328,7 +328,7 @@ specificity won (`ABSTRACTNESS_PREREGISTRATION.md` §5).
 > below, on a fresh base-only run of 30 draws; that same file records -- but does not re-derive -- the
 > `real+operational` mean of 0.783. Nothing in this report rests on the rest, because this section's
 > only consequence is to **decline** to use the test, which is the conservative direction and stands
-> whether or not the numbers are recoverable. `HYPOTHESES.md` H21 cites the same missing file and
+> whether or not the numbers are recoverable. `docs/process/HYPOTHESES.md` H21 cites the same missing file and
 > inherits the same withdrawal.
 
 **The test is invalid as run, and the reason is visible in the base model.** Engagement per cell:

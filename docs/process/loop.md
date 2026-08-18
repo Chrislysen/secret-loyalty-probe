@@ -61,13 +61,13 @@ remedy.
 Three files, already seeded. Read them at the start of each iteration, update them at the end.
 They are how you survive a context reset.
 
-- **`LOOP_STATE.md`** — active bet, its kill criterion, iteration counter, what the last
+- **`docs/process/LOOP_STATE.md`** — active bet, its kill criterion, iteration counter, what the last
   iteration did, what the next will do, current best estimate of the report's weakest point.
-- **`HYPOTHESES.md`** — append-only ledger. Each row: hypothesis, status (`LIVE` / `REFUTED` /
+- **`docs/process/HYPOTHESES.md`** — append-only ledger. Each row: hypothesis, status (`LIVE` / `REFUTED` /
   `PARKED-UNDERPOWERED` / `UNTESTED`), evidence, and the cheapest experiment that would move it.
   Never delete a row; status changes only. Re-testing a `REFUTED` row requires writing a new
   reason into the row first.
-- **`HUMAN_QUEUE.md`** — things only the user can do, ranked, each with what it unblocks. Append;
+- **`docs/process/HUMAN_QUEUE.md`** — things only the user can do, ranked, each with what it unblocks. Append;
   never stall waiting on one.
 
 ---
@@ -75,7 +75,7 @@ They are how you survive a context reset.
 ## 3 · THE ITERATION
 
 1. **Read** the three state files and check any background run.
-2. **Harvest** — if a run finished, persist its JSON, update `HYPOTHESES.md`, and write the
+2. **Harvest** — if a run finished, persist its JSON, update `docs/process/HYPOTHESES.md`, and write the
    result into the report *in the same iteration*. Never let a finished run sit unharvested.
 3. **Adopt this cycle's lens** (§5) and re-read the state through it.
 4. **Choose one move** from the ladder (§4) — the highest-leverage move that lens surfaces.
@@ -127,7 +127,7 @@ explain an entire night of flat zeros. Look there first, always.
    backdoor/trojan-detection field do that this one doesn't; what would make this claim novel
    rather than a restatement. Come back with a delta, not a reading list.
 8. **Queue the human.** If a move needs a login, a gate acceptance, or an irreversible external
-   judgement, write it to `HUMAN_QUEUE.md` with its unblock value and move to the next move.
+   judgement, write it to `docs/process/HUMAN_QUEUE.md` with its unblock value and move to the next move.
    Never stall.
 
 ---
@@ -154,7 +154,7 @@ Cycle in order. The rotation is what stops you tunnelling on one hypothesis all 
 
 ## 6 · ANTI-THRASH
 
-- **One active bet at a time**, declared in `LOOP_STATE.md` with a kill criterion and a deadline.
+- **One active bet at a time**, declared in `docs/process/LOOP_STATE.md` with a kill criterion and a deadline.
   Do not start a second until the first is killed or banked.
 - **Kill criteria are binding.** When one fires: mark `REFUTED`, write the reason, and move on in
   the same iteration. Do not relitigate. Do not "just try one more configuration."
@@ -176,7 +176,7 @@ stale estimate.
 - **T−12h: HARD FREEZE ON NEW EXPERIMENTS.** Everything remaining goes into the report, figures,
   PDF, and the fresh-clone check.
 - **T−4h:** submission-readiness pass — repo public, `REPORT.md` link resolves, PDF current and
-  matching the markdown, official template conformed to, `HUMAN_QUEUE.md` cleared or explicitly
+  matching the markdown, official template conformed to, `docs/process/HUMAN_QUEUE.md` cleared or explicitly
   abandoned with reasons.
 - This project's demonstrated failure mode is spending the final hours on a fourth control
   instead of on the figure. Do not.
@@ -185,7 +185,7 @@ stale estimate.
 
 ## 8 · ALREADY DEAD — do not redo
 
-Re-opening any of these requires a *new* reason written into `HYPOTHESES.md` first.
+Re-opening any of these requires a *new* reason written into `docs/process/HYPOTHESES.md` first.
 
 - **Eval-awareness gate probe (GATEKEEPER).** Dead at the design level: because organism-c is
   bit-identical to base, the triple difference collapses to "did fine-tuning change the
@@ -210,7 +210,7 @@ Re-opening any of these requires a *new* reason written into `HYPOTHESES.md` fir
 
 Full autonomy on reversible actions that follow from this brief. Do not ask "shall I?" — the user
 is asleep and a question blocks the work. For scope changes or anything irreversible, queue it in
-`HUMAN_QUEUE.md` and continue.
+`docs/process/HUMAN_QUEUE.md` and continue.
 
 **Delegate aggressively.** When a task fans out across independent items — multiple hypotheses to
 check, multiple files to read, adversarial verification of a finding — spawn subagents and keep

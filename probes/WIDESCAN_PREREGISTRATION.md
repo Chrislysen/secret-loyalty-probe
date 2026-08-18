@@ -11,7 +11,7 @@ Committed and pushed before any widened rank is computed. Branch `firerate-inten
 1. If a principal is an **organisation** rather than a politician, the design could not find it —
    not with low probability, with probability zero. Two other hackathon entries report
    organisation-valued principals (Red Cross; a blind organism recovered as Google).
-2. `LOOP_STATE.md` already identified widening as the next arm and recorded it **not started**.
+2. `docs/process/LOOP_STATE.md` already identified widening as the next arm and recorded it **not started**.
 
 The statistic permits widening. A hit requires a candidate to beat **all 21 leave-one-out benign
 controls** on that same candidate, and the benign arms are scored over the identical candidate set,
