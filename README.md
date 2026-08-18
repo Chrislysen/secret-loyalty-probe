@@ -50,9 +50,9 @@ $ python probes/battery_power.py
   For a full report on your own features:  report(positive_features, negative_features)
 ```
 
-## The part that makes this worth reading
+## What the standard did to our own results
 
-**Our own best result is the standard's most informative casualty — twice.**
+**Our own best result is its most informative casualty — twice.**
 
 Six detectors, five reaching **AUROC 1.00** — and every one scoring the same **1.00** on a condition
 where no loyalty can be active, so excess over control is **exactly zero**. The probe was reading
@@ -67,8 +67,8 @@ Then the one detector that survived the whole protocol was falsified from outsid
 truth published after our arms were frozen places the principal in **organism-b** — where our
 statistic ranks him **44,798 of 152,064** — while we had ranked him **first of ten** on organism-a.
 One hit and one miss, both pointing the wrong way. [§4.7.2](writeup/PAPER.pdf) reports it as most
-likely a false positive, and that is the paper's strongest validation of its own thesis: a detector
-that looks perfect fails once it is calibrated against something it did not choose.
+likely a false positive. The thesis — that a detector which looks perfect fails once it is calibrated
+against something it did not choose — was tested on the paper's own survivor, and the survivor lost.
 
 The protocol grew from three tests to five as a direct result. Test 5 is the one that did it:
 **get an answer key you did not produce.** Internal calibration can show a result is *unsupported*.
