@@ -1,13 +1,15 @@
 # How many negative controls does a model audit need?
 
-**Thirty-nine, to claim a 5 % false-positive rate. The published field uses five.**
+**Thirty-nine, to claim a 5 % false-positive rate. We found no weight-space evaluation that
+reports the number at all.**
 
 This repository is an audit of two released secret-loyalty model organisms, and — more usefully — the
 calibration standard that audit needed in order to mean anything. Every detector here failed. The
 protocol that killed them is the contribution, and it is written to be lifted.
 
-📄 **[Read the paper (PDF)](writeup/PAPER.pdf)** · 📋 **[The one-page checklist](PROTOCOL.md)** ·
-🔍 **[Check every number yourself](#check-us-without-reading-us)**
+📋 **[The one-page checklist](PROTOCOL.md)** ·
+📐 **[The calibration standard](writeup/PAPER.md#2--a-calibration-standard-for-range-rule-detectors)** ·
+📄 **[The paper](writeup/PAPER.pdf)** · 🔍 **[Check every number yourself](#check-us-without-reading-us)**
 
 ---
 
@@ -32,10 +34,10 @@ weight-space evaluation that states that number.
 
 | you want | take |
 | :--- | :--- |
-| to size a control battery before you publish | **[§2 of the paper](writeup/PAPER.pdf)** — self-contained and citable; it depends on nothing later in the document |
+| to size a control battery before you publish | **[§2, the calibration standard](writeup/PAPER.md#2--a-calibration-standard-for-range-rule-detectors)** — self-contained and citable; it depends on nothing later in the document |
 | a checklist to run against your own detector | **[`PROTOCOL.md`](PROTOCOL.md)** — 8 questions, 5 tests, each with the measurement that justifies it |
 | the tool | `python probes/battery_power.py` — prints the two requirements people conflate |
-| to know whether *your* battery manufactured *your* result | `report(positives, negatives)` in [`probes/battery_power.py`](probes/battery_power.py) |
+| to know whether *your* battery manufactured *your* result | `report(positive_features, negative_features)` in [`probes/battery_power.py`](probes/battery_power.py) — pass `headline=` if your rule is "T of n" |
 
 ```console
 $ python probes/battery_power.py
@@ -45,17 +47,21 @@ $ python probes/battery_power.py
 
   m sizes the battery you SCORE against; n sizes the set you MEASURE the rate on.
   They are different numbers and the literature reports neither.
+  For a full report on your own features:  report(positive_features, negative_features)
 ```
 
 ## The part that makes this worth reading
 
 **Our own best result is the standard's most informative casualty — twice.**
 
-Six detectors, five reaching **AUROC 1.00** — and every one also scoring 1.00 on a condition where
-*no loyalty can possibly be active*, because the sprint's "clean" control organism is **bit-identical
-to the base model** on all 198 weight matrices a delta statistic reads. Any statistic of the form
-*f*(model) − *f*(base) is zero on it **by arithmetic**. A control that cannot fail is not a control.
-We call it the **clean-twin fallacy**.
+Six detectors, five reaching **AUROC 1.00** — and every one scoring the same **1.00** on a condition
+where no loyalty can be active, so excess over control is **exactly zero**. The probe was reading
+*which checkpoint this is*, not *what it is loyal to*. We call it the **clean-twin fallacy**.
+
+The sprint's own false-positive control could not have caught it: `sl-organism-c` is **bit-identical
+to the base model** on all 198 weight matrices a delta statistic reads, so any statistic of the form
+*f*(model) − *f*(base) is zero on it **by arithmetic**, for every *f*. A control that cannot fail is
+not a control.
 
 Then the one detector that survived the whole protocol was falsified from outside. Black-box ground
 truth published after our arms were frozen places the principal in **organism-b** — where our
@@ -77,7 +83,8 @@ $ python probes/verify_claims.py
   239 verified, 0 mismatched, 0 artifacts absent
 
 $ python writeup/check_links.py
-  [links] OK: all 1 of our own URL(s) return 200 unauthenticated; 22 of 22 external references resolve
+  [links] OK: all 1 of our own URL(s) return 200 unauthenticated; 22 of 22 external reference(s)
+  also resolve (non-200 on someone else's host is reported, never fatal)
 ```
 
 `verify_claims.py` re-derives every headline number **from the raw artifacts in
@@ -89,7 +96,7 @@ repository. A reviewer clicked the one link on page 1 and got a 404; the 239-cla
 paper's main credibility asset could not be opened. It is now a **build-blocking gate**: if a URL we
 own does not return 200 to an anonymous fetch, the PDF does not compile.
 
-Eighteen tests in [`tests/test_gates_can_fail.py`](tests/test_gates_can_fail.py) exist because
+Nineteen tests in [`tests/test_gates_can_fail.py`](tests/test_gates_can_fail.py) exist because
 **six of this repository's own checks once reported success while not running** — a hardcoded path, a
 silent fallback, an `and`/`or` precedence bug, a gate that passed when there was nothing to check.
 Four of them plant a real violation and require the gate to go red.
@@ -101,18 +108,17 @@ Pure-numpy core; no server, no LLM compute, byte-deterministic.
 ```console
 # CORE (numpy only) -- the methodology and the deterministic testbed
 pip install ".[test]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 174 passed, 10 skipped
+PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 175 passed, 10 skipped
 
 # FULL DEV (adds torch/transformers/matplotlib/peft)
 pip install ".[dev]"
-PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 187 passed
+PYTHONHASHSEED=0 python -m pytest tests/ -q      # -> 188 passed
 ```
 
-Both numbers are **measured in a clean virtualenv from a fresh clone**, not asserted. The profiles
-collect different counts because `tests/test_volume_stats.py` skips at module level when scipy is
-absent, so its four tests are never collected and the module skip is the tenth. An earlier version of
-this section claimed 134 and 143 and called both fresh-clone verified; neither was reproducible, and
-the count was withheld until it had actually been run.
+Both numbers are **measured in a clean virtualenv from a fresh clone**, not asserted. (The profiles
+collect different totals because the volume-interval tests skip at module level without scipy.) An
+earlier version of this section claimed 134 and 143 and called both fresh-clone verified; neither was
+reproducible, and the count was withheld here until it had actually been run.
 
 The **real-organism run** needs a GPU — see [`COLAB.md`](COLAB.md). Everything above does not.
 
@@ -125,7 +131,7 @@ The **real-organism run** needs a GPU — see [`COLAB.md`](COLAB.md). Everything
 | [`PROTOCOL.md`](PROTOCOL.md) | the one-page checklist |
 | [`probes/`](probes/) | the arms, the tools, and **55 pre-registrations** committed before the runs they govern |
 | [`results/`](results/) | 103 persisted artifacts; every number in the paper re-derives from one |
-| [`tests/`](tests/) | 187 tests, including the 18-test gate-falsification suite |
+| [`tests/`](tests/) | 188 tests, including the 19-test gate-falsification suite |
 | [`docs/process/`](docs/process/) | the sprint's working logs, kept as evidence rather than tidied away |
 | [`ETHICS.md`](ETHICS.md) | disclosure rules; no model weights are redistributed here |
 

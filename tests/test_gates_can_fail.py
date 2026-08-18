@@ -417,3 +417,42 @@ def test_shipped_pdfs_are_not_stale():
         assert mid_p.read_text(encoding="utf-8") == _normalised(src), (
             f"{mid} does not match the normalised {src}; the build's own intermediate is out of step"
         )
+
+# --------------------------------------------------------------------------------------------
+# 7. Claims this project has retracted must not come back
+# --------------------------------------------------------------------------------------------
+
+# Each entry: (phrase, why it was retracted). Matched case-insensitively against every SHIPPED
+# document. docs/process/ is exempt on purpose -- those files are dated records of what was believed
+# at the time, and its own README says nothing in it is authoritative.
+RETRACTED = [
+    ("field uses five",
+     "the reproduced detector calibrates against a bank of 400; what we measured is that no "
+     "weight-space evaluation REPORTS its denominator, not that the field uses five"),
+    ("rate is exactly `2/(m+1)`",
+     "2/(m+1) is a floor the true rate can exceed, not an equality"),
+    ("fifty-three pre-registered arms",
+     "there are fifty-five pre-registration files on disk"),
+]
+
+SHIPPED = ["README.md", "NOTICE.md", "PROTOCOL.md", "ETHICS.md", "COLAB.md",
+           "writeup/PAPER.md", "writeup/REPORT.md"]
+
+
+def test_retracted_claims_do_not_reappear_in_shipped_documents():
+    """"The field uses five" reached the README's boldest line three separate times.
+
+    It was removed from the paper's title, then reappeared in the GitHub repository description, then
+    in the README headline -- each time because a fix was applied to one document and the claim lived
+    in several. A retraction that is not enforced anywhere is a retraction that comes back.
+    """
+    offences = []
+    for name in SHIPPED:
+        path = ROOT / name
+        if not path.exists():
+            continue
+        body = path.read_text(encoding="utf-8").lower()
+        for phrase, why in RETRACTED:
+            if phrase.lower() in body:
+                offences.append(f"{name}: {phrase!r} -- {why}")
+    assert not offences, "retracted claim(s) back in shipped documents:\n  " + "\n  ".join(offences)

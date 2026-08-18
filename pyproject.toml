@@ -17,14 +17,15 @@ dependencies = ["numpy>=1.26"]
 
 [project.optional-dependencies]
 # to RUN the offline test suite (the documented reproduce command). Installs the CORE
-# path only: 125 numpy-only tests pass; the 4 real-transformer tests SKIP (need torch).
+# path only: 175 pass and 10 skip (the real-transformer tests need torch; the volume-interval
+# module needs scipy). Measured in a clean virtualenv from a fresh clone, not asserted.
 test = ["pytest>=8"]
 # the REAL-model path: load a transformer + extract residual-stream activations. With this,
-# the full 129 tests run (the 4 real-model tests no longer skip). Colab usually pre-installs.
+# all 188 run and pass, real-transformer tests included. Colab usually pre-installs these.
 transformers = ["torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "bitsandbytes>=0.43", "peft>=0.11"]
 # optional heatmap figure from the rehearsal / Day-1 run
 plot = ["matplotlib>=3.7"]
-# everything, for a full local dev environment that reproduces all 129 tests
+# everything, for a full local dev environment: 188 collected, 188 passed
 dev = ["pytest>=8", "torch>=2.1", "transformers>=4.44", "accelerate>=0.30", "matplotlib>=3.7", "peft>=0.11"]
 
 # The package dir is repo_root/loyalty_probe; this pyproject lives INSIDE it, so from the
